@@ -1,0 +1,85 @@
+{
+    "base_station_set": {
+      "1": {
+        "id": 1,
+        "bs_name": "BS1",
+        "node_label": "1\n(2.45)",
+        "node_latency": 2.45,
+        "wireless_latency": 0.2,
+        "signal_range": 0.13,
+        "position": [
+          0.6871551023043595,
+          0.6418631150757651
+        ],
+        "edges": [
+          "2",
+          "4"
+        ],
+        "edge_net_latencies": [
+          0.87,
+          1.11
+        ],
+        "edge_net_throughputs": [
+          1,
+          2
+        ]
+      },
+      "2": {
+        "id": 2,
+        "bs_name": "BS2",
+        "node_label": "2\n(2.45)",
+        "node_latency": 2.45,
+        "wireless_latency": 0.2,
+        "signal_range": 0.13,
+        "position": [
+          0.6871551023043595,
+          0.6418631150757651
+        ],
+        "edges": [
+          "3"
+        ],
+        "edge_net_latencies": [
+          0.87
+        ],
+        "edge_net_throughputs": [
+          3
+        ]
+      },
+      "3": {
+        "id": 3,
+        "bs_name": "BS3",
+        "node_label": "3\n(2.45)",
+        "node_latency": 2.45,
+        "wireless_latency": 0.2,
+        "signal_range": 0.13,
+        "position": [
+          0.6871551023043595,
+          0.6418631150757651
+        ],
+        "edges": [],
+        "edge_net_latencies": [],
+        "edge_net_throughputs": []
+      },
+      "4": {
+        "id": 4,
+        "bs_name": "BS4",
+        "node_label": "4\n(2.45)",
+        "node_latency": 2.45,
+        "wireless_latency": 0.2,
+        "signal_range": 0.13,
+        "position": [
+          0.6871551023043595,
+          0.6418631150757651
+        ],
+        "edges": [
+          "3"
+        ],
+        "edge_net_latencies": [
+          0.87
+        ],
+        "edge_net_throughputs": [
+          5
+        ]
+      }
+    }
+}

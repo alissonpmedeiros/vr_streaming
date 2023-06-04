@@ -140,7 +140,8 @@ class MecController:
         for i in range(0, overall_mecs):
             bs_id = str(i)
             bs: 'BaseStation' = base_station_set[bs_id]
-            mec_id = str(uuid.uuid4())
+            #mec_id = str(uuid.uuid4())
+            mec_id = i
             mec_name = 'MEC' + str(i)
             overall_mec_cpu = int(cpu_set[i])
             overall_mec_gpu = int(gpu_set[i])

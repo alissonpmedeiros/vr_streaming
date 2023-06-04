@@ -69,7 +69,8 @@ class HmdController:
         
         for i in range(total_hmds):
             
-            hmd_id = str(uuid.uuid4())
+            #hmd_id = str(uuid.uuid4())
+            hmd_id = i
             computing_latency = HmdController.__generate_hmd_latency()
             position = HmdController.__generate_hmd_initial_position()
             

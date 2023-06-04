@@ -1,14 +1,14 @@
 {
   "hmds_set": {
-    "838cb3eb-7b2f-4608-8673-79ce23cbc89f": {
+    "0": {
       "id": 0,
       "signal_range": 0.05,
-      "computing_latency": 6.05,
+      "computing_latency": 6.99,
       "current_base_station": "",
       "previous_base_station": "",
       "position": [
-        0.22984828538603796,
-        0.9890853891389889
+        0.10334936617737434,
+        0.07775020503823105
       ],
       "video_client": {
         "buffer_size": 0,
@@ -22,101 +22,17 @@
         "video_quality": ""
       },
       "services_ids": [
-        "8e8795f8-1426-4902-9252-05be26ecf27e"
+        "afa48d46-16d0-4fc6-84a7-a4b7f804c592"
       ],
       "services_set": [
         {
-          "id": "8e8795f8-1426-4902-9252-05be26ecf27e",
+          "id": "afa48d46-16d0-4fc6-84a7-a4b7f804c592",
           "cpu_only": false,
           "is_mobile": true,
           "quota": {
-            "name": "medium",
+            "name": "modest",
             "resources": {
-              "cpu": 4,
-              "gpu": 2
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        }
-      ]
-    },
-    "f27e552a-26bf-4a07-a624-7b4e74ca6f4c": {
-      "id": 1,
-      "signal_range": 0.05,
-      "computing_latency": 6.97,
-      "current_base_station": "",
-      "previous_base_station": "",
-      "position": [
-        0.6684927188616738,
-        0.22955025099603654
-      ],
-      "video_client": {
-        "buffer_size": 0,
-        "refresh_rate": 0,
-        "missed_frames": 0,
-        "data_received": 0,
-        "playback_time": 0,
-        "current_buffer": 0,
-        "current_throughput": 0,
-        "video_id": "",
-        "video_quality": ""
-      },
-      "services_ids": [
-        "5061c74e-0161-4651-9c06-4a7de479e773"
-      ],
-      "services_set": [
-        {
-          "id": "5061c74e-0161-4651-9c06-4a7de479e773",
-          "cpu_only": false,
-          "is_mobile": true,
-          "quota": {
-            "name": "jumbo",
-            "resources": {
-              "cpu": 10,
-              "gpu": 8
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        }
-      ]
-    },
-    "8915f62a-0ff2-4fac-b369-ff080dbe130d": {
-      "id": 2,
-      "signal_range": 0.05,
-      "computing_latency": 6.86,
-      "current_base_station": "",
-      "previous_base_station": "",
-      "position": [
-        0.3805465051905551,
-        0.4729117775350439
-      ],
-      "video_client": {
-        "buffer_size": 0,
-        "refresh_rate": 0,
-        "missed_frames": 0,
-        "data_received": 0,
-        "playback_time": 0,
-        "current_buffer": 0,
-        "current_throughput": 0,
-        "video_id": "",
-        "video_quality": ""
-      },
-      "services_ids": [
-        "d485a3c9-da0e-4c35-98cd-6ce8ee60fdb1"
-      ],
-      "services_set": [
-        {
-          "id": "d485a3c9-da0e-4c35-98cd-6ce8ee60fdb1",
-          "cpu_only": false,
-          "is_mobile": true,
-          "quota": {
-            "name": "average",
-            "resources": {
-              "cpu": 4,
+              "cpu": 1,
               "gpu": 1
             }
           },
@@ -126,15 +42,15 @@
         }
       ]
     },
-    "268d5135-171a-43bd-89eb-2edc2b47ad23": {
-      "id": 3,
+    "1": {
+      "id": 1,
       "signal_range": 0.05,
-      "computing_latency": 6.7,
+      "computing_latency": 6.37,
       "current_base_station": "",
       "previous_base_station": "",
       "position": [
-        0.7826282380877774,
-        0.39606484570989575
+        0.5877713333024989,
+        0.8494433772954557
       ],
       "video_client": {
         "buffer_size": 0,
@@ -148,53 +64,11 @@
         "video_quality": ""
       },
       "services_ids": [
-        "56da5ff0-581d-4e80-93dd-5c18c8363edf"
+        "24955249-3cef-4e23-be3e-4138ea096f63"
       ],
       "services_set": [
         {
-          "id": "56da5ff0-581d-4e80-93dd-5c18c8363edf",
-          "cpu_only": false,
-          "is_mobile": true,
-          "quota": {
-            "name": "giant",
-            "resources": {
-              "cpu": 10,
-              "gpu": 4
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        }
-      ]
-    },
-    "09961835-043b-4700-ab41-c01a627e6d74": {
-      "id": 4,
-      "signal_range": 0.05,
-      "computing_latency": 6.66,
-      "current_base_station": "",
-      "previous_base_station": "",
-      "position": [
-        0.06577449472820796,
-        0.05249938362552542
-      ],
-      "video_client": {
-        "buffer_size": 0,
-        "refresh_rate": 0,
-        "missed_frames": 0,
-        "data_received": 0,
-        "playback_time": 0,
-        "current_buffer": 0,
-        "current_throughput": 0,
-        "video_id": "",
-        "video_quality": ""
-      },
-      "services_ids": [
-        "2827d98d-a427-4df2-a42a-493e15b349e3"
-      ],
-      "services_set": [
-        {
-          "id": "2827d98d-a427-4df2-a42a-493e15b349e3",
+          "id": "24955249-3cef-4e23-be3e-4138ea096f63",
           "cpu_only": false,
           "is_mobile": true,
           "quota": {
@@ -210,15 +84,15 @@
         }
       ]
     },
-    "88536010-1e31-4f41-a198-3d24d3bedb0d": {
-      "id": 5,
+    "2": {
+      "id": 2,
       "signal_range": 0.05,
-      "computing_latency": 6.04,
+      "computing_latency": 4.32,
       "current_base_station": "",
       "previous_base_station": "",
       "position": [
-        0.2802476885711136,
-        0.1277681264988655
+        0.24357754088982408,
+        0.6092256908203934
       ],
       "video_client": {
         "buffer_size": 0,
@@ -232,17 +106,101 @@
         "video_quality": ""
       },
       "services_ids": [
-        "ac822bf1-b71d-4630-8ecc-5a29170451c6"
+        "2325b06a-164b-4c55-93ff-04d69deb10ba"
       ],
       "services_set": [
         {
-          "id": "ac822bf1-b71d-4630-8ecc-5a29170451c6",
+          "id": "2325b06a-164b-4c55-93ff-04d69deb10ba",
           "cpu_only": false,
           "is_mobile": true,
           "quota": {
-            "name": "mini",
+            "name": "average",
             "resources": {
-              "cpu": 1,
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "3": {
+      "id": 3,
+      "signal_range": 0.05,
+      "computing_latency": 6.38,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.3647662526333997,
+        0.4629800556132636
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "23032f48-d6b4-4408-94f6-75f72e18ea3e"
+      ],
+      "services_set": [
+        {
+          "id": "23032f48-d6b4-4408-94f6-75f72e18ea3e",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "4": {
+      "id": 4,
+      "signal_range": 0.05,
+      "computing_latency": 5.09,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.9758597668538979,
+        0.12087706206133664
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "149b1148-1997-4ef3-b7c1-b04e5c85df99"
+      ],
+      "services_set": [
+        {
+          "id": "149b1148-1997-4ef3-b7c1-b04e5c85df99",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
               "gpu": 0
             }
           },
@@ -252,15 +210,15 @@
         }
       ]
     },
-    "6bc548fc-308d-44e6-ac6c-d52d4e1c1f05": {
-      "id": 6,
+    "5": {
+      "id": 5,
       "signal_range": 0.05,
-      "computing_latency": 5.42,
+      "computing_latency": 4.72,
       "current_base_station": "",
       "previous_base_station": "",
       "position": [
-        0.975292663437272,
-        0.41919045901770413
+        0.21157156303695646,
+        0.5178180700702026
       ],
       "video_client": {
         "buffer_size": 0,
@@ -274,18 +232,18 @@
         "video_quality": ""
       },
       "services_ids": [
-        "23b89e73-fcd0-4b77-9b66-5d9f6481d8d4"
+        "bd7e7f84-7df9-424d-b6d6-472aac666010"
       ],
       "services_set": [
         {
-          "id": "23b89e73-fcd0-4b77-9b66-5d9f6481d8d4",
+          "id": "bd7e7f84-7df9-424d-b6d6-472aac666010",
           "cpu_only": false,
           "is_mobile": true,
           "quota": {
-            "name": "massive",
+            "name": "compact",
             "resources": {
-              "cpu": 8,
-              "gpu": 8
+              "cpu": 6,
+              "gpu": 0
             }
           },
           "video_decoder": {
@@ -294,15 +252,15 @@
         }
       ]
     },
-    "24bc555c-c1c1-421c-abf8-7bc46495eee3": {
-      "id": 7,
+    "6": {
+      "id": 6,
       "signal_range": 0.05,
-      "computing_latency": 5.64,
+      "computing_latency": 6.36,
       "current_base_station": "",
       "previous_base_station": "",
       "position": [
-        0.7857521402469498,
-        0.22677286585904644
+        0.0036522562508116696,
+        0.3944996748124633
       ],
       "video_client": {
         "buffer_size": 0,
@@ -316,11 +274,767 @@
         "video_quality": ""
       },
       "services_ids": [
-        "a9eb4234-8971-40b7-bcf4-30b29278dc8b"
+        "92a2c567-90bc-4e1b-93b2-e054d429d596"
       ],
       "services_set": [
         {
-          "id": "a9eb4234-8971-40b7-bcf4-30b29278dc8b",
+          "id": "92a2c567-90bc-4e1b-93b2-e054d429d596",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "7": {
+      "id": 7,
+      "signal_range": 0.05,
+      "computing_latency": 5.82,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.6452254876442128,
+        0.43996307184104244
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "e402cbbe-061d-4753-8b22-b6b18a62fe66"
+      ],
+      "services_set": [
+        {
+          "id": "e402cbbe-061d-4753-8b22-b6b18a62fe66",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "huge",
+            "resources": {
+              "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "8": {
+      "id": 8,
+      "signal_range": 0.05,
+      "computing_latency": 5.51,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.9571600073589785,
+        0.9527932631605931
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "fe20cdaa-0112-40c4-a314-db47a068e2a3"
+      ],
+      "services_set": [
+        {
+          "id": "fe20cdaa-0112-40c4-a314-db47a068e2a3",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "medium",
+            "resources": {
+              "cpu": 4,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "9": {
+      "id": 9,
+      "signal_range": 0.05,
+      "computing_latency": 5.29,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.7450105138074514,
+        0.9421657689993361
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "35ebf7f1-3fde-4362-8a01-e79b3bfbc291"
+      ],
+      "services_set": [
+        {
+          "id": "35ebf7f1-3fde-4362-8a01-e79b3bfbc291",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "medium",
+            "resources": {
+              "cpu": 4,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "10": {
+      "id": 10,
+      "signal_range": 0.05,
+      "computing_latency": 5.18,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.14226248655949314,
+        0.7300289746280815
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "c3900f2a-1d0b-47b6-8772-d9b55555ac7a"
+      ],
+      "services_set": [
+        {
+          "id": "c3900f2a-1d0b-47b6-8772-d9b55555ac7a",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "11": {
+      "id": 11,
+      "signal_range": 0.05,
+      "computing_latency": 5.35,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.35957685182726873,
+        0.03998559390447198
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "83368982-f4bc-4b9e-8ae0-ab1375fdfc23"
+      ],
+      "services_set": [
+        {
+          "id": "83368982-f4bc-4b9e-8ae0-ab1375fdfc23",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "12": {
+      "id": 12,
+      "signal_range": 0.05,
+      "computing_latency": 6.76,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.027249731395091237,
+        0.3390312368418342
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "4ee1bb34-ad65-426b-8c86-26a78b66d772"
+      ],
+      "services_set": [
+        {
+          "id": "4ee1bb34-ad65-426b-8c86-26a78b66d772",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "13": {
+      "id": 13,
+      "signal_range": 0.05,
+      "computing_latency": 6.23,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.41618244241667324,
+        0.4706734411229516
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "d431189a-3234-4f58-a2b8-77ef5b67d744"
+      ],
+      "services_set": [
+        {
+          "id": "d431189a-3234-4f58-a2b8-77ef5b67d744",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "xlarge",
+            "resources": {
+              "cpu": 10,
+              "gpu": 10
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "14": {
+      "id": 14,
+      "signal_range": 0.05,
+      "computing_latency": 4.87,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.8731996205657869,
+        0.374536411944165
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "d3ef8c17-298f-4d84-bfcd-f1aa9e58322e"
+      ],
+      "services_set": [
+        {
+          "id": "d3ef8c17-298f-4d84-bfcd-f1aa9e58322e",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "plentiful",
+            "resources": {
+              "cpu": 6,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "15": {
+      "id": 15,
+      "signal_range": 0.05,
+      "computing_latency": 5.12,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.798619548167294,
+        0.9184722922634342
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "dec59209-4dff-475a-a5b1-ad1526599e24"
+      ],
+      "services_set": [
+        {
+          "id": "dec59209-4dff-475a-a5b1-ad1526599e24",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "xlarge",
+            "resources": {
+              "cpu": 10,
+              "gpu": 10
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "16": {
+      "id": 16,
+      "signal_range": 0.05,
+      "computing_latency": 5.7,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.22971229495397982,
+        0.5785904044969403
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "c6a1069d-54ff-4a71-a1ae-ddd1d6f7a209"
+      ],
+      "services_set": [
+        {
+          "id": "c6a1069d-54ff-4a71-a1ae-ddd1d6f7a209",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "17": {
+      "id": 17,
+      "signal_range": 0.05,
+      "computing_latency": 6.21,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.8562690363875719,
+        0.5964545476472838
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "4327ab10-4059-49b4-8090-09692f44ed8e"
+      ],
+      "services_set": [
+        {
+          "id": "4327ab10-4059-49b4-8090-09692f44ed8e",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "generous",
+            "resources": {
+              "cpu": 6,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "18": {
+      "id": 18,
+      "signal_range": 0.05,
+      "computing_latency": 4.27,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.24793830862348631,
+        0.6747103599405959
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "4043d834-76c6-4cc9-95f2-902a2fd07516"
+      ],
+      "services_set": [
+        {
+          "id": "4043d834-76c6-4cc9-95f2-902a2fd07516",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "generous",
+            "resources": {
+              "cpu": 6,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "19": {
+      "id": 19,
+      "signal_range": 0.05,
+      "computing_latency": 4.44,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.5736833460365109,
+        0.5325731907180823
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "096ca90d-00a2-4e66-9663-ae8efa886c7d"
+      ],
+      "services_set": [
+        {
+          "id": "096ca90d-00a2-4e66-9663-ae8efa886c7d",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "tiny",
+            "resources": {
+              "cpu": 4,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "20": {
+      "id": 20,
+      "signal_range": 0.05,
+      "computing_latency": 5.44,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.2611203006504489,
+        0.8557537522940502
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "f4e48170-5071-4784-8406-e9874b992458"
+      ],
+      "services_set": [
+        {
+          "id": "f4e48170-5071-4784-8406-e9874b992458",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "21": {
+      "id": 21,
+      "signal_range": 0.05,
+      "computing_latency": 4.5,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.22803022262081674,
+        0.658782937363187
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "09ff2b5b-da5c-4535-9b2f-1af26b1cc08e"
+      ],
+      "services_set": [
+        {
+          "id": "09ff2b5b-da5c-4535-9b2f-1af26b1cc08e",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "xlarge",
+            "resources": {
+              "cpu": 10,
+              "gpu": 10
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "22": {
+      "id": 22,
+      "signal_range": 0.05,
+      "computing_latency": 6.49,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.29614435023364594,
+        0.9126070131668387
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "4c72d09e-fae6-4a11-8d3f-ba30e9a11f28"
+      ],
+      "services_set": [
+        {
+          "id": "4c72d09e-fae6-4a11-8d3f-ba30e9a11f28",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "huge",
+            "resources": {
+              "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "23": {
+      "id": 23,
+      "signal_range": 0.05,
+      "computing_latency": 5.39,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.013330136276760385,
+        0.35112221402748
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "12f931c9-c9e2-493f-9fad-00033ad6c008"
+      ],
+      "services_set": [
+        {
+          "id": "12f931c9-c9e2-493f-9fad-00033ad6c008",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "ample",
+            "resources": {
+              "cpu": 8,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "24": {
+      "id": 24,
+      "signal_range": 0.05,
+      "computing_latency": 4.86,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.3507459544006417,
+        0.3274796181442525
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "47811199-fe64-4d7e-b3a6-4f2227f8e595"
+      ],
+      "services_set": [
+        {
+          "id": "47811199-fe64-4d7e-b3a6-4f2227f8e595",
           "cpu_only": false,
           "is_mobile": true,
           "quota": {
@@ -336,15 +1050,15 @@
         }
       ]
     },
-    "272c0318-e622-41aa-bf71-4451b1f4fc0a": {
-      "id": 8,
+    "25": {
+      "id": 25,
       "signal_range": 0.05,
-      "computing_latency": 5.5,
+      "computing_latency": 4.22,
       "current_base_station": "",
       "previous_base_station": "",
       "position": [
-        0.27504626539972754,
-        0.33423624456792667
+        0.47039908469492164,
+        0.02112052018941224
       ],
       "video_client": {
         "buffer_size": 0,
@@ -358,17 +1072,395 @@
         "video_quality": ""
       },
       "services_ids": [
-        "f7f61cdd-7f7e-4c41-ad65-35bdafc6b2de"
+        "92710e76-573e-4c07-bb94-0b4d5d41c5c4"
       ],
       "services_set": [
         {
-          "id": "f7f61cdd-7f7e-4c41-ad65-35bdafc6b2de",
+          "id": "92710e76-573e-4c07-bb94-0b4d5d41c5c4",
           "cpu_only": false,
           "is_mobile": true,
           "quota": {
-            "name": "mini",
+            "name": "xlarge",
             "resources": {
-              "cpu": 1,
+              "cpu": 10,
+              "gpu": 10
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "26": {
+      "id": 26,
+      "signal_range": 0.05,
+      "computing_latency": 4.71,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.9563926303819517,
+        0.8790497110274298
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "c059f3f0-95de-4ee1-9ac9-a514c99d03b4"
+      ],
+      "services_set": [
+        {
+          "id": "c059f3f0-95de-4ee1-9ac9-a514c99d03b4",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "huge",
+            "resources": {
+              "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "27": {
+      "id": 27,
+      "signal_range": 0.05,
+      "computing_latency": 5.06,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.7746874092916695,
+        0.3707652299111889
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "356c7822-55ea-4f55-9c8e-c75105aaa2f4"
+      ],
+      "services_set": [
+        {
+          "id": "356c7822-55ea-4f55-9c8e-c75105aaa2f4",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "massive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "28": {
+      "id": 28,
+      "signal_range": 0.05,
+      "computing_latency": 6.7,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.4023127043717678,
+        0.6044773543587519
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "7b7f395a-995f-45de-b4c6-a55b9ee5aa1c"
+      ],
+      "services_set": [
+        {
+          "id": "7b7f395a-995f-45de-b4c6-a55b9ee5aa1c",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "29": {
+      "id": 29,
+      "signal_range": 0.05,
+      "computing_latency": 6.42,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.17398115368560996,
+        0.42518241503450316
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "3ae0093a-39c5-4211-b017-164c06159c36"
+      ],
+      "services_set": [
+        {
+          "id": "3ae0093a-39c5-4211-b017-164c06159c36",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "massive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "30": {
+      "id": 30,
+      "signal_range": 0.05,
+      "computing_latency": 5.65,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.28418461184924526,
+        0.18299555960798608
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "cb4fcac8-906c-403e-89c9-540dfd47448d"
+      ],
+      "services_set": [
+        {
+          "id": "cb4fcac8-906c-403e-89c9-540dfd47448d",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "huge",
+            "resources": {
+              "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "31": {
+      "id": 31,
+      "signal_range": 0.05,
+      "computing_latency": 4.57,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.15589402627964677,
+        0.9711968788900721
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "775cc375-eb49-4bca-ade2-588390d8a56d"
+      ],
+      "services_set": [
+        {
+          "id": "775cc375-eb49-4bca-ade2-588390d8a56d",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "huge",
+            "resources": {
+              "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "32": {
+      "id": 32,
+      "signal_range": 0.05,
+      "computing_latency": 4.8,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.214946831101811,
+        0.1325227793062086
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "849d0e04-f904-481b-b295-ee3c217b4033"
+      ],
+      "services_set": [
+        {
+          "id": "849d0e04-f904-481b-b295-ee3c217b4033",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "ample",
+            "resources": {
+              "cpu": 8,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "33": {
+      "id": 33,
+      "signal_range": 0.05,
+      "computing_latency": 5.13,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.6309211985354397,
+        0.5137097331236212
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "76b210cf-b05c-439f-8985-f5cb9fe19b9a"
+      ],
+      "services_set": [
+        {
+          "id": "76b210cf-b05c-439f-8985-f5cb9fe19b9a",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "34": {
+      "id": 34,
+      "signal_range": 0.05,
+      "computing_latency": 6.44,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.9728256596634731,
+        0.04741081165082639
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "ffbe0cdb-45d1-4973-9e6f-8024560989fc"
+      ],
+      "services_set": [
+        {
+          "id": "ffbe0cdb-45d1-4973-9e6f-8024560989fc",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
               "gpu": 0
             }
           },
@@ -378,15 +1470,15 @@
         }
       ]
     },
-    "dee3966f-86f2-4b32-bec7-659330474ba3": {
-      "id": 9,
+    "35": {
+      "id": 35,
       "signal_range": 0.05,
-      "computing_latency": 4.66,
+      "computing_latency": 6.49,
       "current_base_station": "",
       "previous_base_station": "",
       "position": [
-        0.7472374084728517,
-        0.8583652640473864
+        0.41557171006038707,
+        0.3834255690331704
       ],
       "video_client": {
         "buffer_size": 0,
@@ -400,18 +1492,606 @@
         "video_quality": ""
       },
       "services_ids": [
-        "ad95c434-9a24-40b3-b44b-8220c042e5ba"
+        "63f40502-af60-465f-94ae-a549147c3717"
       ],
       "services_set": [
         {
-          "id": "ad95c434-9a24-40b3-b44b-8220c042e5ba",
+          "id": "63f40502-af60-465f-94ae-a549147c3717",
           "cpu_only": false,
           "is_mobile": true,
           "quota": {
-            "name": "grant",
+            "name": "jumbo",
             "resources": {
               "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "36": {
+      "id": 36,
+      "signal_range": 0.05,
+      "computing_latency": 5.46,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.7663322649347382,
+        0.6224754219674735
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "6b5185ac-bbb8-42a4-a3ae-71ab7486e0cf"
+      ],
+      "services_set": [
+        {
+          "id": "6b5185ac-bbb8-42a4-a3ae-71ab7486e0cf",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "plentiful",
+            "resources": {
+              "cpu": 6,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "37": {
+      "id": 37,
+      "signal_range": 0.05,
+      "computing_latency": 5.82,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.11878096838036278,
+        0.9368136767809007
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "3035cc01-46d4-4f98-b4d2-d3fa8e292411"
+      ],
+      "services_set": [
+        {
+          "id": "3035cc01-46d4-4f98-b4d2-d3fa8e292411",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "plentiful",
+            "resources": {
+              "cpu": 6,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "38": {
+      "id": 38,
+      "signal_range": 0.05,
+      "computing_latency": 5.8,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.8084168636575603,
+        0.17172042676414612
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "1be88135-a9f1-445b-9e18-520ea3466ac3"
+      ],
+      "services_set": [
+        {
+          "id": "1be88135-a9f1-445b-9e18-520ea3466ac3",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "standard",
+            "resources": {
+              "cpu": 4,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "39": {
+      "id": 39,
+      "signal_range": 0.05,
+      "computing_latency": 6.63,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.13281570294641276,
+        0.41248847532829547
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "b9e1a43a-058d-46be-8810-6ee9573e66a4"
+      ],
+      "services_set": [
+        {
+          "id": "b9e1a43a-058d-46be-8810-6ee9573e66a4",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "40": {
+      "id": 40,
+      "signal_range": 0.05,
+      "computing_latency": 4.86,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.9132535741606399,
+        0.8319390255171247
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "0f135ed0-4b55-4803-a05a-4c74f718f8df"
+      ],
+      "services_set": [
+        {
+          "id": "0f135ed0-4b55-4803-a05a-4c74f718f8df",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "41": {
+      "id": 41,
+      "signal_range": 0.05,
+      "computing_latency": 6.42,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.4823737097771208,
+        0.2538285723592809
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "aef60c5f-237d-4036-8264-db8dc8a4b8f4"
+      ],
+      "services_set": [
+        {
+          "id": "aef60c5f-237d-4036-8264-db8dc8a4b8f4",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "42": {
+      "id": 42,
+      "signal_range": 0.05,
+      "computing_latency": 5.01,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.23159389650436857,
+        0.403417654793767
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "a2a55c18-6a04-43fc-9ee0-3704200033ad"
+      ],
+      "services_set": [
+        {
+          "id": "a2a55c18-6a04-43fc-9ee0-3704200033ad",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
               "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "43": {
+      "id": 43,
+      "signal_range": 0.05,
+      "computing_latency": 5.02,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.42662457263164943,
+        0.5414931701399494
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "1fa8a65d-05f2-4434-ac48-b3c6f752f79e"
+      ],
+      "services_set": [
+        {
+          "id": "1fa8a65d-05f2-4434-ac48-b3c6f752f79e",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "jumbo",
+            "resources": {
+              "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "44": {
+      "id": 44,
+      "signal_range": 0.05,
+      "computing_latency": 5.18,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.8596372002195426,
+        0.12287269227597886
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "fd5a7472-733c-4a92-8225-87b01007edf8"
+      ],
+      "services_set": [
+        {
+          "id": "fd5a7472-733c-4a92-8225-87b01007edf8",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "45": {
+      "id": 45,
+      "signal_range": 0.05,
+      "computing_latency": 4.9,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.7975931572990318,
+        0.20278893612139337
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "8cead40c-ea47-429d-bb21-bf71f0cf28e1"
+      ],
+      "services_set": [
+        {
+          "id": "8cead40c-ea47-429d-bb21-bf71f0cf28e1",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "limited",
+            "resources": {
+              "cpu": 2,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "46": {
+      "id": 46,
+      "signal_range": 0.05,
+      "computing_latency": 5.1,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.925502678964558,
+        0.7053220013896335
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "4d104b91-cf60-4876-ada9-ba805598a5fa"
+      ],
+      "services_set": [
+        {
+          "id": "4d104b91-cf60-4876-ada9-ba805598a5fa",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "generous",
+            "resources": {
+              "cpu": 6,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "47": {
+      "id": 47,
+      "signal_range": 0.05,
+      "computing_latency": 5.95,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.20106929981832034,
+        0.05404232822856714
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "97f73917-c8c9-423d-beda-0a70a8f01a87"
+      ],
+      "services_set": [
+        {
+          "id": "97f73917-c8c9-423d-beda-0a70a8f01a87",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "48": {
+      "id": 48,
+      "signal_range": 0.05,
+      "computing_latency": 5.13,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.6747145454984822,
+        0.8491096105081432
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "97bc4377-202c-418a-9d6a-02a4130be5a4"
+      ],
+      "services_set": [
+        {
+          "id": "97bc4377-202c-418a-9d6a-02a4130be5a4",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "massive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "49": {
+      "id": 49,
+      "signal_range": 0.05,
+      "computing_latency": 4.27,
+      "current_base_station": "",
+      "previous_base_station": "",
+      "position": [
+        0.4867860985224506,
+        0.44533177426957116
+      ],
+      "video_client": {
+        "buffer_size": 0,
+        "refresh_rate": 0,
+        "missed_frames": 0,
+        "data_received": 0,
+        "playback_time": 0,
+        "current_buffer": 0,
+        "current_throughput": 0,
+        "video_id": "",
+        "video_quality": ""
+      },
+      "services_ids": [
+        "27b7f696-8601-472d-a5ed-e9a60ef8fbcb"
+      ],
+      "services_set": [
+        {
+          "id": "27b7f696-8601-472d-a5ed-e9a60ef8fbcb",
+          "cpu_only": false,
+          "is_mobile": true,
+          "quota": {
+            "name": "modest",
+            "resources": {
+              "cpu": 1,
+              "gpu": 1
             }
           },
           "video_decoder": {

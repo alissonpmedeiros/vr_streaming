@@ -1,93 +1,21 @@
 {
   "mec_set": {
-    "bdad4ed6-fd76-4296-847d-160847232a49": {
+    "0": {
       "name": "MEC0",
-      "overall_cpu": 187,
-      "overall_gpu": 120,
-      "computing_latency": 2.45,
+      "overall_cpu": 169,
+      "overall_gpu": 99,
+      "computing_latency": 3.11,
       "init_resource_load": 0.9,
-      "allocated_cpu": 19,
-      "allocated_gpu": 7,
-      "cpu_threshold": 19,
-      "gpu_threshold": 12,
-      "video_server": {
-        "id": "c893d1fe-3cac-4d28-895b-b7aa19e992d1",
-        "segmentation_time": 2,
-        "video_set": {
-          "391bf21b-e301-417f-866c-0d750b79d3fd": {
-            "id": "391bf21b-e301-417f-866c-0d750b79d3fd",
-            "duration": 100,
-            "refresh_rate": 120,
-            "resolution": {
-              "resolution": ""
-            }
-          }
-        }
-      },
-      "services_set": [
-        {
-          "id": "ce3c8957-13e5-4cc2-86bc-a0a81bc3d2c4",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "modest",
-            "resources": {
-              "cpu": 1,
-              "gpu": 1
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        },
-        {
-          "id": "68799949-f208-4016-b270-eb481d91e849",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "ample",
-            "resources": {
-              "cpu": 8,
-              "gpu": 2
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        },
-        {
-          "id": "15401056-3da0-4fa2-84fd-c2f1fa2e37c3",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "giant",
-            "resources": {
-              "cpu": 10,
-              "gpu": 4
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        }
-      ]
-    },
-    "c9790b60-30d1-40a6-8af2-d6eae3bf460b": {
-      "name": "MEC1",
-      "overall_cpu": 193,
-      "overall_gpu": 91,
-      "computing_latency": 3.5,
-      "init_resource_load": 0.9,
-      "allocated_cpu": 14,
-      "allocated_gpu": 7,
-      "cpu_threshold": 20,
+      "allocated_cpu": 16,
+      "allocated_gpu": 9,
+      "cpu_threshold": 17,
       "gpu_threshold": 10,
       "video_server": {
-        "id": "bcac6230-c3b2-440a-b339-68f3d911bf74",
+        "id": "be342e38-e8ce-4b3b-8c95-87e87a53a3d8",
         "segmentation_time": 2,
         "video_set": {
-          "6ec11570-f569-4f52-b03d-3f987452a8a0": {
-            "id": "6ec11570-f569-4f52-b03d-3f987452a8a0",
+          "70733591-ba01-442c-99b3-a96c6930fc87": {
+            "id": "70733591-ba01-442c-99b3-a96c6930fc87",
             "duration": 100,
             "refresh_rate": 120,
             "resolution": {
@@ -98,22 +26,7 @@
       },
       "services_set": [
         {
-          "id": "d497558f-1ea1-4dd9-bca6-621b166d885b",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "huge",
-            "resources": {
-              "cpu": 8,
-              "gpu": 6
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        },
-        {
-          "id": "787a4d73-84b3-4bb7-acef-85260fe41231",
+          "id": "a8268b0e-c8c3-4c4f-81a8-42739f3aeb76",
           "cpu_only": false,
           "is_mobile": false,
           "quota": {
@@ -126,211 +39,40 @@
           "video_decoder": {
             "name": ""
           }
+        },
+        {
+          "id": "6460d0c9-3063-408c-ade1-55d19fc5ef04",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "jumbo",
+            "resources": {
+              "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
         }
       ]
     },
-    "bc84af5f-1712-46b4-9dc4-d9a7c62aef77": {
-      "name": "MEC2",
-      "overall_cpu": 210,
+    "1": {
+      "name": "MEC1",
+      "overall_cpu": 216,
       "overall_gpu": 111,
-      "computing_latency": 4.26,
+      "computing_latency": 3.83,
       "init_resource_load": 0.9,
-      "allocated_cpu": 14,
-      "allocated_gpu": 5,
-      "cpu_threshold": 21,
-      "gpu_threshold": 12,
-      "video_server": {
-        "id": "4987cdcb-119a-4ae6-bb7f-8f408588540e",
-        "segmentation_time": 2,
-        "video_set": {
-          "648e54a0-1e72-4a81-9034-e9f7c6f4fc6f": {
-            "id": "648e54a0-1e72-4a81-9034-e9f7c6f4fc6f",
-            "duration": 100,
-            "refresh_rate": 120,
-            "resolution": {
-              "resolution": ""
-            }
-          }
-        }
-      },
-      "services_set": [
-        {
-          "id": "1910777c-cb79-4e01-91bd-640a86fad649",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "average",
-            "resources": {
-              "cpu": 4,
-              "gpu": 1
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        },
-        {
-          "id": "993d131c-a06c-4ec9-b134-1310f812c044",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "giant",
-            "resources": {
-              "cpu": 10,
-              "gpu": 4
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        }
-      ]
-    },
-    "b92710c0-aaf1-440c-bfef-b66b4ec98c8c": {
-      "name": "MEC3",
-      "overall_cpu": 215,
-      "overall_gpu": 115,
-      "computing_latency": 4.12,
-      "init_resource_load": 0.9,
-      "allocated_cpu": 12,
-      "allocated_gpu": 10,
-      "cpu_threshold": 22,
-      "gpu_threshold": 12,
-      "video_server": {
-        "id": "a0c5b1f5-648e-4d6d-927a-eba0c81e05c3",
-        "segmentation_time": 2,
-        "video_set": {
-          "783d4eda-5b36-4058-9157-5f28729797a5": {
-            "id": "783d4eda-5b36-4058-9157-5f28729797a5",
-            "duration": 100,
-            "refresh_rate": 120,
-            "resolution": {
-              "resolution": ""
-            }
-          }
-        }
-      },
-      "services_set": [
-        {
-          "id": "78e40d72-e0e5-44d5-9e1c-93dd18a753ee",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "standard",
-            "resources": {
-              "cpu": 4,
-              "gpu": 4
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        },
-        {
-          "id": "14c01aed-f5f0-477e-9354-264c132e9a26",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "huge",
-            "resources": {
-              "cpu": 8,
-              "gpu": 6
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        }
-      ]
-    },
-    "cafde279-88e5-47b0-95b3-fe0d199139bb": {
-      "name": "MEC4",
-      "overall_cpu": 217,
-      "overall_gpu": 122,
-      "computing_latency": 2.02,
-      "init_resource_load": 0.9,
-      "allocated_cpu": 13,
-      "allocated_gpu": 7,
-      "cpu_threshold": 22,
-      "gpu_threshold": 13,
-      "video_server": {
-        "id": "b2ef8906-7000-498d-8ca9-4e3d571ee69c",
-        "segmentation_time": 2,
-        "video_set": {
-          "77d3db62-620c-4820-9b4b-0f83f56dfbb5": {
-            "id": "77d3db62-620c-4820-9b4b-0f83f56dfbb5",
-            "duration": 100,
-            "refresh_rate": 120,
-            "resolution": {
-              "resolution": ""
-            }
-          }
-        }
-      },
-      "services_set": [
-        {
-          "id": "0a7d1fa1-2f3b-4f40-9627-4bfe3d28899a",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "giant",
-            "resources": {
-              "cpu": 10,
-              "gpu": 4
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        },
-        {
-          "id": "187bf6b7-c672-48c3-a0d0-3c8ef3d8c203",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "regular",
-            "resources": {
-              "cpu": 2,
-              "gpu": 2
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        },
-        {
-          "id": "00e6e334-add7-41ff-83d7-46878a060499",
-          "cpu_only": false,
-          "is_mobile": false,
-          "quota": {
-            "name": "modest",
-            "resources": {
-              "cpu": 1,
-              "gpu": 1
-            }
-          },
-          "video_decoder": {
-            "name": ""
-          }
-        }
-      ]
-    },
-    "e39aeae6-c207-4922-ae65-4e29b77aadcf": {
-      "name": "MEC5",
-      "overall_cpu": 178,
-      "overall_gpu": 98,
-      "computing_latency": 3.71,
-      "init_resource_load": 0.9,
-      "allocated_cpu": 10,
+      "allocated_cpu": 17,
       "allocated_gpu": 8,
-      "cpu_threshold": 18,
-      "gpu_threshold": 10,
+      "cpu_threshold": 22,
+      "gpu_threshold": 12,
       "video_server": {
-        "id": "49ada70d-6cd6-4477-ba5b-72da16abcdd8",
+        "id": "90148e17-2140-4f31-809a-eb39d9b3cc27",
         "segmentation_time": 2,
         "video_set": {
-          "500b8626-2b5a-4f0c-afab-f64e253c0431": {
-            "id": "500b8626-2b5a-4f0c-afab-f64e253c0431",
+          "6a885042-0174-48f9-b637-0b9882733363": {
+            "id": "6a885042-0174-48f9-b637-0b9882733363",
             "duration": 100,
             "refresh_rate": 120,
             "resolution": {
@@ -341,7 +83,7 @@
       },
       "services_set": [
         {
-          "id": "164a1c7b-e6f0-4472-ac78-40707caf7880",
+          "id": "12694a8c-8f64-406d-9da3-adbc7bdee860",
           "cpu_only": false,
           "is_mobile": false,
           "quota": {
@@ -356,7 +98,7 @@
           }
         },
         {
-          "id": "9fa92c39-d0ef-404a-b6f6-27dab182f797",
+          "id": "69e7d450-9bf5-4ecc-9e1d-ee83a6836f02",
           "cpu_only": false,
           "is_mobile": false,
           "quota": {
@@ -369,25 +111,55 @@
           "video_decoder": {
             "name": ""
           }
+        },
+        {
+          "id": "7304ce4a-70be-4fc2-a7c5-e214537d3dd1",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "compact",
+            "resources": {
+              "cpu": 6,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "02e8cdba-4857-44b7-841f-1aa48e85b949",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
         }
       ]
     },
-    "73561ff5-54f5-451a-90f7-cc26b8b592bc": {
-      "name": "MEC6",
-      "overall_cpu": 201,
-      "overall_gpu": 115,
-      "computing_latency": 3.55,
+    "2": {
+      "name": "MEC2",
+      "overall_cpu": 186,
+      "overall_gpu": 107,
+      "computing_latency": 2.16,
       "init_resource_load": 0.9,
-      "allocated_cpu": 16,
-      "allocated_gpu": 12,
-      "cpu_threshold": 21,
-      "gpu_threshold": 12,
+      "allocated_cpu": 8,
+      "allocated_gpu": 8,
+      "cpu_threshold": 19,
+      "gpu_threshold": 11,
       "video_server": {
-        "id": "93c91ce3-167f-4833-a6cc-bf90a4747b00",
+        "id": "c28f33be-a46a-400e-b4e8-788836a4f196",
         "segmentation_time": 2,
         "video_set": {
-          "5645b0fa-5262-4210-9b2c-e21a768a18d1": {
-            "id": "5645b0fa-5262-4210-9b2c-e21a768a18d1",
+          "fcd2566a-5710-44e8-83aa-69f77386967e": {
+            "id": "fcd2566a-5710-44e8-83aa-69f77386967e",
             "duration": 100,
             "refresh_rate": 120,
             "resolution": {
@@ -398,13 +170,298 @@
       },
       "services_set": [
         {
-          "id": "c8a97f22-c614-4e58-b673-9980380a65ba",
+          "id": "3ac74ace-37df-4828-9f78-73789c6323df",
           "cpu_only": false,
           "is_mobile": false,
           "quota": {
-            "name": "large",
+            "name": "massive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "3": {
+      "name": "MEC3",
+      "overall_cpu": 189,
+      "overall_gpu": 117,
+      "computing_latency": 2.39,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 16,
+      "allocated_gpu": 10,
+      "cpu_threshold": 19,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "68af3148-55d0-453d-bcb1-35d82e08fb43",
+        "segmentation_time": 2,
+        "video_set": {
+          "3ca40d7e-0fdc-40dd-9074-0e576d2a7161": {
+            "id": "3ca40d7e-0fdc-40dd-9074-0e576d2a7161",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "968e17b8-d94a-4ef4-830c-abab55991313",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "4c65694f-f1c0-457d-a9a2-1429f2b97903",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "plentiful",
             "resources": {
               "cpu": 6,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "059a59a8-70da-4246-9b77-74229387e79c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "4": {
+      "name": "MEC4",
+      "overall_cpu": 191,
+      "overall_gpu": 96,
+      "computing_latency": 2.28,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 10,
+      "allocated_gpu": 8,
+      "cpu_threshold": 20,
+      "gpu_threshold": 10,
+      "video_server": {
+        "id": "b9273123-fc29-490c-a773-3a9aa1fd2ffe",
+        "segmentation_time": 2,
+        "video_set": {
+          "0c7eb8fe-785a-4d9f-a62c-8cc7a0b1114f": {
+            "id": "0c7eb8fe-785a-4d9f-a62c-8cc7a0b1114f",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "649227f4-627e-4e0f-b55c-7611bf3ae0e0",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "jumbo",
+            "resources": {
+              "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "5": {
+      "name": "MEC5",
+      "overall_cpu": 206,
+      "overall_gpu": 110,
+      "computing_latency": 3.96,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 8,
+      "cpu_threshold": 21,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "ab4b0a1d-0948-4da4-9e5a-3ecfb7e94d33",
+        "segmentation_time": 2,
+        "video_set": {
+          "0c2df254-3f14-4bfd-b98d-d92337f61f61": {
+            "id": "0c2df254-3f14-4bfd-b98d-d92337f61f61",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "43e5342d-7896-45b8-a899-b154642c1352",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "tiny",
+            "resources": {
+              "cpu": 4,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "6b8342a1-394d-4a0c-8b89-481f6f60d57d",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "jumbo",
+            "resources": {
+              "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "6": {
+      "name": "MEC6",
+      "overall_cpu": 200,
+      "overall_gpu": 112,
+      "computing_latency": 4.31,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 6,
+      "cpu_threshold": 20,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "b252d6c5-e953-4d68-b28a-16075261233e",
+        "segmentation_time": 2,
+        "video_set": {
+          "e871d13a-a567-4bf2-8159-fe731b1c6c0c": {
+            "id": "e871d13a-a567-4bf2-8159-fe731b1c6c0c",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "12d335c5-20dc-4db8-b6aa-4571999f14c8",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "giant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "9e80e036-548d-4bbb-9918-e23bca05ac7e",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "medium",
+            "resources": {
+              "cpu": 4,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "7": {
+      "name": "MEC7",
+      "overall_cpu": 175,
+      "overall_gpu": 124,
+      "computing_latency": 4.62,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 13,
+      "allocated_gpu": 2,
+      "cpu_threshold": 18,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "42938a79-221c-41a2-b3a7-2f02ffda1db6",
+        "segmentation_time": 2,
+        "video_set": {
+          "613cb4b8-921d-4014-a27a-d246e765807d": {
+            "id": "613cb4b8-921d-4014-a27a-d246e765807d",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "a29092fd-75d1-4787-b9b5-e32a1449d2f9",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "eab3990e-59b0-4330-8c05-fc2166f6d9a0",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "grant",
+            "resources": {
+              "cpu": 10,
               "gpu": 2
             }
           },
@@ -413,7 +470,742 @@
           }
         },
         {
-          "id": "5fbce18c-23b5-436a-8d50-01c9af874fb0",
+          "id": "05d7f797-a296-4ef2-956b-2a48d0fcacdc",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "8": {
+      "name": "MEC8",
+      "overall_cpu": 217,
+      "overall_gpu": 125,
+      "computing_latency": 4.2,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 20,
+      "allocated_gpu": 12,
+      "cpu_threshold": 22,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "7da97a6f-f469-4230-a9c0-6c6f3b0fc864",
+        "segmentation_time": 2,
+        "video_set": {
+          "f69927ee-d7cd-469a-930b-badc353c6fc6": {
+            "id": "f69927ee-d7cd-469a-930b-badc353c6fc6",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "b9f36af7-70aa-46c5-b7e7-d2d705bdee25",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "medium",
+            "resources": {
+              "cpu": 4,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "1e28cc32-677a-4a6c-a262-9db39b470c04",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "huge",
+            "resources": {
+              "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "e117f8ed-c1e7-498e-be97-49ae0e07d590",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "9": {
+      "name": "MEC9",
+      "overall_cpu": 179,
+      "overall_gpu": 123,
+      "computing_latency": 2.05,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 16,
+      "allocated_gpu": 6,
+      "cpu_threshold": 18,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "f7d96942-eeb0-490f-8b27-a8798c46aa3d",
+        "segmentation_time": 2,
+        "video_set": {
+          "5ead622f-2d40-4367-b1b1-26d0b000afbb": {
+            "id": "5ead622f-2d40-4367-b1b1-26d0b000afbb",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "d226c37f-3561-4a23-b7a5-1f2ba3764072",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "plentiful",
+            "resources": {
+              "cpu": 6,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "b40e20b3-6bd7-4644-bf57-fb5508f99259",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "30f0d204-9725-4299-88ee-687ca2539eaa",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "small",
+            "resources": {
+              "cpu": 8,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "10": {
+      "name": "MEC10",
+      "overall_cpu": 192,
+      "overall_gpu": 103,
+      "computing_latency": 4.0,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 18,
+      "allocated_gpu": 6,
+      "cpu_threshold": 20,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "eef905d0-3ebe-409c-8522-905ea5d3b50f",
+        "segmentation_time": 2,
+        "video_set": {
+          "7c0e2a40-1a97-456d-8e23-c201946c6f29": {
+            "id": "7c0e2a40-1a97-456d-8e23-c201946c6f29",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "c8e86b8a-5efc-486d-aca4-eb1e57e5dd3e",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "grant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "fcad72a6-f174-489a-8845-62e95180e128",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "11": {
+      "name": "MEC11",
+      "overall_cpu": 211,
+      "overall_gpu": 102,
+      "computing_latency": 3.74,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 11,
+      "allocated_gpu": 6,
+      "cpu_threshold": 22,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "7a9f80dc-e838-41ee-9dd8-004eb9df976d",
+        "segmentation_time": 2,
+        "video_set": {
+          "9ae193b1-8f87-4c51-83c1-7bcef36e9cb1": {
+            "id": "9ae193b1-8f87-4c51-83c1-7bcef36e9cb1",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "51532e74-da97-4a8b-82c4-463cf85b4536",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "modest",
+            "resources": {
+              "cpu": 1,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "ad6d59d6-3cb9-4b6c-9eb9-e61ad607c2b8",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "20756d55-2d5a-4388-97b4-b1986b640bbb",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "12": {
+      "name": "MEC12",
+      "overall_cpu": 201,
+      "overall_gpu": 128,
+      "computing_latency": 4.69,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 6,
+      "cpu_threshold": 21,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "07e1a945-56ef-4406-b756-f12e98858f13",
+        "segmentation_time": 2,
+        "video_set": {
+          "4d7c5ad7-b428-4a10-8cd3-42748e5e3a25": {
+            "id": "4d7c5ad7-b428-4a10-8cd3-42748e5e3a25",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "aaf5f299-ee5b-4f3b-84e5-062a4f857f01",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "a3bf86ea-29b3-4868-8941-e7982ef8f60a",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "huge",
+            "resources": {
+              "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "76c4f41e-ca6f-4e3c-9a93-373b4621fac1",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "a29cf53e-e2fd-4613-b2d7-2d65a800ebe7",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "tiny",
+            "resources": {
+              "cpu": 4,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "13": {
+      "name": "MEC13",
+      "overall_cpu": 205,
+      "overall_gpu": 115,
+      "computing_latency": 3.75,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 18,
+      "allocated_gpu": 8,
+      "cpu_threshold": 21,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "eacc691a-7e28-472c-95b9-cc938c636a01",
+        "segmentation_time": 2,
+        "video_set": {
+          "e4e4c4ae-2182-4c87-ae01-b61d9f0d33ef": {
+            "id": "e4e4c4ae-2182-4c87-ae01-b61d9f0d33ef",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "4c15e94e-2081-4ffc-84f5-8ab6c864cf40",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "ed6cbfab-6c4b-4952-b26c-48314b2c5961",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "giant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "14": {
+      "name": "MEC14",
+      "overall_cpu": 196,
+      "overall_gpu": 107,
+      "computing_latency": 3.17,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 6,
+      "cpu_threshold": 20,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "19fe5b2b-417e-4e46-9b21-9ea9ba6f7a81",
+        "segmentation_time": 2,
+        "video_set": {
+          "ada9c004-ede3-465d-bb61-ca0d30fcf620": {
+            "id": "ada9c004-ede3-465d-bb61-ca0d30fcf620",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "f00cbb97-18a9-40af-9ef7-ec4ab941c501",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "ample",
+            "resources": {
+              "cpu": 8,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "cf4e6ba9-6c19-42d6-a8e7-46485e2c20e8",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "15": {
+      "name": "MEC15",
+      "overall_cpu": 194,
+      "overall_gpu": 123,
+      "computing_latency": 3.99,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 19,
+      "allocated_gpu": 10,
+      "cpu_threshold": 20,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "dbe15558-8b27-4581-a33a-494a38122a13",
+        "segmentation_time": 2,
+        "video_set": {
+          "aef2ac4b-559f-4278-981a-006bdaa1ccd3": {
+            "id": "aef2ac4b-559f-4278-981a-006bdaa1ccd3",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "3433d526-add2-4316-8914-6dee227f7506",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "medium",
+            "resources": {
+              "cpu": 4,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "f55d9dfe-2566-48ca-a6f1-b1ac5a7d7cd8",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "c4ff4a42-f91c-40a1-a974-3ab922da1895",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "62293a06-c0bb-45e9-a2db-dc38da71fb55",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "9098a598-5631-4f56-bc72-e3ea0ef872e7",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "limited",
+            "resources": {
+              "cpu": 2,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "6bb40952-6221-4c94-8cbc-f6cd18b2122c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "16": {
+      "name": "MEC16",
+      "overall_cpu": 182,
+      "overall_gpu": 124,
+      "computing_latency": 2.42,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 18,
+      "allocated_gpu": 5,
+      "cpu_threshold": 19,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "0982cc01-8c91-48e6-8275-e3741765613a",
+        "segmentation_time": 2,
+        "video_set": {
+          "8badd8fc-3706-4c94-bbfb-3d4bd17de77c": {
+            "id": "8badd8fc-3706-4c94-bbfb-3d4bd17de77c",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "50da16b5-77e6-4788-9603-b0f0ba5b01de",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "128f3637-cbf1-4a39-995a-32b64c98d062",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "generous",
+            "resources": {
+              "cpu": 6,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "5c86d30d-d9e0-4a37-9a23-461161820816",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "a7d82450-e800-4646-982e-b00df0502065",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "17": {
+      "name": "MEC17",
+      "overall_cpu": 166,
+      "overall_gpu": 96,
+      "computing_latency": 4.27,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 16,
+      "allocated_gpu": 10,
+      "cpu_threshold": 17,
+      "gpu_threshold": 10,
+      "video_server": {
+        "id": "28c25ee7-34e6-4319-a63d-7f80c2b5b726",
+        "segmentation_time": 2,
+        "video_set": {
+          "e2db520e-131c-4735-8d06-3908d38e53e2": {
+            "id": "e2db520e-131c-4735-8d06-3908d38e53e2",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "be5dd4c1-9292-4b0f-8d7e-218532f4a6b7",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "compact",
+            "resources": {
+              "cpu": 6,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "50d195ea-ecb4-48bb-a9d0-8df9caebf7bb",
           "cpu_only": false,
           "is_mobile": false,
           "quota": {
@@ -429,22 +1221,22 @@
         }
       ]
     },
-    "615f93ec-8aa7-452c-96ea-3a1a1a7d15ba": {
-      "name": "MEC7",
-      "overall_cpu": 199,
-      "overall_gpu": 113,
-      "computing_latency": 3.34,
+    "18": {
+      "name": "MEC18",
+      "overall_cpu": 205,
+      "overall_gpu": 110,
+      "computing_latency": 3.22,
       "init_resource_load": 0.9,
       "allocated_cpu": 18,
-      "allocated_gpu": 8,
-      "cpu_threshold": 20,
-      "gpu_threshold": 12,
+      "allocated_gpu": 11,
+      "cpu_threshold": 21,
+      "gpu_threshold": 11,
       "video_server": {
-        "id": "faeb7115-135b-45ce-906d-1cb06ba6dd9f",
+        "id": "39d0c78e-3dd9-4cf5-8345-bf9e38c4bf6f",
         "segmentation_time": 2,
         "video_set": {
-          "74c03911-51c1-4e4e-941c-be44266fe402": {
-            "id": "74c03911-51c1-4e4e-941c-be44266fe402",
+          "883f2fbb-8cc1-4e92-af07-cf6f02da0653": {
+            "id": "883f2fbb-8cc1-4e92-af07-cf6f02da0653",
             "duration": 100,
             "refresh_rate": 120,
             "resolution": {
@@ -455,13 +1247,157 @@
       },
       "services_set": [
         {
-          "id": "0740d858-53ab-4f5e-8a01-1e25ceb1ad53",
+          "id": "724ed26f-abd4-4358-a0ea-b1f67e7c6e49",
           "cpu_only": false,
           "is_mobile": false,
           "quota": {
-            "name": "small",
+            "name": "standard",
+            "resources": {
+              "cpu": 4,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "ce8fbbb3-04ab-492e-9a96-43dec7ef32fa",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "9b6649e1-4f56-4ffc-a061-7f24b24d4cd2",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "19": {
+      "name": "MEC19",
+      "overall_cpu": 191,
+      "overall_gpu": 106,
+      "computing_latency": 4.06,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 12,
+      "allocated_gpu": 10,
+      "cpu_threshold": 20,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "d9a60f13-724d-4629-bb40-607dab9197d5",
+        "segmentation_time": 2,
+        "video_set": {
+          "5a02bb02-853d-4f33-b740-52e85d3eb932": {
+            "id": "5a02bb02-853d-4f33-b740-52e85d3eb932",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "3096a9c5-2f40-495d-83d2-b386cf7112d8",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "standard",
+            "resources": {
+              "cpu": 4,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "08625e45-3fb9-4d2c-bb25-6b071fbcb50d",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "huge",
             "resources": {
               "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "20": {
+      "name": "MEC20",
+      "overall_cpu": 218,
+      "overall_gpu": 126,
+      "computing_latency": 3.34,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 21,
+      "allocated_gpu": 9,
+      "cpu_threshold": 22,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "0c9ff538-7984-43d1-bba3-4890d75b2310",
+        "segmentation_time": 2,
+        "video_set": {
+          "f0821d1b-6f5d-45c3-869e-f87540d91952": {
+            "id": "f0821d1b-6f5d-45c3-869e-f87540d91952",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "58824edc-6b0f-43ae-9923-b277edd1f7e0",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "plentiful",
+            "resources": {
+              "cpu": 6,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "1df22fde-99da-46ae-be30-42d5bcc3b71b",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
               "gpu": 0
             }
           },
@@ -470,7 +1406,822 @@
           }
         },
         {
-          "id": "f1abdcdc-63e1-426a-af6a-a8f669a845ce",
+          "id": "25945bef-a938-4070-b084-4f407c6d306e",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "d0fb5b8b-7869-4043-91e0-341ffbe60177",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "4a25e99e-abc1-4333-9b21-aa4c6a23fb1f",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "generous",
+            "resources": {
+              "cpu": 6,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "21": {
+      "name": "MEC21",
+      "overall_cpu": 213,
+      "overall_gpu": 110,
+      "computing_latency": 2.89,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 11,
+      "cpu_threshold": 22,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "f070331f-4dca-409e-b05c-517a604990e8",
+        "segmentation_time": 2,
+        "video_set": {
+          "1fb580f4-1c7e-40b5-9316-6f1e3069a0fa": {
+            "id": "1fb580f4-1c7e-40b5-9316-6f1e3069a0fa",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "e9de44b0-cb54-4457-8d48-6491d09c3100",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "limited",
+            "resources": {
+              "cpu": 2,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "59481d3d-ab6b-47b9-919e-7b52a4113884",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "plentiful",
+            "resources": {
+              "cpu": 6,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "97fde370-3977-4f3d-9310-787012b3e216",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "22": {
+      "name": "MEC22",
+      "overall_cpu": 204,
+      "overall_gpu": 101,
+      "computing_latency": 3.39,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 10,
+      "allocated_gpu": 6,
+      "cpu_threshold": 21,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "fce74796-35ad-4a36-bc9e-a1aa844415eb",
+        "segmentation_time": 2,
+        "video_set": {
+          "2e071a61-ea7d-46b4-ba66-72232ec66353": {
+            "id": "2e071a61-ea7d-46b4-ba66-72232ec66353",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "a9c3bddb-58d8-42f4-a9fa-0154c76a4ba7",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "23": {
+      "name": "MEC23",
+      "overall_cpu": 193,
+      "overall_gpu": 101,
+      "computing_latency": 4.52,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 20,
+      "allocated_gpu": 7,
+      "cpu_threshold": 20,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "10822689-6301-46a1-864a-d626d7cdf70c",
+        "segmentation_time": 2,
+        "video_set": {
+          "fda1a499-221c-45a1-a5c2-3849ccbfcc56": {
+            "id": "fda1a499-221c-45a1-a5c2-3849ccbfcc56",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "409c8bae-f61a-4919-bcc9-250da9ddd9c3",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "compact",
+            "resources": {
+              "cpu": 6,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "16b6df24-afcf-44ac-9c08-53acf6e8cca8",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "13c87ea7-cbb9-4542-961e-b4ca6b32fca8",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "24": {
+      "name": "MEC24",
+      "overall_cpu": 200,
+      "overall_gpu": 89,
+      "computing_latency": 4.02,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 0,
+      "allocated_gpu": 0,
+      "cpu_threshold": 20,
+      "gpu_threshold": 9,
+      "video_server": {
+        "id": "8caba91b-0fcb-4ea8-8e18-cea7716d395c",
+        "segmentation_time": 2,
+        "video_set": {
+          "4197ef96-8f81-4a0e-85c5-e1be500c4777": {
+            "id": "4197ef96-8f81-4a0e-85c5-e1be500c4777",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": []
+    },
+    "25": {
+      "name": "MEC25",
+      "overall_cpu": 209,
+      "overall_gpu": 119,
+      "computing_latency": 2.52,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 10,
+      "cpu_threshold": 21,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "3ec8475b-8a89-4687-87b3-bfe4b2192629",
+        "segmentation_time": 2,
+        "video_set": {
+          "496ed973-e27d-4f23-bf1e-b1e383fc62f2": {
+            "id": "496ed973-e27d-4f23-bf1e-b1e383fc62f2",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "03ffdc84-9f5b-45bb-80b1-1ae4c1e2392c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "98841b20-1958-4971-9841-0045e9998699",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "834ab66f-b0dc-4556-87f6-d4f53c33e986",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "plentiful",
+            "resources": {
+              "cpu": 6,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "26": {
+      "name": "MEC26",
+      "overall_cpu": 209,
+      "overall_gpu": 114,
+      "computing_latency": 2.26,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 20,
+      "allocated_gpu": 10,
+      "cpu_threshold": 21,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "0d4756d4-bd0e-4ada-b828-c0638bdc9a8d",
+        "segmentation_time": 2,
+        "video_set": {
+          "11b733af-43da-449d-9664-170e00506651": {
+            "id": "11b733af-43da-449d-9664-170e00506651",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "cf12a34d-0fb1-477d-a9f4-ab8a111312a3",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "2e6d18a5-33ff-4e13-bfb0-57b84175fffa",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "60e10d56-05b9-4978-8e95-5532bdeb6b66",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "27": {
+      "name": "MEC27",
+      "overall_cpu": 193,
+      "overall_gpu": 103,
+      "computing_latency": 3.26,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 12,
+      "allocated_gpu": 6,
+      "cpu_threshold": 20,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "47803d3c-1984-4aed-8c8d-fdc36f7ddb3d",
+        "segmentation_time": 2,
+        "video_set": {
+          "c6caedc9-1c9b-4c69-981b-80f2dd1611de": {
+            "id": "c6caedc9-1c9b-4c69-981b-80f2dd1611de",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "45516f27-b505-4c71-bdf6-a76ff3025151",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "a1d136a0-6c0a-4b3e-ae5c-dea71d665829",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "28": {
+      "name": "MEC28",
+      "overall_cpu": 202,
+      "overall_gpu": 102,
+      "computing_latency": 3.33,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 9,
+      "cpu_threshold": 21,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "a8abd3dd-b215-451e-a80a-99be3ec555e2",
+        "segmentation_time": 2,
+        "video_set": {
+          "9fe551bd-0f28-422c-b707-5db0c65abf46": {
+            "id": "9fe551bd-0f28-422c-b707-5db0c65abf46",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "4e42f180-781c-42f8-ab77-d3fdd0d4a969",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "6fe1f6f8-9c16-4c22-823b-5b83a0e6da91",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "ba1f01dc-259c-48f0-a4b5-64dc9db340df",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "limited",
+            "resources": {
+              "cpu": 2,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "29": {
+      "name": "MEC29",
+      "overall_cpu": 202,
+      "overall_gpu": 115,
+      "computing_latency": 3.18,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 20,
+      "allocated_gpu": 6,
+      "cpu_threshold": 21,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "5dd90ace-7e43-4454-a19c-1da7eaed98d8",
+        "segmentation_time": 2,
+        "video_set": {
+          "c321a05d-b12a-4551-8cf6-930697e66ef0": {
+            "id": "c321a05d-b12a-4551-8cf6-930697e66ef0",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "aa1e27ba-0b15-485b-b040-f2e182f5a778",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "giant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "3443ed57-1d0d-4fdc-a711-d24a92beed9f",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "grant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "30": {
+      "name": "MEC30",
+      "overall_cpu": 223,
+      "overall_gpu": 124,
+      "computing_latency": 4.66,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 16,
+      "allocated_gpu": 8,
+      "cpu_threshold": 23,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "fcb4b361-1d5c-4857-9959-b52a98aca61e",
+        "segmentation_time": 2,
+        "video_set": {
+          "ee75e50c-87cb-4209-91df-5f4e0ad20ecd": {
+            "id": "ee75e50c-87cb-4209-91df-5f4e0ad20ecd",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "d6dd17d0-4954-4954-80d6-fafb3bb80893",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "2055e09b-5b4f-44cb-bd30-c09fa3d1df36",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "d306743a-5cd5-4b2a-9bc5-936f9c42ed0c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "limited",
+            "resources": {
+              "cpu": 2,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "31": {
+      "name": "MEC31",
+      "overall_cpu": 172,
+      "overall_gpu": 106,
+      "computing_latency": 2.33,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 4,
+      "cpu_threshold": 18,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "3c34777a-945a-45af-91a5-a1267f04735b",
+        "segmentation_time": 2,
+        "video_set": {
+          "2d96d6b3-df68-41cc-a00f-77ece85b7eec": {
+            "id": "2d96d6b3-df68-41cc-a00f-77ece85b7eec",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "e0bde3ca-0a46-4c70-9e57-706343f93de7",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "medium",
+            "resources": {
+              "cpu": 4,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "eb18938f-f6bb-43e1-b424-be596101b15c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "grant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "32": {
+      "name": "MEC32",
+      "overall_cpu": 215,
+      "overall_gpu": 112,
+      "computing_latency": 3.13,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 18,
+      "allocated_gpu": 10,
+      "cpu_threshold": 22,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "646a17f7-0190-4c0d-bdae-8e43af997cc5",
+        "segmentation_time": 2,
+        "video_set": {
+          "b05a3a19-1275-4453-bdaa-fb5b10312bd6": {
+            "id": "b05a3a19-1275-4453-bdaa-fb5b10312bd6",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "9b569105-f5a8-4c6e-9a90-46ec21ddca9e",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "fe50b803-ded3-4ed6-a93a-762b8917deef",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "33": {
+      "name": "MEC33",
+      "overall_cpu": 182,
+      "overall_gpu": 122,
+      "computing_latency": 3.49,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 16,
+      "allocated_gpu": 10,
+      "cpu_threshold": 19,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "664dda58-ccf5-4313-98db-1c15666be6ce",
+        "segmentation_time": 2,
+        "video_set": {
+          "3ff4e1a6-d02a-4246-b16c-a989b5e791e1": {
+            "id": "3ff4e1a6-d02a-4246-b16c-a989b5e791e1",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "7ad7c279-1767-4cf9-ab61-76c518d82382",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "a60a6091-e94d-4eb1-bc5d-fc9f47822bf8",
           "cpu_only": false,
           "is_mobile": false,
           "quota": {
@@ -478,6 +2229,1068 @@
             "resources": {
               "cpu": 10,
               "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "1fcd533b-d812-4e7a-8405-923e3190c8fd",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "medium",
+            "resources": {
+              "cpu": 4,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "34": {
+      "name": "MEC34",
+      "overall_cpu": 198,
+      "overall_gpu": 91,
+      "computing_latency": 3.24,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 11,
+      "allocated_gpu": 0,
+      "cpu_threshold": 20,
+      "gpu_threshold": 10,
+      "video_server": {
+        "id": "9228ceb8-614f-4797-a724-d93534873af0",
+        "segmentation_time": 2,
+        "video_set": {
+          "53918ae2-c932-452c-b9ed-c5c1663691eb": {
+            "id": "53918ae2-c932-452c-b9ed-c5c1663691eb",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "c0224523-b58c-46fd-9c49-dfd967280b8c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "7f4d7e85-88f6-45e5-a99c-38fabd16adad",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "compact",
+            "resources": {
+              "cpu": 6,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "377e4146-5914-49d6-b1ba-f7c35b22375f",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "tiny",
+            "resources": {
+              "cpu": 4,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "35": {
+      "name": "MEC35",
+      "overall_cpu": 208,
+      "overall_gpu": 90,
+      "computing_latency": 2.68,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 4,
+      "allocated_gpu": 4,
+      "cpu_threshold": 21,
+      "gpu_threshold": 9,
+      "video_server": {
+        "id": "3f11d6b1-1638-482f-b465-70293e9abdb8",
+        "segmentation_time": 2,
+        "video_set": {
+          "3009048b-a0b0-4990-af28-485fef0fcfdc": {
+            "id": "3009048b-a0b0-4990-af28-485fef0fcfdc",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "2cdf989f-faee-489b-bce3-6a932221aa24",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "standard",
+            "resources": {
+              "cpu": 4,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "36": {
+      "name": "MEC36",
+      "overall_cpu": 195,
+      "overall_gpu": 106,
+      "computing_latency": 4.19,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 18,
+      "allocated_gpu": 9,
+      "cpu_threshold": 20,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "c2a605a2-21ab-4afb-ab5d-c14be6f551a6",
+        "segmentation_time": 2,
+        "video_set": {
+          "782dbf49-b40e-41b3-a39c-72e6bd663bdd": {
+            "id": "782dbf49-b40e-41b3-a39c-72e6bd663bdd",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "b9aab756-628b-44dd-adc2-af2a0ffc4f42",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "compact",
+            "resources": {
+              "cpu": 6,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "fb10e6c2-caf5-4938-a257-aa691fe2f503",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "limited",
+            "resources": {
+              "cpu": 2,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "97682121-aced-42ce-8972-36ee4d9d5d90",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "8050645a-24bd-4246-bd4b-7c4775bb0561",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "huge",
+            "resources": {
+              "cpu": 8,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "37": {
+      "name": "MEC37",
+      "overall_cpu": 209,
+      "overall_gpu": 101,
+      "computing_latency": 4.89,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 10,
+      "cpu_threshold": 21,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "dad5d2c0-5a4d-4779-bec4-31c2632b45aa",
+        "segmentation_time": 2,
+        "video_set": {
+          "3710d03d-d129-47ab-8774-a7b2c7a54d3e": {
+            "id": "3710d03d-d129-47ab-8774-a7b2c7a54d3e",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "9ff6d82e-4c04-4551-8c37-211d40d8a80f",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "0417fc14-2111-4500-b2a9-35535e04541a",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "395132c4-0e83-4c1b-a6f4-7b14a395902e",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "38": {
+      "name": "MEC38",
+      "overall_cpu": 197,
+      "overall_gpu": 127,
+      "computing_latency": 3.88,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 18,
+      "allocated_gpu": 12,
+      "cpu_threshold": 20,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "98d784dc-2013-4fa3-a5fe-e83a5b18c4b4",
+        "segmentation_time": 2,
+        "video_set": {
+          "b8308b6e-2674-44cf-805c-4f1063c68a83": {
+            "id": "b8308b6e-2674-44cf-805c-4f1063c68a83",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "f9a9fe1d-0156-4177-a1f0-18d86e6ef245",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "jumbo",
+            "resources": {
+              "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "62f95cf3-b246-4143-a981-416cb7534d5c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "extensive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "39": {
+      "name": "MEC39",
+      "overall_cpu": 194,
+      "overall_gpu": 114,
+      "computing_latency": 3.4,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 5,
+      "cpu_threshold": 20,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "8a9103cc-71b1-4849-9473-1688854cfee8",
+        "segmentation_time": 2,
+        "video_set": {
+          "5fbf4c6b-ab50-4375-9409-c4747e9f21cd": {
+            "id": "5fbf4c6b-ab50-4375-9409-c4747e9f21cd",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "bd64c834-ae28-4b7e-84d5-b63a80feafd1",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "giant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "97e5e137-5c7e-49b2-8c25-fee708a8cc9f",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "40": {
+      "name": "MEC40",
+      "overall_cpu": 212,
+      "overall_gpu": 123,
+      "computing_latency": 4.93,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 15,
+      "allocated_gpu": 12,
+      "cpu_threshold": 22,
+      "gpu_threshold": 13,
+      "video_server": {
+        "id": "f076a8ef-ef5b-4046-ae4f-efdd1b1af4f2",
+        "segmentation_time": 2,
+        "video_set": {
+          "2eabead3-40ca-484a-b246-922ad5a6446b": {
+            "id": "2eabead3-40ca-484a-b246-922ad5a6446b",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "f2e63cbe-b9dc-4482-89cd-81e026f55a13",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "4fd60cc4-5c88-4f0a-8908-df2fe39d518c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "jumbo",
+            "resources": {
+              "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "ba615bd7-fd18-4bae-9896-ea9dcbe8aadd",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "standard",
+            "resources": {
+              "cpu": 4,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "41": {
+      "name": "MEC41",
+      "overall_cpu": 204,
+      "overall_gpu": 108,
+      "computing_latency": 2.24,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 5,
+      "cpu_threshold": 21,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "f11aa545-8654-4d81-9eec-62f0bf3c5345",
+        "segmentation_time": 2,
+        "video_set": {
+          "dc008061-f6d7-491d-bd8e-478cc2d2517b": {
+            "id": "dc008061-f6d7-491d-bd8e-478cc2d2517b",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "5f43c6e6-a392-4713-97b4-13d4cb08959e",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "ample",
+            "resources": {
+              "cpu": 8,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "044b4757-6dd5-4d55-9642-cb8598d5381e",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "ffcd6b43-cbb8-40a5-abbb-d0b8da64bab2",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "42": {
+      "name": "MEC42",
+      "overall_cpu": 203,
+      "overall_gpu": 111,
+      "computing_latency": 3.59,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 20,
+      "allocated_gpu": 6,
+      "cpu_threshold": 21,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "a17aadb0-3965-48bc-bbb9-90014776bea5",
+        "segmentation_time": 2,
+        "video_set": {
+          "fcd03769-eb95-4dcc-b06d-67fbb4868342": {
+            "id": "fcd03769-eb95-4dcc-b06d-67fbb4868342",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "1e361efd-3065-4d1d-bcc1-4c437adb2781",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "grant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "c0fddb95-b437-4463-9b2f-fef5708a9320",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "a7561a4c-dd5b-4a94-98d9-aec248ac23a9",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "medium",
+            "resources": {
+              "cpu": 4,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "43": {
+      "name": "MEC43",
+      "overall_cpu": 196,
+      "overall_gpu": 120,
+      "computing_latency": 4.15,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 20,
+      "allocated_gpu": 11,
+      "cpu_threshold": 20,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "7ddd1791-e0c5-4839-a7f3-ed8ca78c9304",
+        "segmentation_time": 2,
+        "video_set": {
+          "1c0dff9e-402e-41ef-b93b-2b962d21941c": {
+            "id": "1c0dff9e-402e-41ef-b93b-2b962d21941c",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "e0632ece-e1e7-45ab-8df0-f1210ec13f0d",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "jumbo",
+            "resources": {
+              "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "167fe27f-6504-4a12-973b-328ed2e41929",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "4cb21fd6-5416-4643-a19b-5c6c2a363e0c",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "average",
+            "resources": {
+              "cpu": 4,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "44": {
+      "name": "MEC44",
+      "overall_cpu": 172,
+      "overall_gpu": 106,
+      "computing_latency": 4.15,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 14,
+      "allocated_gpu": 10,
+      "cpu_threshold": 18,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "2a04aa1e-951c-4842-a367-ad66460de305",
+        "segmentation_time": 2,
+        "video_set": {
+          "234a59cc-6974-4a17-81d4-d5676c139e90": {
+            "id": "234a59cc-6974-4a17-81d4-d5676c139e90",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "90117fb7-a1ca-4935-a275-6b9851f2de27",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "massive",
+            "resources": {
+              "cpu": 8,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "6cc6bd74-a6d5-4f90-b0df-e69e67ec724a",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "45": {
+      "name": "MEC45",
+      "overall_cpu": 195,
+      "overall_gpu": 102,
+      "computing_latency": 3.48,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 18,
+      "allocated_gpu": 8,
+      "cpu_threshold": 20,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "b82441d9-a4ca-40f2-801b-2cd23eb1262f",
+        "segmentation_time": 2,
+        "video_set": {
+          "c5d6c844-253c-4574-b5e7-9bb8bd4e1866": {
+            "id": "c5d6c844-253c-4574-b5e7-9bb8bd4e1866",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "ee8358ef-37f5-4d50-b4ce-7cb07d14f5a6",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "substantial",
+            "resources": {
+              "cpu": 6,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "507e3dc8-abdf-4fc8-9aac-685694fffe77",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "grant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "f7b1001c-3962-4017-9346-16235fbbee46",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "regular",
+            "resources": {
+              "cpu": 2,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "46": {
+      "name": "MEC46",
+      "overall_cpu": 209,
+      "overall_gpu": 118,
+      "computing_latency": 4.89,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 20,
+      "allocated_gpu": 8,
+      "cpu_threshold": 21,
+      "gpu_threshold": 12,
+      "video_server": {
+        "id": "625402fb-70c1-4b31-9c5f-b2b6e5b4741b",
+        "segmentation_time": 2,
+        "video_set": {
+          "5e65f1a7-8178-48db-a7c4-541123bf8389": {
+            "id": "5e65f1a7-8178-48db-a7c4-541123bf8389",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "39ac44a9-c6b0-4ec7-a880-f7e4e1f2c26d",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "king",
+            "resources": {
+              "cpu": 10,
+              "gpu": 6
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "289ed071-ca18-41de-8b5d-b48ea8efba0b",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "grant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "47": {
+      "name": "MEC47",
+      "overall_cpu": 175,
+      "overall_gpu": 95,
+      "computing_latency": 4.28,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 10,
+      "allocated_gpu": 4,
+      "cpu_threshold": 18,
+      "gpu_threshold": 10,
+      "video_server": {
+        "id": "688ffb30-a412-491a-8df1-71ade84aadfe",
+        "segmentation_time": 2,
+        "video_set": {
+          "fb6b8b2c-45ae-448b-b36e-bfc399235e4f": {
+            "id": "fb6b8b2c-45ae-448b-b36e-bfc399235e4f",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "200e04be-b31c-4873-9668-45c1bd0d304d",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "giant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "48": {
+      "name": "MEC48",
+      "overall_cpu": 203,
+      "overall_gpu": 110,
+      "computing_latency": 4.16,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 13,
+      "allocated_gpu": 9,
+      "cpu_threshold": 21,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "1b30fc17-176b-49a0-9869-8b447cbfbf13",
+        "segmentation_time": 2,
+        "video_set": {
+          "90407070-ec49-486d-9269-20079aa3a897": {
+            "id": "90407070-ec49-486d-9269-20079aa3a897",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "9cfce297-d456-4f26-8f22-b9dd37f7d08f",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "mini",
+            "resources": {
+              "cpu": 1,
+              "gpu": 0
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "fe3868c7-298f-4c4d-a797-96c39bf8d566",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "limited",
+            "resources": {
+              "cpu": 2,
+              "gpu": 1
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "e851dece-c076-43b9-9046-d85c7df9d47e",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "jumbo",
+            "resources": {
+              "cpu": 10,
+              "gpu": 8
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        }
+      ]
+    },
+    "49": {
+      "name": "MEC49",
+      "overall_cpu": 183,
+      "overall_gpu": 102,
+      "computing_latency": 4.69,
+      "init_resource_load": 0.9,
+      "allocated_cpu": 18,
+      "allocated_gpu": 6,
+      "cpu_threshold": 19,
+      "gpu_threshold": 11,
+      "video_server": {
+        "id": "549f125a-9c30-4f79-8453-486901e60a28",
+        "segmentation_time": 2,
+        "video_set": {
+          "f302f724-6f8d-4afd-a882-cd364cd42503": {
+            "id": "f302f724-6f8d-4afd-a882-cd364cd42503",
+            "duration": 100,
+            "refresh_rate": 120,
+            "resolution": {
+              "resolution": ""
+            }
+          }
+        }
+      },
+      "services_set": [
+        {
+          "id": "612ee767-a3a7-4cd8-9c1c-9093efcc2a61",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "large",
+            "resources": {
+              "cpu": 6,
+              "gpu": 2
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "5660faf6-5993-4586-bb22-7e0eb36fcd29",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "giant",
+            "resources": {
+              "cpu": 10,
+              "gpu": 4
+            }
+          },
+          "video_decoder": {
+            "name": ""
+          }
+        },
+        {
+          "id": "dbfc2175-a16d-4b4e-8390-5701a9f0d5a0",
+          "cpu_only": false,
+          "is_mobile": false,
+          "quota": {
+            "name": "petite",
+            "resources": {
+              "cpu": 2,
+              "gpu": 0
             }
           },
           "video_decoder": {

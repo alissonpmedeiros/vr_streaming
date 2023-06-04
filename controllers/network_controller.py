@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 from pprint import pprint as pprint
 
 MIN_VALUE = -10**9
+MAX_THROUGHPUT = 250
 
 class NetworkController:
     
@@ -32,10 +33,9 @@ class NetworkController:
 
     @staticmethod
     def generate_flow_order(vr_hmds: Dict[str, 'VrHMD']) -> list:
-        flow_order = []
         hmd_keys = list(vr_hmds.keys())
-        flow_order = random.shuffle(hmd_keys)
-        return flow_order
+        random.shuffle(hmd_keys)
+        return hmd_keys
     
     @staticmethod
     def deallocate_bandwidth(graph: 'Graph', route_set: dict, source_id: str):
@@ -103,6 +103,7 @@ class NetworkController:
     
             if updated_available < 0:
                 a = input('\n***CRASHED!***')
+                return
             
             #updating the allocated and available banwidth from src -> dst
             graph.graph[src][dst]['allocated_bandwidth'] = updated_allocation
@@ -139,6 +140,9 @@ class NetworkController:
         graph: 'Graph', route_set: dict, source_node: 'BaseStation', target_node: 'BaseStation', required_throughput: float
     ):
     
+        if required_throughput >= MAX_THROUGHPUT:
+            return required_throughput
+    
         source_node_id = source_node.bs_name
         
         new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
@@ -148,6 +152,8 @@ class NetworkController:
         
         """
         here, we shouldn't use the same route, instead we recalculate the new route with a lower throughput. after the first trial,  we get the previous currespondent throughput based on required throughput and try it, if it doesn't work, we try the previous one and so on... an exception should be raised if we reach the minimum throughput possible and there is no more routes available.
+        
+        HEADS UP: we should consider get the node congested and decrease the bandwidth of all routes passing through that node untill it satisfies at least one quota before the current quota requested!
         """
         
         while route_max_throughput == MIN_VALUE:
@@ -159,8 +165,8 @@ class NetworkController:
                 print(f'*** NO ROUTE FOUND ***')
                 print(f'Using the lowest throughput profile: {previous_throughput}')
                 required_throughput = previous_throughput
-                a = input('')
-                break
+                a = input('type to continue')
+                return 
             
             #print(f'*** NEW BW PROFILE {required_throughput} ***')
             new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
@@ -244,12 +250,13 @@ class NetworkController:
                 
                 if route_max_throughput == MIN_VALUE:
                     """
-                    here, we shouldn't use the same route, instead we recalculate the new route with a lower throughput. after the first trial,  we get the previous currespondent throughput based on required throughput and try it, if it doesn't work, we try the previous one and so on... an exception should be raised if we reach the minimum throughput possible and there is no more routes available.
+                    TODO: here, we shouldn't use the same route, instead we recalculate the new route with a lower throughput. after the first trial,  we get the previous currespondent throughput based on required throughput and try it, if it doesn't work, we try the previous one and so on... an exception should be raised if we reach the minimum throughput possible and there is no more routes available.
                     """
                     print(f'\nNO MORE ROUTES AVAILABLE FOR THE PATH')
                     print(f'*** recalculating a suboptimal route ***')
+                    a = input('')
                     while True:
-                        updated_required_throughput = NetworkController.get_previous_throughput_profile(updated_required_throughput)
+                        updated_required_throughput = bitrate_profiles.get_previous_throughput_profile(updated_required_throughput)
                         new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                             graph, source_node, target_node, updated_required_throughput
                         )

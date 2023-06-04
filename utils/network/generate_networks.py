@@ -196,7 +196,7 @@ def create_topology(file_dir, file_name, pdf_name):
     
     node_latency = {'lower_latency_threshold': 2, 'upper_latency_threshold': 5}
     net_latency = {'lower_latency_threshold': 0.5, 'upper_latency_threshold': 1}
-    net_throughput = {'lower_throughput_threshold': 500, 'upper_throughput_threshold': 1000}
+    net_throughput = {'lower_throughput_threshold': 10000, 'upper_throughput_threshold': 100000}
     
     generate_graph_connections(graph)
     init_graph(graph, di_graph, node_latency, net_latency, net_throughput)

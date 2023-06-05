@@ -235,9 +235,13 @@ while True:
     served_flows = []
 
     for i in range(len(flow_set)): 
-        flows_order.append(i) 
+        if i not in video_servers:
+            flows_order.append(i) 
     
     random.shuffle(flows_order)
+    #print(flows_order)
+    #pprint(flow_set)
+    #a = input('type to continue..')
     
     #print(f'\n##################### THROUGHPUT ########################\n')
     print(f'\n################ ITERATION ################\n')
@@ -255,13 +259,12 @@ while True:
         
         previous_throughput = flow_throughput
         required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
-        print(f'trying to upgrade video resolution from {previous_throughput} -> {required_throughput}...')
+        print(f'\n___________________________________________')
+        print(f'\ntrying to upgrade video resolution from {previous_throughput} -> {required_throughput}...')
     
         source_node = base_station_set[str(src_id)]
         target_node = base_station_set[str(dst_id)]
         
-        served_flows.append(flow_id)
-        print(f'\n___________________________________________')
         
         print(f'\nrequesting {src_id} -> {dst_id}: {required_throughput} Mbps')
         required_throughput = network_controller.NetworkController.allocate_bandwidth(
@@ -277,10 +280,16 @@ while True:
                 hmd, manifest, required_throughput
             )
             flow['throughput'] = required_throughput
+            
+        served_flows.append(flow_id)
+        print(f'\nserved flows: {served_flows}')
+        print(f'flow {flow_id} from {src_id} -> {dst_id}...')
+        pprint(route_set)
+        #a = input('')
     
     route_set = {}
-    generate_networks.plot_graph(graph.graph)
-    a = input('type to continue..')
+    #generate_networks.plot_graph(graph.graph)
+    #a = input('type to continue..')
     
     #pprint(connections)
     #a = input('\ntype 1 to show graph!\n')

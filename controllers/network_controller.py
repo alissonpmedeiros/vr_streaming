@@ -9,6 +9,7 @@ if typing.TYPE_CHECKING:
 
 from controllers import dijkstra_controller
 from models.bitrates import BitRateProfiles
+from utils.network import generate_networks 
 
 bitrate_profiles = BitRateProfiles()
 
@@ -135,10 +136,22 @@ class NetworkController:
     
     @staticmethod
     def decrease_all_flow_resolutions(graph: 'Graph', route_set: dict, flow_set: dict, served_flows: list):
+        #TODO: instead of decreasing all flow resolutions, we must look for all routes passing through the congested node and decrease the bandwidth of all routes passing through that node untill it satisfies at least one quota before the current quota.
+        #TODO: after shifting all flow resolutions, we have to consider the current allocated throughput after the first iteration of this function. Consider also dealocating the route...
+        
         print(f'\n*** DECREASING ALL FLOW RESOLUTIONS ***')
+        print(f'served flows: {served_flows}')
+        #print(f'flow set:')
+        #pprint(flow_set)
+        print(f'\n')
+        pprint(route_set)
+        print(f'\n')
+        
         for served_flow in served_flows:
+            print(f'\n*** served flow: {served_flow} ***')
             source_node_id = 'BS' + str(flow_set[served_flow]['client'])
             if source_node_id not in route_set.keys():
+                print(f'source node: {source_node_id}')
                 print(f'key {source_node_id} not found in route_set')
                 print(f'route_set keys: {route_set.keys()}')
                 a = input('')
@@ -148,19 +161,20 @@ class NetworkController:
             flow_throughput = flow_set[served_flow]['throughput']
             flow_previous_throughput = bitrate_profiles.get_previous_throughput_profile(flow_throughput)
             
-            print(f'source node: {source_node_id}')
-            print(f'served flow: {served_flow}')
+            #print(f'source node: {source_node_id}')
+            
             print(f'served flow throughput: {flow_throughput} Mbps')
             print(f'previous served flow throughput: {flow_previous_throughput} Mbps')
+            print(" -> ".join(current_route))
             #print(f'current route: {current_route}')
             #print(f'current route throughput: {current_route_throughput} Mbps')
-            print(f'route info {current_route[0]} -> {current_route[-1]}:')
-            print(route_set[source_node_id])
-            print(f'graph info:')
-            pprint(graph.graph[current_route[0]])
+            #print(f'route info {current_route[0]} -> {current_route[-1]}:')
+            #print(route_set[source_node_id])
+            #print(f'graph info:')
+            #pprint(graph.graph[current_route[0]])
             
             
-            a = input('')
+            #a = input('')
             
             if flow_previous_throughput is None:
                 print(f'*** NO ROUTE FOUND ***')
@@ -199,8 +213,10 @@ class NetworkController:
         
         HEADS UP: we should consider get the node congested and decrease the bandwidth of all routes passing through that node untill it satisfies at least one quota before the current quota requested!
         """
-        
+        generate_networks.plot_graph(graph.graph)
+        a = input('type to continue..')
         while route_max_throughput == MIN_VALUE:
+            
             print(f'\n*** no routes to fulfill {required_throughput} Mbps ***')
             
             NetworkController.decrease_all_flow_resolutions(graph, route_set, flow_set, served_flows)
@@ -219,11 +235,13 @@ class NetworkController:
                 a = input('type to continue')
                 return 
             
-            #print(f'*** NEW BW PROFILE {required_throughput} ***')
+            print(f'*** NEW BW PROFILE {required_throughput} ***')
             new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                 graph, source_node, target_node, required_throughput
             )
-            #print(f'*** NEW route_max_throughput: {route_max_throughput}')
+            print(f'*** NEW route_max_throughput: {route_max_throughput}')
+            generate_networks.plot_graph(graph.graph)
+            a = input('type to continue..')
         
         '''
         print(f'\nNEW ROUTE FOUND!')

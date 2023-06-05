@@ -133,11 +133,55 @@ class NetworkController:
         return congested
     
     
+    @staticmethod
+    def decrease_all_flow_resolutions(graph: 'Graph', route_set: dict, flow_set: dict, served_flows: list):
+        print(f'\n*** DECREASING ALL FLOW RESOLUTIONS ***')
+        for served_flow in served_flows:
+            source_node_id = 'BS' + str(flow_set[served_flow]['client'])
+            if source_node_id not in route_set.keys():
+                print(f'key {source_node_id} not found in route_set')
+                print(f'route_set keys: {route_set.keys()}')
+                a = input('')
+            
+            current_route = route_set[source_node_id]['route']
+            #current_route_throughput = route_set[source_node_id]['total_route_bandwidth']
+            flow_throughput = flow_set[served_flow]['throughput']
+            flow_previous_throughput = bitrate_profiles.get_previous_throughput_profile(flow_throughput)
+            
+            print(f'source node: {source_node_id}')
+            print(f'served flow: {served_flow}')
+            print(f'served flow throughput: {flow_throughput} Mbps')
+            print(f'previous served flow throughput: {flow_previous_throughput} Mbps')
+            #print(f'current route: {current_route}')
+            #print(f'current route throughput: {current_route_throughput} Mbps')
+            print(f'route info {current_route[0]} -> {current_route[-1]}:')
+            print(route_set[source_node_id])
+            print(f'graph info:')
+            pprint(graph.graph[current_route[0]])
+            
+            
+            a = input('')
+            
+            if flow_previous_throughput is None:
+                print(f'*** NO ROUTE FOUND ***')
+                print(f'Using the lowest throughput profile: {flow_throughput}')
+
+            else:
+                print(f'new flow throughput: {flow_previous_throughput} Mbps')
+                flow_set[served_flow]['throughput'] = flow_previous_throughput
+        
+                route_set[source_node_id]['total_route_bandwidth'] -= flow_throughput - flow_previous_throughput
+                
+                NetworkController.reserve_bandwidth(graph, route_set, current_route, flow_previous_throughput)
+            
+        
+        print(f'\n*** FINISH DECREASING ALL FLOW RESOLUTIONS ***')
+        a = input('')
         
         
     @staticmethod
     def allocate_bandwidth(
-        graph: 'Graph', route_set: dict, source_node: 'BaseStation', target_node: 'BaseStation', required_throughput: float
+        graph: 'Graph', route_set: dict, source_node: 'BaseStation', target_node: 'BaseStation', required_throughput: float, flow_set: dict, served_flows: list
     ):
     
         if required_throughput >= MAX_THROUGHPUT:
@@ -158,6 +202,13 @@ class NetworkController:
         
         while route_max_throughput == MIN_VALUE:
             print(f'\n*** no routes to fulfill {required_throughput} Mbps ***')
+            
+            NetworkController.decrease_all_flow_resolutions(graph, route_set, flow_set, served_flows)
+            
+            #print(served_flows)
+            #print(len(served_flows))
+            #pprint(flow_set)
+            #a = input('')
             print(f'*** recalculating a new route ***')
             previous_throughput = required_throughput
             required_throughput = bitrate_profiles.get_previous_throughput_profile(required_throughput)

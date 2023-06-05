@@ -371,13 +371,13 @@ class MecController:
     def get_manifest(mec_set: Dict[str, 'Mec'], video_id: str):
         server:VideoServer = MecController.get_video_server_by_video_id(mec_set, video_id)
         video:Video = MecController.get_video(mec_set, server.id, video_id)
-        print(f'encoding video')
+        #print(f'encoding video')
         encoded_video = MecController.__encode_video(server, video)
-        print(f'segmenting video')
+        #print(f'segmenting video')
         segmented_video = MecController.__segment_video(encoded_video)
-        print(f'packaging video')
+        #print(f'packaging video')
         manifest = MecController.__build_manifest(video, segmented_video)
-        print(f'manifest sent to client')
+        #print(f'manifest sent to client')
         return manifest
     
     #TODO: check this method

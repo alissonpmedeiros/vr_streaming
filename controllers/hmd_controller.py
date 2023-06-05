@@ -373,7 +373,7 @@ class HmdController:
     
     @staticmethod
     def request_manifest(mec_set: Dict[str, 'Mec'], video_id: str):
-        print(f'client requested manifest for video {video_id}')
+        #print(f'client requested manifest for video {video_id}')
         return mec_controller.MecController.get_manifest(
             mec_set, video_id
         )

@@ -30,10 +30,12 @@ import random
 from random import choice
 from pprint import pprint as pprint
 
-OVERALL_MECS = 50
-OVERALL_VIDEO_SERVERS = 5
-OVERALL_VIDEO_CLIENTS = 250
+OVERALL_MECS = 1
+OVERALL_VIDEO_SERVERS = 1
+OVERALL_VIDEO_CLIENTS = 7
 CLIENTS_PER_SERVER = OVERALL_VIDEO_CLIENTS / OVERALL_VIDEO_SERVERS
+
+MAX_THROUGHPUT = 250
 
 
 ### CONFIG ###
@@ -46,7 +48,7 @@ mecs_file = CONFIG['SYSTEM']['MEC_FILE']
 
 #hmd_controller = hmd_controller.HmdController()
 json_controller = json_controller.DecoderController()
-network_controller = network_controller.NetworkController()
+
 dijkstra_controller = dijkstra_controller.DijkstraController()
 
 ### FUNCTIONS ###
@@ -84,7 +86,7 @@ def start_system():
     plt.figure(figsize=(12, 12))
 
     while True:
-        network_controller.generate_network_plot(base_station_set, hmds_set)
+        network_controller.NetworkController.generate_network_plot(base_station_set, hmds_set)
         hmd_controller.update_hmd_positions(base_station_set, hmds_set)
         a = input('')
         
@@ -138,32 +140,32 @@ graph = graph_controller.GraphController.get_graph(base_station_set)
 
 
 video_servers = []
-for _ in range(OVERALL_VIDEO_SERVERS):
-    video_servers.append(random.randint(0, OVERALL_MECS-1))
+#for _ in range(OVERALL_VIDEO_SERVERS):
+#    video_servers.append(random.randint(0, OVERALL_MECS-1))
+video_servers.append(2)
     
 video_clients = []
-for _ in range(OVERALL_VIDEO_CLIENTS):
-    video_clients.append(choice([i for i in range(0,OVERALL_MECS-1) if i not in video_servers]))
 
-connections = {}
+for _ in range(OVERALL_VIDEO_CLIENTS):
+    video_clients.append(choice([i for i in range(0,OVERALL_VIDEO_CLIENTS+1) if i not in video_servers and i not in video_clients]))
+
+#print(f'video servers: {video_servers}')
+#print(f'overall mecs : {OVERALL_MECS} -> {video_servers}')
+#print(f'overall video clients: {OVERALL_VIDEO_CLIENTS} -> {video_clients}')
+flow_set = {}
 
 clients = 0
 pairs = 0
 
-#print(len(video_servers))
-#print(video_servers)
-#print(len(video_clients))
-#print(video_clients)
 
-def full_resolutions(connections: dict) -> bool:
-    for connection in connections.values():
-        if connection['throughput'] < 250:
+def full_resolutions(flow_set: dict) -> bool:
+    for flow in flow_set.values():
+        if flow['throughput'] < MAX_THROUGHPUT:
             return False
     return True 
 
 for server in video_servers.copy():
     for client in video_clients.copy():
-        #print(f'pair: {client} -> {server}')
         if clients == CLIENTS_PER_SERVER:
             break
         else:
@@ -178,7 +180,7 @@ for server in video_servers.copy():
             manifest = hmd_controller.HmdController.request_manifest(mec_set, first_video_id) 
             bitrate_quotas = bitrate_profiles.get_bitrate_quota_profiles()
             first_hmd_quota = hmds_set[str(client)].services_set[0].quota.name
-            connections[pairs] = {
+            flow_set[pairs] = {
                     'server': server,
                     'client': client,
                     'throughput': bitrate_quotas[first_hmd_quota]['throughput']
@@ -191,7 +193,7 @@ for server in video_servers.copy():
 
     
 
-#pprint(connections)
+#pprint(flow_set)
 #a = input('')
     
         
@@ -200,38 +202,39 @@ for server in video_servers.copy():
 
 ### THROUGHPUT TEST###
 
-first_hmd_id = list(hmds_set.keys())[0]
-hmd = hmds_set[first_hmd_id]
+#first_hmd_id = list(hmds_set.keys())[0]
+#hmd = hmds_set[first_hmd_id]
 
 
-mec_id = list(mec_set.keys())[0]
-mec_server = mec_set[mec_id]
+#mec_id = list(mec_set.keys())[0]
+#mec_server = mec_set[mec_id]
 
-first_server = mec_server.video_server
+#first_server = mec_server.video_server
 
-first_video_id = list(first_server.video_set.keys())[0]
+#first_video_id = list(first_server.video_set.keys())[0]
 
-src_node_id = 49
-dst_node_id = 3
+#src_node_id = 49
+#dst_node_id = 3
 
-manifest = hmd_controller.HmdController.request_manifest(mec_set, first_video_id)     
+#manifest = hmd_controller.HmdController.request_manifest(mec_set, first_video_id)     
 
-bitrate_quotas = bitrate_profiles.get_bitrate_quota_profiles()
-first_hmd_quota = hmd.services_set[0].quota.name
-hmd.video_client.current_throughput = bitrate_quotas[first_hmd_quota]['throughput']
+#bitrate_quotas = bitrate_profiles.get_bitrate_quota_profiles()
+#first_hmd_quota = hmd.services_set[0].quota.name
+#hmd.video_client.current_throughput = bitrate_quotas[first_hmd_quota]['throughput']
 
-source_node = base_station_set[str(src_node_id)]
-target_node = base_station_set[str(dst_node_id)]
+#source_node = base_station_set[str(src_node_id)]
+#target_node = base_station_set[str(dst_node_id)]
 
-required_throughput = hmd.video_client.current_throughput
+#required_throughput = hmd.video_client.current_throughput
 
-#pprint(connections)
-#a = input('')
+#a = input('type to continue..')
 
 while True:
     
     flows_order = []
-    for i in range(len(connections)): 
+    served_flows = []
+
+    for i in range(len(flow_set)): 
         flows_order.append(i) 
     
     random.shuffle(flows_order)
@@ -243,73 +246,52 @@ while True:
     print(f'updating hmd positions...')
     hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
     
-    for flow in flows_order:
-        connection = connections[flow]
-        src_id = connection['client']
-        dst_id = connection['server']
-        required_throughput = connection['throughput']
+    for flow_id in flows_order:
+        flow = flow_set[flow_id]
+        src_id = flow['client']
+        dst_id = flow['server']
         
+        flow_throughput = flow['throughput']
+        
+        previous_throughput = flow_throughput
+        required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
+        print(f'trying to upgrade video resolution from {previous_throughput} -> {required_throughput}...')
+    
         source_node = base_station_set[str(src_id)]
         target_node = base_station_set[str(dst_id)]
         
+        served_flows.append(flow_id)
+        print(f'\n___________________________________________')
         
-        print(f'requesting {src_id} -> {dst_id}: {required_throughput} Mbps')
-        required_throughput = network_controller.allocate_bandwidth(
-            graph, route_set, source_node, target_node, required_throughput
-        )
-        #print(f'got {required_throughput}')
-        #print('before:')
-        #print(connection)
-        #print('\nafter:')
-        #print(connection)
-        #a = input('')
-        
-        
-        print(f'\nswitching resolution...')
-        hmd_controller.HmdController.switch_resolution_based_on_throughput(
-            hmd, manifest, required_throughput
+        print(f'\nrequesting {src_id} -> {dst_id}: {required_throughput} Mbps')
+        required_throughput = network_controller.NetworkController.allocate_bandwidth(
+            graph, route_set, source_node, target_node, required_throughput, flow_set, served_flows
         )
         
-        previous_throughput = required_throughput
-        required_throughput = bitrate_profiles.get_next_throughput_profile(required_throughput)
-        print(f'trying to upgrade video resolution from {previous_throughput} -> {required_throughput}...')
-        connection['throughput'] = required_throughput
+        if required_throughput == MAX_THROUGHPUT:
+            print(f'maximum throughput reached!')
+            
+        else:
+            print(f'switching resolution...')
+            hmd_controller.HmdController.switch_resolution_based_on_throughput(
+                hmd, manifest, required_throughput
+            )
+            flow['throughput'] = required_throughput
+    
     route_set = {}
+    generate_networks.plot_graph(graph.graph)
+    a = input('type to continue..')
+    
     #pprint(connections)
     #a = input('\ntype 1 to show graph!\n')
-    if full_resolutions(connections):
-        generate_networks.plot_graph(graph.graph)
-        a = input('type to continue..')
+    #if full_resolutions(flow_set):
+    #    generate_networks.plot_graph(graph.graph)
+    #    a = input('type to continue..')
     #if a == '1':
     #    generate_networks.plot_graph(graph.graph)
     #time.sleep(0.5)
         
-        
-        
-        '''
-        network_controller.allocate_bandwidth(
-            graph, route_set, src, dst, required_throughput
-        )
-        time.sleep(0.5)
-        
-        generate_networks.plot_graph(graph.graph)
-        #a = input('\npress enter to continue!\n')
-        
-        
-        option = input(f'\ntype 1 to delete route from {source_node.bs_name} -> {target_node.bs_name}: ')
-        if option == '1':
-            
-            network_controller.deallocate_bandwidth(
-                graph, route_set, source_node.bs_name
-            )
-            
-            generate_networks.plot_graph(graph.graph)
-        '''
-            
-        #if cont % 10000 == 0:
-        #    generate_networks.plot_graph(graph.graph)
-        #cont += 1
-        #break
+   
 
 
 ###########################################################################

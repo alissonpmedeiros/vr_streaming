@@ -51,36 +51,6 @@ json_controller = json_controller.DecoderController()
 
 dijkstra_controller = dijkstra_controller.DijkstraController()
 
-### FUNCTIONS ###
-
-'''def check_algorithm():
-    if sys.argv[1] == 'no':
-        return NoMigration()
-    elif sys.argv[1] == 'scg':
-        return SCG()
-    elif sys.argv[1] == 'am':
-        return AlwaysMigrate()
-    elif sys.argv[1] == 'la':
-        return LA()
-    elif sys.argv[1] == 'lra':
-        return LRA()
-    elif sys.argv[1] == 'dscp':
-        return DSCP()
-    else:
-        print('*** algorithm not found! ***')
-        a = input('')
-        
-
-def check_service_migration(migration_algorithm: 'Migration'):
-    print('\n*** CHECKING MIGRATION ***')
-    
-    migration_algorithm.check_services(
-        base_station_set,
-        mec_set, 
-        hmds_set,
-        graph,
-    ) 
- '''       
 
 def start_system():
     plt.figure(figsize=(12, 12))
@@ -202,32 +172,6 @@ for server in video_servers.copy():
 
 ### THROUGHPUT TEST###
 
-#first_hmd_id = list(hmds_set.keys())[0]
-#hmd = hmds_set[first_hmd_id]
-
-
-#mec_id = list(mec_set.keys())[0]
-#mec_server = mec_set[mec_id]
-
-#first_server = mec_server.video_server
-
-#first_video_id = list(first_server.video_set.keys())[0]
-
-#src_node_id = 49
-#dst_node_id = 3
-
-#manifest = hmd_controller.HmdController.request_manifest(mec_set, first_video_id)     
-
-#bitrate_quotas = bitrate_profiles.get_bitrate_quota_profiles()
-#first_hmd_quota = hmd.services_set[0].quota.name
-#hmd.video_client.current_throughput = bitrate_quotas[first_hmd_quota]['throughput']
-
-#source_node = base_station_set[str(src_node_id)]
-#target_node = base_station_set[str(dst_node_id)]
-
-#required_throughput = hmd.video_client.current_throughput
-
-#a = input('type to continue..')
 
 while True:
     
@@ -239,16 +183,12 @@ while True:
             flows_order.append(i) 
     
     random.shuffle(flows_order)
-    #print(flows_order)
-    #pprint(flow_set)
-    #a = input('type to continue..')
     
-    #print(f'\n##################### THROUGHPUT ########################\n')
     print(f'\n################ ITERATION ################\n')
-    #pprint(first_hmd.video_client)
     
     print(f'updating hmd positions...')
     hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+    #network_controller.NetworkController.print_network(base_station_set, hmds_set)
     
     for flow_id in flows_order:
         flow = flow_set[flow_id]
@@ -259,35 +199,40 @@ while True:
         
         previous_throughput = flow_throughput
         required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
-        print(f'\n___________________________________________')
-        print(f'\ntrying to upgrade video resolution from {previous_throughput} -> {required_throughput}...')
-    
-        source_node = base_station_set[str(src_id)]
-        target_node = base_station_set[str(dst_id)]
         
-        
-        print(f'\nrequesting {src_id} -> {dst_id}: {required_throughput} Mbps')
-        required_throughput = network_controller.NetworkController.allocate_bandwidth(
-            graph, route_set, source_node, target_node, required_throughput, flow_set, served_flows
-        )
-        
-        if required_throughput == MAX_THROUGHPUT:
-            print(f'maximum throughput reached!')
-            
+        if previous_throughput == MAX_THROUGHPUT:
+            print(f'\nmaximum throughput reached!\n')
+                
         else:
-            print(f'switching resolution...')
+            print(f'\n___________________________________________')
+            print(f'\nupgrading video resolution from {previous_throughput} -> {required_throughput}...')
+        
+            #source_node = hmds_set[str(src_id)].current_base_station
+            #target_node = hmds_set[str(dst_id)].current_base_station
+            source_node = base_station_set[str(src_id)]
+            
+          
+            target_node = base_station_set[str(dst_id)]
+            
+            
+            print(f'\nrequesting {required_throughput} Mbps from {src_id} -> {dst_id}')
+            required_throughput = network_controller.NetworkController.allocate_bandwidth(
+                graph, route_set, source_node, target_node, required_throughput, flow_set, served_flows
+            )
+            print(f'\nswitching resolution...\n')
             hmd_controller.HmdController.switch_resolution_based_on_throughput(
                 hmd, manifest, required_throughput
             )
             flow['throughput'] = required_throughput
+          
             
         served_flows.append(flow_id)
-        print(f'\nserved flows: {served_flows}')
-        print(f'flow {flow_id} from {src_id} -> {dst_id}...')
+        #print(f'\nserved flows: {served_flows}')
+        #print(f'flow {flow_id} from {src_id} -> {dst_id}...')
         pprint(route_set)
         #a = input('')
     
-    route_set = {}
+    #route_set = {}
     #generate_networks.plot_graph(graph.graph)
     #a = input('type to continue..')
     

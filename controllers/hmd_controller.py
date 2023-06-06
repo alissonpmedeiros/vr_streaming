@@ -316,7 +316,7 @@ class HmdController:
         for service in hmd.services_set:
             service.quota.set_quota(quota_name)
         
-        print(f'throughput {bandwidth} | resolution {resolution} | frame rate {frame_rate} | quota: {quota_name}')
+        #print(f'throughput {bandwidth} | resolution {resolution} | frame rate {frame_rate} | quota: {quota_name}')
         
     
     #TODO: this method should also consider the bitrate profile to analyze both latency and throughput in order to select the best resolution

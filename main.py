@@ -204,7 +204,9 @@ while True:
             print(f'\nmaximum throughput reached!\n')
                 
         else:
+            a = input('')
             print(f'\n___________________________________________')
+            print(f'\nFLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
             print(f'\nupgrading video resolution from {previous_throughput} -> {required_throughput}...')
         
             #source_node = hmds_set[str(src_id)].current_base_station
@@ -215,7 +217,6 @@ while True:
             target_node = base_station_set[str(dst_id)]
             
             
-            print(f'\nrequesting {required_throughput} Mbps from {src_id} -> {dst_id}')
             required_throughput = network_controller.NetworkController.allocate_bandwidth(
                 graph, route_set, source_node, target_node, required_throughput, flow_set, served_flows
             )

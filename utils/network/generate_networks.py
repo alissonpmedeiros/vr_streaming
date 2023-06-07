@@ -211,11 +211,11 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
     if throughput:
         #edges = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True)]
         
-        esmall = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_allocated_throughput"] < (d["net_throughput"] * 0.3)]
+        esmall = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_available_throughput"] < (d["net_throughput"] * 0.3)]
         
-        neutral = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_allocated_throughput"] >= (d["net_throughput"] * 0.3) and d["net_allocated_throughput"] <= (d["net_throughput"] * 0.8)]
+        neutral = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_available_throughput"] >= (d["net_throughput"] * 0.3) and d["net_available_throughput"] <= (d["net_throughput"] * 0.8)]
                    
-        elarge = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_allocated_throughput"] > ((d["net_throughput"] * 0.8))]
+        elarge = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_available_throughput"] > ((d["net_throughput"] * 0.8))]
         
         
         #pprint(di_graph.graph_positions)
@@ -237,7 +237,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         # edges
         nx.draw_networkx_edges(
             di_graph.graph, di_graph.graph_positions, 
-            edgelist=elarge, 
+            edgelist=esmall, 
             width=0.8, 
             style="dashed", 
             edge_color="r",
@@ -247,7 +247,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         )
         nx.draw_networkx_edges(
             di_graph.graph, di_graph.graph_positions, 
-            edgelist=esmall, 
+            edgelist=elarge, 
             width=0.8, 
             alpha=0.5, 
             edge_color="g", 

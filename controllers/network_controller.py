@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 from pprint import pprint as pprint
 
 MIN_VALUE = -10**9
+MIN_THROUGHPUT = 10
 MAX_THROUGHPUT = 250
 
 class NetworkController:
@@ -48,16 +49,16 @@ class NetworkController:
             current_allocated_bandwidth = graph.graph[src][dst]['allocated_bandwidth']
             current_available_bandwidth = graph.graph[src][dst]['available_bandwidth']
             
-            updated_allocation = round(current_allocated_bandwidth - current_route_bandwidth, 2)
-            updated_available = round(current_available_bandwidth + current_route_bandwidth, 2)
+            new_allocated_bandwidth = round(current_allocated_bandwidth - current_route_bandwidth, 2)
+            new_available_bandwidth = round(current_available_bandwidth + current_route_bandwidth, 2)
             
             #updating the allocated and available banwidth from src -> dst
-            graph.graph[src][dst]['allocated_bandwidth'] = updated_allocation
-            graph.graph[src][dst]['available_bandwidth'] = updated_available
+            graph.graph[src][dst]['allocated_bandwidth'] = new_allocated_bandwidth
+            graph.graph[src][dst]['available_bandwidth'] = new_available_bandwidth
             
             #updating the allocated and available banwidth from dst -> src
-            graph.graph[dst][src]['allocated_bandwidth'] = updated_allocation
-            graph.graph[dst][src]['available_bandwidth'] = updated_available
+            graph.graph[dst][src]['allocated_bandwidth'] = new_allocated_bandwidth
+            graph.graph[dst][src]['available_bandwidth'] = new_available_bandwidth
             
             #print(f'\nfrom {src} -> {dst}')
             #print(f'\nprevious allocated bandwidth: {current_allocated_bandwidth} Mbps')
@@ -65,7 +66,7 @@ class NetworkController:
             #print(f'new allocated bandwidth: {updated_allocation} Mbps')
             #print(f'new available bandwidth: {updated_available} Mbps')
         
-        route_set[source_id]['total_route_bandwidth'] -= current_allocated_bandwidth
+        route_set[source_id]['total_route_bandwidth'] = 0
         print(f'sucessfully deallocated bandwidth: {current_route_bandwidth} Mbps')
     
     
@@ -77,38 +78,42 @@ class NetworkController:
         #print(route)
         print(" -> ".join(route))
         source_node_id = route[0]
+        
         for src, dst in NetworkController.__pairwise(route):
             
-            current_allocated_bandwidth = graph.graph[src][dst]['allocated_bandwidth']
+            #print(f'\ngraph info:')
+            #pprint(graph.graph[src][dst])
+
+            current_allocated_bandwidth = route_set[source_node_id]['total_route_bandwidth']
             current_available_bandwidth = graph.graph[src][dst]['available_bandwidth']
         
-            updated_allocation = round(required_throughput, 2)
-            updated_available = round(current_available_bandwidth + (current_allocated_bandwidth - required_throughput), 2)
+            new_allocated_bandwidth = current_allocated_bandwidth - (current_allocated_bandwidth - required_throughput)
+            new_available_bandwidth = current_available_bandwidth + (current_allocated_bandwidth - required_throughput)
             
             
-            '''
             print(f'\nfrom {src} -> {dst}')
-            print(f'previous allocated bandwidth: {current_allocated_bandwidth} Mbps')
-            print(f'previous available bandwidth: {current_available_bandwidth} Mbps')
-            print(f'new allocated bandwidth: {updated_allocation} Mbps')
-            print(f'new available bandwidth: {updated_available} Mbps')
+            print(f'current allocated bandwidth: {current_allocated_bandwidth} Mbps')
+            print(f'new allocated bandwidth: {new_allocated_bandwidth} Mbps\n')
+            print(f'current available bandwidth: {current_available_bandwidth} Mbps')
+            print(f'new available bandwidth: {new_available_bandwidth} Mbps')
+            '''
             '''
     
-            if updated_available < 0:
+            if new_available_bandwidth < 0:
                 a = input('\n***CRASHED!***')
                 return
             
             #updating the allocated and available banwidth from src -> dst
-            graph.graph[src][dst]['allocated_bandwidth'] = updated_allocation
-            graph.graph[src][dst]['available_bandwidth'] = updated_available
+            graph.graph[src][dst]['allocated_bandwidth'] = new_allocated_bandwidth
+            graph.graph[src][dst]['available_bandwidth'] = new_available_bandwidth
             
             #updating the allocated and available banwidth from dst -> src
-            graph.graph[dst][src]['allocated_bandwidth'] = updated_allocation
-            graph.graph[dst][src]['available_bandwidth'] = updated_available
+            graph.graph[dst][src]['allocated_bandwidth'] = new_allocated_bandwidth
+            graph.graph[dst][src]['available_bandwidth'] = new_available_bandwidth
             
         
         print(f'\nprevious route bandwidth: {route_set[source_node_id]["total_route_bandwidth"]} Mbps')
-        route_set[source_node_id]['total_route_bandwidth'] = updated_allocation
+        route_set[source_node_id]['total_route_bandwidth'] = new_allocated_bandwidth
         print(f'\nnew route bandwidth: {route_set[source_node_id]["total_route_bandwidth"]} Mbps')
         
     
@@ -122,15 +127,13 @@ class NetworkController:
         source_node_id = route[0]
         for src, dst in NetworkController.__pairwise(route):
             
-            #print(f'\nfrom {src} -> {dst}\n\n')
-            #pprint(graph.graph)
             
             #a = input('')
             current_allocated_bandwidth = graph.graph[src][dst]['allocated_bandwidth']
             current_available_bandwidth = graph.graph[src][dst]['available_bandwidth']
         
-            updated_allocation = round(current_allocated_bandwidth + (required_throughput - current_allocated_bandwidth), 2)
-            updated_available = round(current_available_bandwidth - required_throughput, 2)
+            new_allocated_bandwidth = round(current_allocated_bandwidth + (required_throughput - current_allocated_bandwidth), 2)
+            new_available_bandwidth = round(current_available_bandwidth - required_throughput, 2)
             
             '''
             print(f'\nfrom {src} -> {dst}')
@@ -140,20 +143,23 @@ class NetworkController:
             print(f'new available bandwidth: {updated_available} Mbps')
             '''
     
-            if updated_available < 0:
+            if new_available_bandwidth < 0:
                 a = input('\n***CRASHED!***')
                 return
             
             #updating the allocated and available banwidth from src -> dst
-            graph.graph[src][dst]['allocated_bandwidth'] = updated_allocation
-            graph.graph[src][dst]['available_bandwidth'] = updated_available
+            graph.graph[src][dst]['allocated_bandwidth'] = new_allocated_bandwidth
+            graph.graph[src][dst]['available_bandwidth'] = new_available_bandwidth
             
             #updating the allocated and available banwidth from dst -> src
-            graph.graph[dst][src]['allocated_bandwidth'] = updated_allocation
-            graph.graph[dst][src]['available_bandwidth'] = updated_available
+            graph.graph[dst][src]['allocated_bandwidth'] = new_allocated_bandwidth
+            graph.graph[dst][src]['available_bandwidth'] = new_available_bandwidth
+            
+            #print(f'\nfrom {src} -> {dst}\n\n')
+            #pprint(graph.graph[src][dst])
             
         print(f'\nprevious route bandwidth: {route_set[source_node_id]["total_route_bandwidth"]} Mbps')
-        route_set[source_node_id]['total_route_bandwidth'] = updated_allocation
+        route_set[source_node_id]['total_route_bandwidth'] = new_allocated_bandwidth
         print(f'new route bandwidth: {route_set[source_node_id]["total_route_bandwidth"]} Mbps')
     
     
@@ -177,14 +183,15 @@ class NetworkController:
         print(f'served flows: {served_flows}')
         #print(f'flow set:')
         #pprint(flow_set)
-        print(f'\n')
-        pprint(route_set)
+        #print(f'\n')
+        #pprint(route_set)
         print(f'\n')
         
         for served_flow in served_flows:
             print(f'*************************************************************')
             print(f'\n*** served flow: {served_flow} ***')
             source_node_id = 'BS' + str(flow_set[served_flow]['client'])
+            
             if source_node_id not in route_set.keys():
                 print(f'source node: {source_node_id}')
                 print(f'key {source_node_id} not found in route_set')
@@ -194,71 +201,36 @@ class NetworkController:
             current_route = route_set[source_node_id]['route']
             
             flow_throughput = flow_set[served_flow]['throughput']
-            flow_previous_throughput = bitrate_profiles.get_previous_throughput_profile(flow_throughput)
+            new_flow_throughput = bitrate_profiles.get_previous_throughput_profile(flow_throughput)
             
-            #print(f'source node: {source_node_id}')
-            
-            print(f'served flow throughput: {flow_throughput} Mbps')
-            print(f'previous served flow throughput: {flow_previous_throughput} Mbps')
+            print(f'current flow throughput: {flow_throughput} Mbps')
+            print(f'new served flow throughput: {new_flow_throughput} Mbps')
             print(" -> ".join(current_route))
-            #print(f'current route: {current_route}')
-            #print(f'current route throughput: {current_route_throughput} Mbps')
-            #print(f'route info {current_route[0]} -> {current_route[-1]}:')
-            #print(route_set[source_node_id])
-            #print(f'graph info:')
-            #pprint(graph.graph[current_route[0]])
             
-            
-            #a = input('')
-            
-            if flow_previous_throughput is None:
+            if new_flow_throughput is None:
                 print(f'*** NO ROUTE FOUND ***')
                 print(f'Using the lowest throughput profile: {flow_throughput}')
 
             else:
-                print(f'new flow throughput: {flow_previous_throughput} Mbps')
-                flow_set[served_flow]['throughput'] = flow_previous_throughput
+                print(f'new flow throughput: {new_flow_throughput} Mbps')
+                flow_set[served_flow]['throughput'] = new_flow_throughput
         
-                route_set[source_node_id]['total_route_bandwidth'] -= flow_throughput - flow_previous_throughput
+                #route_set[source_node_id]['total_route_bandwidth'] = new_flow_throughput
                 
                 a = input('\ntype to decrease BW and update plot\n')
                 
-                NetworkController.decrease_bandwidth_reservation(graph, route_set, current_route, flow_previous_throughput)
+                NetworkController.decrease_bandwidth_reservation(graph, route_set, current_route, new_flow_throughput)
                 
                 generate_networks.plot_graph(graph.graph)
             
-            a = input('')
+            #a = input('')
         
         print(f'\n*** FINISH DECREASING ALL FLOW RESOLUTIONS ***')
-        a = input('')
+        #a = input('')
         
         
-    @staticmethod
-    def decrease_flow_resolution(
-        graph: 'Graph', route_set: dict, flow_set: dict, served_flows: list, source_node: 'BaseStation', target_node: 'BaseStation', required_throughput: float
-    ) -> dict:
         
-        NetworkController.decrease_all_flow_resolutions(graph, route_set, flow_set, served_flows)
-        print(f'*** recalculating a new route ***')
-        previous_throughput = required_throughput
-        required_throughput = bitrate_profiles.get_previous_throughput_profile(required_throughput)
-        if required_throughput is None:
-            print(f'*** NO ROUTE FOUND ***')
-            print(f'Using the lowest throughput profile: {previous_throughput}')
-            required_throughput = previous_throughput
-            #a = input('type to continue')
-            return 
-        
-        #print(f'*** NEW BW PROFILE {required_throughput} ***')
-        new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
-            graph, source_node, target_node, required_throughput
-        )    
-        result = {
-            'new_route': new_route,
-            'route_max_throughput': route_max_throughput,
-        }
-        
-        return result
+
         
     @staticmethod
     def allocate_bandwidth(
@@ -271,7 +243,7 @@ class NetworkController:
         current_route = None
         
         if source_node_id not in route_set.keys():
-            print(f'\nNEW ROUTE')
+            print(f'\n*** NEW ROUTE ***')
             
             new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                 graph, source_node, target_node, required_throughput
@@ -280,23 +252,26 @@ class NetworkController:
             while route_max_throughput == MIN_VALUE:
                 
                 print(f'\n*** no routes to fulfill {required_throughput} Mbps ***')
-                
-                #NetworkController.decrease_all_flow_resolutions(graph, route_set, flow_set, served_flows)
             
                 print(f'*** recalculating a new route ***')
                 previous_throughput = required_throughput
                 required_throughput = bitrate_profiles.get_previous_throughput_profile(required_throughput)
-                if required_throughput is None:
-                    print(f'\n*** NO ROUTE FOUND ***')
-                    print(f'\nUsing the lowest throughput profile: {previous_throughput}')
-                    required_throughput = previous_throughput
-                    print(f'\n*** NEW BW PROFILE {required_throughput} ***')
-                    break
                 
+                if required_throughput is None:
+                    required_throughput = previous_throughput
+                    
                 #print(f'*** NEW BW PROFILE {required_throughput} ***')
                 new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                     graph, source_node, target_node, required_throughput
                 )
+                
+                if required_throughput == MIN_THROUGHPUT and route_max_throughput == MIN_VALUE:
+                    print(f'\nUsing the lowest throughput profile: {required_throughput}')
+                    #required_throughput = previous_throughput
+                    NetworkController.decrease_all_flow_resolutions(graph, route_set, flow_set, served_flows)
+                    
+                
+                #print(f'route_max_throughput: {route_max_throughput}')
             
             print(" -> ".join(new_route))
             
@@ -309,46 +284,43 @@ class NetworkController:
         else:
             print(f'\nDEALLOCATING CURRENT ROUTE')
             current_route = route_set[source_node_id]['route']
+            print(" -> ".join(current_route))
+            
+            a = input('type to deallocate BW and update plot\n')
             
             NetworkController.deallocate_bandwidth(
                 graph, route_set, source_node_id
             )
             
+            generate_networks.plot_graph(graph.graph)
+            
             print(f'\nRECALCULATING A NEW ROUTE')
             new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                 graph, source_node, target_node, required_throughput
             )
-            
-            
+                        
             while route_max_throughput == MIN_VALUE:
                 
                 print(f'\n*** no routes to fulfill {required_throughput} Mbps ***')
-                
-                #NetworkController.decrease_all_flow_resolutions(graph, route_set, flow_set, served_flows)
-                
-                #print(served_flows)
-                #print(len(served_flows))
-                #pprint(flow_set)
-                #a = input('')
-                print(f'\n*** recalculating a new route ***')
+            
+                print(f'*** recalculating a new route ***')
                 previous_throughput = required_throughput
                 required_throughput = bitrate_profiles.get_previous_throughput_profile(required_throughput)
-                if required_throughput is None:
-                    print(f'*** NO ROUTE FOUND ***')
-                    print(f'Using the lowest throughput profile: {previous_throughput}')
-                    required_throughput = previous_throughput
-                    #a = input('type to continue')
-                    return 
                 
-                print(f'*** NEW BW PROFILE {required_throughput} ***')
+                if required_throughput is None:
+                    required_throughput = previous_throughput
+                    
+                #print(f'*** NEW BW PROFILE {required_throughput} ***')
                 new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                     graph, source_node, target_node, required_throughput
                 )
-                #print(f'*** NEW route_max_throughput: {route_max_throughput}')
-                #generate_networks.plot_graph(graph.graph)
-            
+                
+                if required_throughput == MIN_THROUGHPUT and route_max_throughput == MIN_VALUE:
+                    print(f'\nUsing the lowest throughput profile: {required_throughput}')
+                    #required_throughput = previous_throughput
+                    NetworkController.decrease_all_flow_resolutions(graph, route_set, flow_set, served_flows)
         
-        #print(f'*** CURRENT route_max_throughput: {route_max_throughput}')                
+                        
         print(f'current route: {current_route}')
         
         a = input('\ntype to increase BW and update plot\n')

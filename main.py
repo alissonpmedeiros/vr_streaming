@@ -189,7 +189,8 @@ while True:
     print(f'updating hmd positions...')
     hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
     #network_controller.NetworkController.print_network(base_station_set, hmds_set)
-    
+    #pprint(graph.graph)
+    #a = input('')   
     for flow_id in flows_order:
         flow = flow_set[flow_id]
         src_id = flow['client']
@@ -204,7 +205,7 @@ while True:
             print(f'\nmaximum throughput reached!\n')
                 
         else:
-            a = input('')
+            #a = input('')
             print(f'\n___________________________________________')
             print(f'\nFLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
             print(f'\nupgrading video resolution from {previous_throughput} -> {required_throughput}...')
@@ -215,23 +216,30 @@ while True:
             
           
             target_node = base_station_set[str(dst_id)]
-            
-            
+            #print(f'\n')
+            #pprint(graph.graph[source_node.bs_name])
             required_throughput = network_controller.NetworkController.allocate_bandwidth(
                 graph, route_set, source_node, target_node, required_throughput, flow_set, served_flows
             )
+            #print(f'\n')
+            #pprint(graph.graph[source_node.bs_name])
+            
+            a = input('')
+            
             print(f'\nswitching resolution...\n')
             hmd_controller.HmdController.switch_resolution_based_on_throughput(
                 hmd, manifest, required_throughput
             )
             flow['throughput'] = required_throughput
+            
+            print(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
           
             
         served_flows.append(flow_id)
         #print(f'\nserved flows: {served_flows}')
         #print(f'flow {flow_id} from {src_id} -> {dst_id}...')
-        pprint(route_set)
-        #a = input('')
+    pprint(route_set)
+    #a = input('')
     
     #route_set = {}
     #generate_networks.plot_graph(graph.graph)

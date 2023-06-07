@@ -386,7 +386,7 @@ class NetworkController:
                 
                 if route_max_throughput == MIN_VALUE:
                     """
-                    TODO: here, we shouldn't use the same route, instead we recalculate the new route with a lower throughput. after the first trial,  we get the previous currespondent throughput based on required throughput and try it, if it doesn't work, we try the previous one and so on... an exception should be raised if we reach the minimum throughput possible and there is no more routes available.
+                    here, we shouldn't use the same route, instead we recalculate the new route with a lower throughput. after the first trial,  we get the previous currespondent throughput based on required throughput and try it, if it doesn't work, we try the previous one and so on... an exception should be raised if we reach the minimum throughput possible and there is no more routes available.
                     """
                     print(f'\nNO MORE ROUTES AVAILABLE FOR THE PATH')
                     print(f'*** recalculating a suboptimal route ***')
@@ -503,10 +503,8 @@ class NetworkController:
         
         
     
-    #TODO: to be tested
     @staticmethod
     def generate_network_plot(base_station_set: Dict[str, 'BaseStation'], hmds_set: Dict[str, 'VrHMD']) -> None:
-        #TODO: this function should receive the network graph and plot the connections between them and the available bandwidth over time. 
         plt.xlim(0, 1)
         plt.ylim(0, 1)
         plt.title("Network Graph")
@@ -539,5 +537,4 @@ class NetworkController:
     def print_network(base_station_set: Dict[str, 'BaseStation'], hmds_set: Dict[str, 'VrHMD']) -> None:
         plt.figure(figsize=(12, 12))
         while True:
-            #TODO: before each iteration, update the HMDs positions...
             NetworkController.generate_network_plot(base_station_set, hmds_set)

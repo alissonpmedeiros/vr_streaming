@@ -45,6 +45,20 @@ class BaseStationController:
         
         return bs_dict
     
+    @staticmethod
+    def initialize_mec_nodes(base_station_set: Dict[str, BaseStation], mec_set: Dict[str, 'Mec']) -> None:
+        """ initializes the mec nodes of the base stations """
+        
+        '''
+        for bs_id in base_station_set:
+            print(bs_id)
+            base_station_set[bs_id].mec_id = bs_id
+        '''
+        for bs_id, base_station in base_station_set.items():
+            base_station.mec_id = base_station.id
+        
+        
+    
     """ 
     @staticmethod
     def print_base_stations(base_station_set: Dict[str, BaseStation]) -> None:

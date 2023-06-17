@@ -1,5 +1,6 @@
 """ controller modules """
 from controllers import config_controller
+from controllers import bs_controller
 from controllers import hmd_controller 
 from controllers import json_controller
 from controllers import mec_controller
@@ -7,10 +8,10 @@ from controllers import graph_controller
 from controllers import dijkstra_controller
 from utils.network import generate_networks 
 from controllers import network_controller
-from matplotlib import pyplot as plt
 from models.bitrates import BitRateProfiles
 bitrate_profiles = BitRateProfiles()
-import time
+
+
 
 '''import typing 
 if typing.TYPE_CHECKING:
@@ -26,17 +27,18 @@ from models.migration_algorithms.am import AlwaysMigrate'''
 
 """others modules"""
 import sys
+import time
+from timeit import default_timer as timer
 import random
 from random import choice
 from pprint import pprint as pprint
+import multiprocessing
+from threading import Thread
+import pickle
 
-OVERALL_MECS = 1
-OVERALL_VIDEO_SERVERS = 1
-OVERALL_VIDEO_CLIENTS = 7
-CLIENTS_PER_SERVER = OVERALL_VIDEO_CLIENTS / OVERALL_VIDEO_SERVERS
 
 MAX_THROUGHPUT = 250
-
+LOGS = True
 
 ### CONFIG ###
 
@@ -46,6 +48,19 @@ data_dir = CONFIG['SYSTEM']['DATA_DIR']
 hmds_file = CONFIG['SYSTEM']['HMDS_FILE']
 mecs_file = CONFIG['SYSTEM']['MEC_FILE']
 
+
+OVERALL_MECS = CONFIG['MEC_SERVERS']['OVERALL_MECS']
+OVERALL_VIDEO_SERVERS = 1
+OVERALL_VIDEO_CLIENTS = CONFIG['NETWORK']['HMDS']
+#OVERALL_VIDEO_CLIENTS = 5
+CLIENTS_PER_SERVER = OVERALL_VIDEO_CLIENTS / OVERALL_VIDEO_SERVERS
+
+CDN_SERVER_ID = 226
+CDN_CLIENT_ID = 161
+
+
+ITERATION = 1
+
 #hmd_controller = hmd_controller.HmdController()
 json_controller = json_controller.DecoderController()
 
@@ -53,7 +68,6 @@ dijkstra_controller = dijkstra_controller.DijkstraController()
 
 
 def start_system():
-    plt.figure(figsize=(12, 12))
 
     while True:
         network_controller.NetworkController.generate_network_plot(base_station_set, hmds_set)
@@ -77,288 +91,315 @@ def start_system():
 
         '''
 
-
-
-### BASE STATIONS ###
-
-base_station_set = json_controller.decode_net_config_file()
-
-### MECS ###
-mec_controller.MecController.create_mec_servers(
-    base_station_set, OVERALL_MECS
-)
-
-mec_set = json_controller.decoding_to_dict(
-    data_dir, mecs_file
-)
- 
-### HMDS ###
-hmd_controller.HmdController.create_hmds()
-
-hmds_set = json_controller.decoding_to_dict(
-    data_dir, hmds_file
-)
-
-### ROUTES###
-route_set = {}
-
-### GRAPH TEST###
-
-graph = graph_controller.GraphController.get_graph(base_station_set)
-
-### VIDEO SERVERS AND CLIENTS ###
-
-
-video_servers = []
-#for _ in range(OVERALL_VIDEO_SERVERS):
-#    video_servers.append(random.randint(0, OVERALL_MECS-1))
-video_servers.append(2)
-    
-video_clients = []
-
-for _ in range(OVERALL_VIDEO_CLIENTS):
-    video_clients.append(choice([i for i in range(0,OVERALL_VIDEO_CLIENTS+1) if i not in video_servers and i not in video_clients]))
-
-#print(f'video servers: {video_servers}')
-#print(f'overall mecs : {OVERALL_MECS} -> {video_servers}')
-#print(f'overall video clients: {OVERALL_VIDEO_CLIENTS} -> {video_clients}')
-flow_set = {}
-
-clients = 0
-pairs = 0
-
-
-def full_resolutions(flow_set: dict) -> bool:
+def full_resolutions() -> bool:
     for flow in flow_set.values():
         if flow['throughput'] < MAX_THROUGHPUT:
             return False
     return True 
 
-for server in video_servers.copy():
-    for client in video_clients.copy():
-        if clients == CLIENTS_PER_SERVER:
-            break
-        else:
-            hmd = hmds_set[str(client)]
 
-            mec_id = server
-            mec_server = mec_set[str(mec_id)]
 
-            first_server = mec_server.video_server
-
-            first_video_id = list(first_server.video_set.keys())[0]
-            manifest = hmd_controller.HmdController.request_manifest(mec_set, first_video_id) 
-            bitrate_quotas = bitrate_profiles.get_bitrate_quota_profiles()
-            first_hmd_quota = hmds_set[str(client)].services_set[0].quota.name
-            flow_set[pairs] = {
-                    'server': server,
-                    'client': client,
-                    'throughput': bitrate_quotas[first_hmd_quota]['throughput']
-            }
-            pairs += 1
-            clients += 1
-            video_clients.remove(client) 
-    clients = 0   
-    video_servers.remove(server)
+if __name__ == '__main__':
+    #MULTIPROCESSING MANAGERS 
+    #manager = multiprocessing.Manager()
 
     
+    ### BASE STATIONS ###
+    print(f'\n*** decoding base stations ***')
+    base_station_set = json_controller.decode_net_config_file()  
 
-#pprint(flow_set)
-#a = input('')
+    ### MECS ###
+    mec_controller.MecController.create_mec_servers(
+        base_station_set, OVERALL_MECS
+    )
+
+    print(f'\n*** decoding mecs ***')
+    mec_set = json_controller.decoding_to_dict(
+        data_dir, mecs_file
+    )
     
+    print(f'\n*** initializing mecs ***')
+    bs_controller.BaseStationController.initialize_mec_nodes(base_station_set, mec_set)
+    
+    ### HMDS ###
+    #print(f'\n*** creating hmds ***')
+    #hmd_controller.HmdController.create_hmds()
+
+    print(f'\n*** decoding hmds ***')
+    hmds_set = json_controller.decoding_to_dict(
+        data_dir, hmds_file
+    )
+
+    ### GRAPH ###
+    print(f'\n*** getting graph ***')
+    graph = graph_controller.GraphController.get_graph(base_station_set)
+    #graph = manager.dict()
+    #graph.update(graph_copy.graph)
+    
+    
+    ### ROUTES###
+    route_set = {}
+
+    ### VIDEO SERVERS AND CLIENTS ###
+    video_servers = []
+    #for _ in range(OVERALL_VIDEO_SERVERS):
+    #    video_servers.append(random.randint(0, OVERALL_MECS-1))
+    video_servers.append(CDN_SERVER_ID)
         
+    video_clients = []
 
-###########################################################################
+    for _ in range(OVERALL_VIDEO_CLIENTS):
+        #video_clients.append(choice([i for i in range(0,OVERALL_VIDEO_CLIENTS+1) if i not in video_servers and i not in video_clients]))
+        video_clients.append(choice([i for i in range(0,OVERALL_VIDEO_CLIENTS)]))
 
-### THROUGHPUT TEST###
+    #print(f'video servers: {video_servers}')
+    #print(f'overall mecs : {OVERALL_MECS} -> {video_servers}')
+    #print(f'overall video clients: {OVERALL_VIDEO_CLIENTS} -> {video_clients}')
+    flow_set = {}
 
+    clients = 0
+    pairs = 0
 
-while True:
+    process_list = []
     
-    flows_order = []
-    served_flows = []
+    print(f'\n*** creating video and client servers ***')
+    
 
-    for i in range(len(flow_set)): 
-        if i not in video_servers:
-            flows_order.append(i) 
+    for server in video_servers.copy():
+        for client in video_clients.copy():
+            if clients == CLIENTS_PER_SERVER:
+                break
+            else:
+                mec_id = str(server)
+                bitrate_quotas = bitrate_profiles.get_bitrate_quota_profiles()
+                first_hmd_quota = hmds_set[str(client)].services_set[0].quota.name
+                flow_set[pairs] = {
+                        'server': server,
+                        'client': client,
+                        'throughput': bitrate_quotas[first_hmd_quota]['throughput']
+                }
+                pairs += 1
+                clients += 1
+                video_clients.remove(client) 
+        clients = 0   
+        video_servers.remove(server)
+
     
-    random.shuffle(flows_order)
+    print(f'\n*** starting system ***')
     
-    print(f'\n################ ITERATION ################\n')
-    
-    print(f'updating hmd positions...')
-    hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
-    #network_controller.NetworkController.print_network(base_station_set, hmds_set)
-    #pprint(graph.graph)
-    #a = input('')   
-    for flow_id in flows_order:
-        flow = flow_set[flow_id]
-        src_id = flow['client']
-        dst_id = flow['server']
+    while True:
         
-        flow_throughput = flow['throughput']
+        start = timer()
+        flows_order = []
+        served_flows = []
+
+        for i in range(len(flow_set)): 
+            if i not in video_servers:
+                flows_order.append(i) 
         
-        previous_throughput = flow_throughput
-        required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
+        random.shuffle(flows_order)
         
-        if previous_throughput == MAX_THROUGHPUT:
-            print(f'\nmaximum throughput reached!\n')
+        print(f'\n################ ITERATION ################\n')
+        print(f'ITERATION: {ITERATION}')
+        ITERATION += 1
+        if LOGS:
+            print(f'updating hmd positions...')
+        hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+        #network_controller.NetworkController.print_network(base_station_set, hmds_set)
+        #pprint(graph.graph)
+        
+        for flow_id in flows_order:
+            
+            
+            flow = flow_set[flow_id]
+            
+            src_id = flow['client']
+            dst_id = flow['server']
+            
+            flow_throughput = flow['throughput']
+            
+            previous_throughput = flow_throughput
+            required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
+            
+            if previous_throughput == MAX_THROUGHPUT:
+                if LOGS:
+                    print(f'\nmaximum throughput reached!\n')
+                    
+            else:
+                if LOGS:
+                    print(f'\n___________________________________________')
+                    #print(f'\nFLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
+                    #print(f'\nupgrading video resolution from {previous_throughput} -> {required_throughput}...')
+                    print(f'*** \nFLOW ID: {flow_id} *** \n') 
+                        
+                video_client = hmds_set[str(src_id)]
+                source_node_id = str(hmds_set[str(src_id)].current_base_station)
+                #TODO: to be undone
+                source_node = base_station_set[source_node_id]
+                #source_node = base_station_set[str(CDN_CLIENT_ID)]
+
+                mec_server = mec_set[str(dst_id)]
+                video_server = mec_server.video_server
+                video_id = list(video_server.video_set.keys())[0]
                 
-        else:
-            #a = input('')
-            print(f'\n___________________________________________')
-            print(f'\nFLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
-            print(f'\nupgrading video resolution from {previous_throughput} -> {required_throughput}...')
+                manifest = hmd_controller.HmdController.request_manifest(mec_set, video_id)
+                    
+                target_mec_id = str(dst_id)
+                target_node = base_station_set[target_mec_id]
+                
+            
+                required_throughput = network_controller.NetworkController.allocate_bandwidth(
+                    graph, hmds_set, route_set, source_node, target_node, flow_set, served_flows, flow_id, required_throughput
+                )
+                
+                if LOGS:
+                    print(f'\nswitching resolution...\n')
+                
+                hmd_controller.HmdController.switch_resolution_based_on_throughput(
+                    video_client, manifest, required_throughput
+                )
+                #flow['throughput'] = required_throughput
+                flow_set[flow_id]['throughput'] = required_throughput
+                
+                served_flows.append(flow_id)
+                
+                if LOGS:
+                    print(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
+                   
+                    
+                #a = input('')
+
+                
+                
+            
         
-            #source_node = hmds_set[str(src_id)].current_base_station
-            #target_node = hmds_set[str(dst_id)].current_base_station
-            source_node = base_station_set[str(src_id)]
+        
+        
+        end = timer()
+        #pprint(flow_set)
+        print(f'\nelapsed time: {end - start}')
+        
+        #pprint(flow_set)
+        
+        '''
+        if ITERATION % 1 == 0:
+            print(f'printing graph...')    
+            generate_networks.plot_graph(graph.graph)
+        
+        if full_resolutions():
+            print(f'printing graph...')    
+            generate_networks.plot_graph(graph.graph)
+            a = input('FINISHED!')
+        '''
             
-          
-            target_node = base_station_set[str(dst_id)]
-            #print(f'\n')
-            #pprint(graph.graph[source_node.bs_name])
-            required_throughput = network_controller.NetworkController.allocate_bandwidth(
-                graph, route_set, source_node, target_node, required_throughput, flow_set, served_flows
-            )
-            #print(f'\n')
-            #pprint(graph.graph[source_node.bs_name])
-            
-            a = input('')
-            
-            print(f'\nswitching resolution...\n')
-            hmd_controller.HmdController.switch_resolution_based_on_throughput(
-                hmd, manifest, required_throughput
-            )
-            flow['throughput'] = required_throughput
-            
-            print(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
-          
-            
-        served_flows.append(flow_id)
-        #print(f'\nserved flows: {served_flows}')
-        #print(f'flow {flow_id} from {src_id} -> {dst_id}...')
-    pprint(route_set)
+        
+        #time.sleep(3)
+    
+
+    '''
+
+    ###########################################################################
+
+    ### HMD TEST ###
+
+    '''
+    '''
+    first_hmd_id = list(hmds_set.keys())[0]
+    hmd = hmds_set[first_hmd_id]
+
+
+    mec_id = list(mec_set.keys())[0]
+    mec_server = mec_set[mec_id]
+
+    video_server = mec_server.video_server
+
+    video_id = list(video_server.video_set.keys())[0]
+
+
+    ### RESOLUTION TEST ###
+    #print(f'\n*** Starting video operations ***\n')
+    #print(f'requesting manifest of video id: {first_video_id}')
+    manifest = hmd_controller.request_manifest(mec_set, video_id)
+
+    #pprint(manifest)
+
+
+    ### PLOT TEST ###
+
+    start_system()
+
+
+
+
+
+    ###########################################################################
+
+    ### SHORTEST AND WIDEST PATH TEST###
+
+    print(f'\n################ START NODE ################\n')
+    print(source_node.bs_name) 
+    #pprint(graph.graph)
     #a = input('')
-    
-    #route_set = {}
-    #generate_networks.plot_graph(graph.graph)
-    #a = input('type to continue..')
-    
-    #pprint(connections)
-    #a = input('\ntype 1 to show graph!\n')
-    #if full_resolutions(flow_set):
-    #    generate_networks.plot_graph(graph.graph)
-    #    a = input('type to continue..')
-    #if a == '1':
-    #    generate_networks.plot_graph(graph.graph)
-    #time.sleep(0.5)
-        
-   
+    dijkstra_controller.get_shortest_path_all_paths(
+        graph, source_node, base_station_set
+    )
+
+    dijkstra_controller.get_E2E_shortest_path_all_paths(
+        graph, source_node, base_station_set
+    )
+
+    dijkstra_controller.get_E2E_throughput_widest_path_all_paths(
+        graph, source_node, base_station_set
+    )
 
 
-###########################################################################
+    print(f'\n##################### THROUGHPUT ########################\n')
 
-### HMD TEST ###
+    path, e2e_throughput = dijkstra_controller.get_widest_path(
+        graph, source_node, target_node
+    )
 
-'''
-'''
-first_hmd_id = list(hmds_set.keys())[0]
-hmd = hmds_set[first_hmd_id]
+    print(" -> ".join(path))
+    print(e2e_throughput)
 
+    print(f'\n##################### E2E LATENCY ########################\n')
 
-mec_id = list(mec_set.keys())[0]
-mec_server = mec_set[mec_id]
+    path, e2e_latency = dijkstra_controller.get_ETE_shortest_path(
+        graph, source_node, target_node
+    )
 
-first_server = mec_server.video_server
+    print(" -> ".join(path))
+    print(e2e_latency)
+    net_latency = e2e_latency - (target_node.node_latency + source_node.wireless_latency)
 
-first_video_id = list(first_server.video_set.keys())[0]
-
-
-### RESOLUTION TEST ###
-#print(f'\n*** Starting video operations ***\n')
-#print(f'requesting manifest of video id: {first_video_id}')
-manifest = hmd_controller.request_manifest(mec_set, first_video_id)
-
-#pprint(manifest)
-
-
-### PLOT TEST ###
-
-start_system()
+    result = {
+        "e2e_latency": round(e2e_latency, 2),
+        "network_latency": round(net_latency, 2),
+        "destination_latency": round(target_node.node_latency, 2)
+    }
 
 
+    print(f'\n##################### NETWORK LATENCY ########################\n')
+
+    path, e2e_latency = dijkstra_controller.get_shortest_path(
+        graph, source_node, target_node
+    )
 
 
-
-###########################################################################
-
-### SHORTEST AND WIDEST PATH TEST###
-
-print(f'\n################ START NODE ################\n')
-print(source_node.bs_name) 
-#pprint(graph.graph)
-#a = input('')
-dijkstra_controller.get_shortest_path_all_paths(
-    graph, source_node, base_station_set
-)
-
-dijkstra_controller.get_E2E_shortest_path_all_paths(
-    graph, source_node, base_station_set
-)
-
-dijkstra_controller.get_E2E_throughput_widest_path_all_paths(
-    graph, source_node, base_station_set
-)
-
-
-print(f'\n##################### THROUGHPUT ########################\n')
-
-path, e2e_throughput = dijkstra_controller.get_widest_path(
-    graph, source_node, target_node
-)
-
-print(" -> ".join(path))
-print(e2e_throughput)
-
-print(f'\n##################### E2E LATENCY ########################\n')
-
-path, e2e_latency = dijkstra_controller.get_ETE_shortest_path(
-    graph, source_node, target_node
-)
-
-print(" -> ".join(path))
-print(e2e_latency)
-net_latency = e2e_latency - (target_node.node_latency + source_node.wireless_latency)
-
-result = {
-    "e2e_latency": round(e2e_latency, 2),
-    "network_latency": round(net_latency, 2),
-    "destination_latency": round(target_node.node_latency, 2)
-}
-
-
-print(f'\n##################### NETWORK LATENCY ########################\n')
-
-path, e2e_latency = dijkstra_controller.get_shortest_path(
-    graph, source_node, target_node
-)
-
-
-print(" -> ".join(path))
-print(e2e_latency)
+    print(" -> ".join(path))
+    print(e2e_latency)
 
 
 
 
-al = input('enter to continue')
+    al = input('enter to continue')
 
 
 
-###########################################################################
+    ###########################################################################
 
 
-
+    '''
 
 
 

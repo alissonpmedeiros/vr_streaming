@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 #pio.kaleido.scope.mathjax = None
 from pprint import pprint as pprint
+import matplotlib
+matplotlib.use('TkAgg')
+from typing import Any
 
 import json
 from json import JSONEncoder
@@ -24,10 +27,13 @@ TOPOLOGIES = {
 }
 
 #Bern
-CITY = 'bern'
-#RADIUS = 0.08
-RADIUS = 0.2
-NUMBER_NODES = 50
+#CITY = 'bern'
+#RADIUS = 0.2
+#NUMBER_NODES = 50
+
+CITY = 'geneva'
+RADIUS = 0.08
+NUMBER_NODES = 269
 
 #networkx plot 
 
@@ -39,16 +45,17 @@ EDGE_FONT_SIZE = 8
 '''
 
 # for medium graphs
+'''
 NODE_SIZE = 500
 NODE_FONT_SIZE = 7
 EDGE_FONT_SIZE = 7
 
 '''
 # for large graphs
-NODE_SIZE = 200
-NODE_FONT_SIZE = 4
-EDGE_FONT_SIZE = 4
-'''
+NODE_SIZE = 300
+NODE_FONT_SIZE = 5
+#EDGE_FONT_SIZE = 4
+EDGE_FONT_SIZE = 6
 
 
 
@@ -196,12 +203,13 @@ def create_topology(file_dir, file_name, pdf_name):
     
     node_latency = {'lower_latency_threshold': 2, 'upper_latency_threshold': 5}
     net_latency = {'lower_latency_threshold': 0.5, 'upper_latency_threshold': 1}
-    net_throughput = {'lower_throughput_threshold': 10000, 'upper_throughput_threshold': 100000}
+    net_throughput = {'lower_throughput_threshold': 1000, 'upper_throughput_threshold': 10000}
     
     generate_graph_connections(graph)
     init_graph(graph, di_graph, node_latency, net_latency, net_throughput)
-    draw_graph(di_graph, pdf_name)
     save_to_json(di_graph, file_dir, file_name)
+    while True:    
+        draw_graph(di_graph, pdf_name)
 
 #####################################################################
         
@@ -225,6 +233,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         nx.draw_networkx_nodes(di_graph.graph, di_graph.graph_positions, node_size=NODE_SIZE)
         
         # node labels
+        '''
         nx.draw_networkx_labels(
             di_graph.graph, 
             di_graph.graph_positions, 
@@ -233,6 +242,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
             font_family=FONT_FAMILY, 
             verticalalignment=VERTICAL_ALIGNMENT
         )
+        '''
         
         # edges
         nx.draw_networkx_edges(
@@ -274,6 +284,18 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         net_throughput = nx.get_edge_attributes(di_graph.graph, "net_throughput")
         net_throughput_labels = {}
         
+        #converting throughputs from Mbps to Gbps
+        for k, v in net_throughput.copy().items():
+            net_throughput[k] = round(v/1000, 2)
+            
+        #converting throughputs from Mbps to Gbps
+        for k, v in net_allocated_throughput.copy().items():
+            net_allocated_throughput[k] = round(v/1000, 2)
+            
+        #converting throughputs from Mbps to Gbps
+        for k, v in net_available_throughput.copy().items():
+            net_available_throughput[k] = round(v/1000, 2)
+        
         '''
         zipped = zip(net_throughput.items(), net_allocated_throughput.items(), net_available_throughput.items())
         zipped_list = list(zipped)
@@ -286,7 +308,8 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         for (t, al, av) in zip(net_throughput.items(), net_allocated_throughput.items(), net_available_throughput.items()):
             node_id = t[0]
             #net_throughput_labels[node_id] = 'T(' + str(t[1]) + ')' + 'AL(' + str(al[1]) + ')'  + 'AV(' + str(av[1]) + ')'
-            net_throughput_labels[node_id] = 'A('+str(av[1])+')'
+            #net_throughput_labels[node_id] = 'A('+str(av[1])+')'
+            net_throughput_labels[node_id] = str(av[1])
         
         nx.draw_networkx_edge_labels(
             di_graph.graph, 
@@ -296,10 +319,20 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         )
         
     else:    
-        # provides different colors for each link according to their weight (latency)
+        
+        # provides different colors for each link according to their throughput
+        elarge = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_throughput"] < (10000 * 0.3)]
+        
+        neutral = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_throughput"] >= (10000 * 0.3) and d["net_throughput"] <= (10000 * 0.8)]
+                   
+        esmall = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_throughput"] > ((10000 * 0.8))]
+        
+        # provides different colors for each link according to their latency
+        '''
         esmall = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] < 0.7]
         neutral = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] >= 0.7 and d["net_latency"] <= 0.8]
         elarge = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] > 0.8]
+        '''
         
         #pprint(di_graph.graph_positions)
         #pprint(di_graph.graph.graph)
@@ -309,6 +342,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         nx.draw_networkx_nodes(di_graph.graph, di_graph.graph_positions, node_size=NODE_SIZE)
         
         # node labels
+        '''
         nx.draw_networkx_labels(
             di_graph.graph, 
             di_graph.graph_positions, 
@@ -317,6 +351,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
             font_family=FONT_FAMILY, 
             verticalalignment=VERTICAL_ALIGNMENT
         )
+        '''
 
         # edges
         nx.draw_networkx_edges(
@@ -355,11 +390,20 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         # edge latency and throughput labels
         net_allocated_throughput = nx.get_edge_attributes(di_graph.graph, "net_latency")
         throughput_labels = nx.get_edge_attributes(di_graph.graph, "net_throughput")
+        
+        #converting throughputs from Mbps to Gbps
+        for k, v in throughput_labels.copy().items():
+            throughput_labels[k] = round(v/1000, 2)
+            
+            
         net_latency_throughput_labels = {}
         
         for (k,v), (k2,v2) in zip(net_allocated_throughput.items(), throughput_labels.items()):
             #plot latency labels only
-            net_latency_throughput_labels[k] = str(v) #+ '\n(' + str(v2) + ')'
+            #net_latency_throughput_labels[k] = str(v) #+ '\n(' + str(v2) + ')'
+            
+            #plot throughput labels only
+            net_latency_throughput_labels[k] = str(v2) 
         
         nx.draw_networkx_edge_labels(
             di_graph.graph, 
@@ -372,14 +416,19 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
     ax.margins(0.00)
     plt.axis("off")
     plt.tight_layout()
+    '''
+    '''
+    
     #a = input('enter to continue')
 
     #plt.savefig(pdf_name, bbox_inches='tight', orientation='landscape', dpi=None)  
     #plt.show(block=False)
     #plt.draw()
     #plt.show(block=False)
-    plt.pause(0.005)
-    #plt.pause(0.5)
+    #plt.pause(0.005)
+    
+    #plt.imshow(plt.imread(pdf_name))
+    plt.pause(5)
     plt.clf()
     
 def draw_plotly_graph(m_graph: DiGraph):
@@ -653,66 +702,6 @@ def plot_graph(network_graph: dict):
                     net_throughput=network_throughput
                 )
                 
-    
-    '''
-    for node_id, node_data in data.items():
-        for edge in node_data['edges']:
-            edge_index = node_data['edges'].index(edge)
-            src = node_id[2:]
-            dst = str(edge)
-            
-            #print(f'{src} | {type(src)}')
-            #print(f'{dst} | {type(dst)}')
-            
-            edge_net_latencies = node_data['edge_net_latencies']
-            net_latency = edge_net_latencies[edge_index]
-            
-            edge_net_throughputs = node_data['edge_net_throughputs']
-            net_throughput = edge_net_throughputs[edge_index]
-            #pprint(di_graph.nodes_set)
-            #a = input('')
-            # updating source throughput and latency in node_set  
-            di_graph.nodes_set[src].edges.append(dst)
-            di_graph.nodes_set[src].edge_net_latencies.append(net_latency)
-            di_graph.nodes_set[src].edge_net_throughputs.append(net_throughput)
-            
-            # updating destination throughput and latency in node_set
-            #di_graph.nodes_set[dst].edges.append(src)
-            #di_graph.nodes_set[dst].edge_net_latencies.append(net_latency)
-            #di_graph.nodes_set[dst].edge_net_throughputs.append(net_throughput)
-            
-            #print(type(src))
-            #print(type(dst))
-            
-            #a = input('')
-            #pprint(di_graph.nodes_set[src])
-            #print(f'##############################################################')
-            #pprint(di_graph.nodes_set[dst])
-            src_name = di_graph.nodes_set[src].node_label
-            #print(src_name)
-            #a = input('')
-            dst_name = di_graph.nodes_set[dst].node_label
-            
-            print(f'src: {src_name} ({type(src_name)}) -> dst: {dst_name}( {type(dst_name)})')
-            a = input('')
-            
-            # updating source throughput and latency accordingly
-            di_graph.graph.add_edge(
-                u_of_edge=src_name, 
-                v_of_edge=dst_name, 
-                net_latency=net_latency, 
-                net_throughput=net_throughput
-            )
-            
-            # updating destination throughput and latency accordingly
-            di_graph.graph.add_edge(
-                u_of_edge=dst_name, 
-                v_of_edge=src_name, 
-                net_latency=net_latency, 
-                net_throughput=net_throughput
-            )
-    '''
-    
     draw_graph(di_graph, 'any.pdf', throughput=True)
 
 

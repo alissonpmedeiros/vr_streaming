@@ -7,7 +7,7 @@ from models.base_station import BaseStation
 from controllers import config_controller
 
 """ other modules """
-import json, os
+import json, os, orjson
 from typing import Dict, Any
 from munch import DefaultMunch
 from pprint import pprint as pprint
@@ -87,7 +87,8 @@ class DecoderController:
         
         #print(f'\n*** decoding -> loading file {data_directory} at {file_name} ***')
         with open("{}{}".format(data_directory, file_name),"r", encoding='utf-8') as json_file:
-            data_set = json.load(json_file)
+            #data_set = json.load(json_file)
+            data_set = orjson.loads(json_file.read())
             data_type = next(iter(data_set))
             DecoderController.decoder_to_dict_objects(data_set, data_type)
             return data_set[data_type]

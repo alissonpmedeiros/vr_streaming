@@ -1,33 +1,33 @@
-import simpy
-import random
-
-# Constants
-SIMULATION_TIME = 10  # Total simulation time in seconds
-FLOW_COUNT = 5  # Total number of flows
-
-# Flow class
-class Flow:
-    def __init__(self, flow_id):
-        self.flow_id = flow_id
-
-# Network process
-def network(env, flow):
-    #print(f"Flow {flow.flow_id} arrived at time {env.now}")
-    yield env.timeout(random.uniform(0, 1))  # Simulate processing time
-    print(f"Flow {flow.flow_id} processed at time {env.now}")
-
-# Simulation environment
-env = simpy.Environment()
-
-# Generate flows
-flows = [Flow(i) for i in range(FLOW_COUNT)]
-
-
-# Start network processes for each flow
-for flow in flows:
-    env.process(network(env, flow))
-
-# Run simulation
-env.run(until=SIMULATION_TIME)
-#print(f'\n\n')
-#env.run(until=11)
+# SuperFastPython.com
+# example of shared list among processes using a manager
+from time import sleep
+from random import random
+from multiprocessing import Process
+from multiprocessing import Manager
+ 
+# task executed in a new process
+def task(number, shared_list):
+    # generate a number between 0 and 1
+    value = random()
+    # block for a fraction of a second
+    sleep(value)
+    # store the value in the shared list
+    shared_list.append((number, value))
+ 
+# protect the entry point
+if __name__ == '__main__':
+    # create the manager
+    with Manager() as manager:
+        # create the shared list
+        shared_list = manager.list()
+        # create many child processes
+        processes = [Process(target=task, args=(i, shared_list)) for i in range(50)]
+        # start all processes
+        for process in processes:
+            process.start()
+        # wait for all processes to complete
+        for process in processes:
+            process.join()
+        # report the number of items stored
+        print(f'List: {len(shared_list)}')
+        print(shared_list)

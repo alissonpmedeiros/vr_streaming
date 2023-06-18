@@ -136,6 +136,9 @@ if __name__ == '__main__':
     #graph = manager.dict()
     #graph.update(graph_copy.graph)
     
+    #pprint(graph.graph)
+    #a = input('type to continue...')
+    
     
     ### ROUTES###
     route_set = {}
@@ -184,8 +187,14 @@ if __name__ == '__main__':
         clients = 0   
         video_servers.remove(server)
 
+    print(f'\n*** initializing route_set ***')
+    network_controller.NetworkController.initialize_route_set(hmds_set, route_set)
+
     
     print(f'\n*** starting system ***')
+    
+    #generate_networks.plot_graph(graph.graph)
+    #a = input('')
     
     while True:
         
@@ -215,6 +224,7 @@ if __name__ == '__main__':
             
             src_id = flow['client']
             dst_id = flow['server']
+            route_id = str(src_id)
             
             flow_throughput = flow['throughput']
             
@@ -231,6 +241,7 @@ if __name__ == '__main__':
                     #print(f'\nFLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
                     #print(f'\nupgrading video resolution from {previous_throughput} -> {required_throughput}...')
                     print(f'*** \nFLOW ID: {flow_id} *** \n') 
+                    print(f'\n*** REQUESTING {required_throughput} Mbps ***\n')
                         
                 video_client = hmds_set[str(src_id)]
                 source_node_id = str(hmds_set[str(src_id)].current_base_station)
@@ -249,7 +260,7 @@ if __name__ == '__main__':
                 
             
                 required_throughput = network_controller.NetworkController.allocate_bandwidth(
-                    graph, hmds_set, route_set, source_node, target_node, flow_set, served_flows, flow_id, required_throughput
+                    graph, hmds_set, route_set, route_id, source_node, target_node, flow_set, served_flows, flow_id, required_throughput
                 )
                 
                 if LOGS:
@@ -259,7 +270,7 @@ if __name__ == '__main__':
                     video_client, manifest, required_throughput
                 )
                 #flow['throughput'] = required_throughput
-                flow_set[flow_id]['throughput'] = required_throughput
+                #flow_set[flow_id]['throughput'] = required_throughput
                 
                 served_flows.append(flow_id)
                 
@@ -270,7 +281,8 @@ if __name__ == '__main__':
                 #a = input('')
 
                 
-                
+            #print(f'printing graph...')    
+            #generate_networks.plot_graph(graph.graph) 
             
         
         
@@ -279,6 +291,11 @@ if __name__ == '__main__':
         #pprint(flow_set)
         print(f'\nelapsed time: {end - start}')
         
+        print(f'printing graph...')    
+        generate_networks.plot_graph(graph.graph)
+        print(f'\nprocessing the new flow...\n')
+        time.sleep(1)
+        #a = input('type to continue to the next iteration...')
         #pprint(flow_set)
         
         '''

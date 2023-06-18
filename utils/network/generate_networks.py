@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 #pio.kaleido.scope.mathjax = None
 from pprint import pprint as pprint
 import matplotlib
-matplotlib.use('TkAgg')
+#matplotlib.use('TkAgg')
 from typing import Any
 
 import json
@@ -32,7 +32,7 @@ TOPOLOGIES = {
 #NUMBER_NODES = 50
 
 CITY = 'geneva'
-RADIUS = 0.08
+RADIUS = 0.09
 NUMBER_NODES = 269
 
 #networkx plot 
@@ -52,7 +52,7 @@ EDGE_FONT_SIZE = 7
 
 '''
 # for large graphs
-NODE_SIZE = 300
+NODE_SIZE = 50
 NODE_FONT_SIZE = 5
 #EDGE_FONT_SIZE = 4
 EDGE_FONT_SIZE = 6
@@ -203,7 +203,7 @@ def create_topology(file_dir, file_name, pdf_name):
     
     node_latency = {'lower_latency_threshold': 2, 'upper_latency_threshold': 5}
     net_latency = {'lower_latency_threshold': 0.5, 'upper_latency_threshold': 1}
-    net_throughput = {'lower_throughput_threshold': 1000, 'upper_throughput_threshold': 10000}
+    net_throughput = {'lower_throughput_threshold': 5000, 'upper_throughput_threshold': 100000}
     
     generate_graph_connections(graph)
     init_graph(graph, di_graph, node_latency, net_latency, net_throughput)

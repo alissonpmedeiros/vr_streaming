@@ -263,7 +263,7 @@ if __name__ == '__main__':
         if ITERATION > 1:
             logging.info(f'\n****************************************************')
             logging.info(f'\n***decallocating route of non-prioritized flows...')
-            
+            logging.info(f'{len(deallocated_flows_list)}/{len(flow_set)} flows will be deallocated')
             for flow_id in deallocated_flows_list:
                 logging.debug(f'\n______________________________________________________')
                 cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
@@ -412,6 +412,8 @@ if __name__ == '__main__':
         logging.info(f'\nPREVIOUS THROUGHPUT: {current_throughput} Mbps')
         logging.info(f'EXPECTED THROUGHPUT: {expected_throughput} Mbps')
         logging.info(f'UPDATED  THROUGHPUT: {updated_throughput} Mbps')
+        cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+        logging.info(f'\n***current CND edge throughput: {cdn_bandwidth}') 
         
         full_resolutions(flow_set)
         generate_networks.plot_graph(graph.graph)

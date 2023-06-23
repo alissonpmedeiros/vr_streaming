@@ -399,17 +399,11 @@ class BitRateProfiles:
         bitrate_throughput_profiles = BitRateProfiles.get_throughput_profiles()
         profile_keys = list(bitrate_throughput_profiles.keys())
         profile_keys.sort()
-        #print(profile_keys)
-        #a = input('')
-        #print(f'Finding a new profile... for {required_throughput}')
-        previous_throughput = None
         
         for throughput in profile_keys:
             if throughput > required_throughput:
-                #print(f'throughput: {throughput} > required_throughput: {required_throughput}')
                 return throughput
-            previous_throughput = throughput
-        
+            
         return required_throughput
     
     def __generate_profiles():

@@ -10,7 +10,6 @@ import plotly.graph_objects as go
 from pprint import pprint as pprint
 import matplotlib
 #matplotlib.use('TkAgg')
-from typing import Any
 
 import json
 from json import JSONEncoder
@@ -52,8 +51,8 @@ EDGE_FONT_SIZE = 7
 
 '''
 # for large graphs
-NODE_SIZE = 50
-NODE_FONT_SIZE = 5
+NODE_SIZE = 90
+NODE_FONT_SIZE = 6
 #EDGE_FONT_SIZE = 4
 EDGE_FONT_SIZE = 6
 
@@ -234,6 +233,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         
         # node labels
         '''
+        '''
         nx.draw_networkx_labels(
             di_graph.graph, 
             di_graph.graph_positions, 
@@ -242,7 +242,6 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
             font_family=FONT_FAMILY, 
             verticalalignment=VERTICAL_ALIGNMENT
         )
-        '''
         
         # edges
         nx.draw_networkx_edges(
@@ -343,6 +342,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         
         # node labels
         '''
+        '''
         nx.draw_networkx_labels(
             di_graph.graph, 
             di_graph.graph_positions, 
@@ -351,7 +351,6 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
             font_family=FONT_FAMILY, 
             verticalalignment=VERTICAL_ALIGNMENT
         )
-        '''
 
         # edges
         nx.draw_networkx_edges(
@@ -646,7 +645,8 @@ def plot_graph(network_graph: dict):
         node_latency = node_data['computing_latency']
         bs_name = node_id
         signal_range = 0
-        node_label = str(new_id) + '\n(' + str(node_latency) + ')'
+        #node_label = str(new_id) + '\n(' + str(node_latency) + ')'
+        node_label = str(new_id)
         node_position = node_data['position']     
         
         new_node = Node(new_id, bs_name, node_label, node_latency, signal_range, signal_range, node_position)

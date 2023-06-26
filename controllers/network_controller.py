@@ -21,11 +21,27 @@ from itertools import tee
 import matplotlib.pyplot as plt
 from pprint import pprint as pprint
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
+
+'''
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(levelname)s - %(message)s')
+#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
+'''
 
 MIN_VALUE = -10**9
 MIN_THROUGHPUT = 10
 MAX_THROUGHPUT = 250
+
+MINIMUN_AVAILABLE_BANDWIDTH = 50 #Mbps
 
 
 class NetworkController:
@@ -137,17 +153,15 @@ class NetworkController:
     
     @staticmethod
     def decrease_bandwidth_reservation(
-        graph: 'Graph', route_set: dict, flow_set: dict, served_flows: list, served_flow_id: int, route: list, route_id: str, flow_throughput: float
+        graph: 'Graph', route_set: dict, flow_set: dict, route: list, route_id: str, flow_id: int, flow_throughput: float
     ):
         
-        previous_flow_throughput = bitrate_profiles.get_previous_throughput_profile(flow_throughput)
+        if flow_throughput == MIN_THROUGHPUT:
+            logging.debug(f'\nFlow {flow_id} already reached the minimum resolution!')
+            return
             
-        if previous_flow_throughput is None:
-            logging.debug(f'\n*** Could not decrease the resolution for served flow {served_flow_id} ***')
-            logging.debug(f'*** removing {served_flow_id} from flow_set ***')
-            served_flows.remove(served_flow_id)
-            return 
         
+        previous_flow_throughput = bitrate_profiles.get_previous_throughput_profile(flow_throughput) 
         decreased_throughput = flow_throughput - previous_flow_throughput
         
         logging.debug(f'\nDecreasing {decreased_throughput} Mbps for route:')
@@ -194,7 +208,7 @@ class NetworkController:
         logging.debug(f'\nnew route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
         
         logging.debug(f'\n*** updating flow_set')
-        flow_set[served_flow_id]['throughput'] = previous_flow_throughput
+        flow_set[flow_id]['throughput'] = previous_flow_throughput
             
         #a = input('\ntype to continue...\n')
 
@@ -249,7 +263,48 @@ class NetworkController:
 
         logging.debug(f'\n***updating flow_set')
         flow_set[flow_id]['throughput'] = required_throughput
-   
+
+    staticmethod    
+    def congested_route(graph: 'Graph', src: str, dst: str) -> bool:
+        graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+        current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
+        if current_available_bandwidth < MINIMUN_AVAILABLE_BANDWIDTH:
+            return True
+        return False
+        
+    @staticmethod
+    def get_congested_edges_in_route(graph: 'Graph', route: list) -> list:
+        congested_edges = []
+        for src, dst in NetworkController.__pairwise(route):
+            if NetworkController.congested_route(graph, src, dst):
+                congested_edges.append((src, dst))
+        return congested_edges
+    
+    @staticmethod
+    def congestion_management(graph: 'Graph', route_set: dict, flow_set: dict, served_flows: list):
+        
+        print(f'\n***Network bandwidth congestion management***')
+        for flow_id in served_flows:
+            flow = flow_set[flow_id]
+            flow_throughput = flow['throughput']
+            src_id = flow['client']
+            route_id = str(src_id)
+            route = route_set[route_id]['route']
+            congested_edges = NetworkController.get_congested_edges_in_route(graph, route)
+            if congested_edges:
+                if flow_throughput > MIN_THROUGHPUT:
+                    NetworkController.decrease_bandwidth_reservation(
+                        graph, route_set, flow_set, route, route_id, flow_id, flow_throughput
+                    )
+                else:
+                    print(f'\nFlow {flow_id} already reached the minimum resolution!')
+                    print(f'\nRemoving flow {flow_id} from served flows')
+                    served_flows.remove(flow_id)
+                    #a = input('type to continue...')
+            
+            print(f'finished congestion processing for flow {flow_id}, type to continue...')
+                    
+            
 
     staticmethod
     def initialize_route_set(hmds_set: dict[str, 'VrHMD'], route_set: dict):
@@ -262,7 +317,7 @@ class NetworkController:
         
     @staticmethod
     def allocate_bandwidth(
-        graph: 'Graph', route_set: dict, route_id: str, source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, flow_id: int, required_throughput: float, already_deallocated: bool, prioritized_flow: bool
+        graph: 'Graph', route_set: dict, route_id: str, source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, served_flows: list, flow_id: int, required_throughput: float, already_deallocated: bool, prioritized_flow: bool
     ):
     
         new_route = None
@@ -292,7 +347,17 @@ class NetworkController:
                     logging.debug(f'\nFLOW PRIORITIZATION: {prioritized_flow}\n')
                     logging.debug(f'printing graph...')    
                     generate_networks.plot_graph(graph.graph)
-                    a = input('\nno more resources available!\n')
+                    if not served_flows:
+                        a = input('no served flows were processed!')
+                    
+                    else:
+                        while route_max_throughput == MIN_VALUE:
+                            NetworkController.congestion_management(graph, route_set, flow_set, served_flows)
+                            
+                            new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
+                                graph, source_node, target_node, required_throughput
+                            )
+                    #a = input('\nno more resources available 1!\n')
                     
             
             route_set[route_id]['route'] = new_route
@@ -337,7 +402,18 @@ class NetworkController:
                     logging.debug(f'\nFLOW PRIORITIZATION: {prioritized_flow}\n')
                     logging.debug(f'printing graph...')    
                     generate_networks.plot_graph(graph.graph)
-                    a = input('\nno more resources available!\n')
+                    
+                    if not served_flows:
+                        a = input(f'\nno served flows were processed!')
+                    
+                    else:
+                        while route_max_throughput == MIN_VALUE:
+                            NetworkController.congestion_management(graph, route_set, flow_set, served_flows)
+                            
+                            new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
+                                graph, source_node, target_node, required_throughput
+                            )
+                    #a = input('\nno more resources available!\n')
             
             NetworkController.increase_bandwidth_reservation(graph, route_set, flow_set, flow_id, new_route, route_id, required_throughput)
         

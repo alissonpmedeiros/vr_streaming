@@ -34,8 +34,19 @@ from timeit import default_timer as timer
 from pprint import pprint as pprint
 
 logging.basicConfig(level=logging.INFO)
+'''
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
 
+#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
+'''
 
 MAX_THROUGHPUT = 250
 
@@ -124,8 +135,8 @@ def get_expected_throughput(flow_set: dict):
 def flow_fairness_selection(flow_set):
     """ return a list of flows that will be not prioritized """
     flow_set_size = len(flow_set)
-    floor = 5
-    roof = 20
+    floor = 5 # PERCENTAGE
+    roof = 20 # PERCENTAGE
     
     percentage_deallocated_flows = random.randint(floor, roof) / 100
     total_deallocated_flows = int(flow_set_size * percentage_deallocated_flows)   
@@ -236,6 +247,7 @@ if __name__ == '__main__':
         
         start = timer()
         flows_order = []
+        served_flows = []
 
         for i in range(len(flow_set)): 
             if i not in video_servers:
@@ -330,7 +342,7 @@ if __name__ == '__main__':
                 prioritized_flow = True
             
                 required_throughput = network_controller.NetworkController.allocate_bandwidth(
-                    graph, route_set, route_id, source_node, target_node, flow_set, flow_id, required_throughput, already_deallocated, prioritized_flow
+                    graph, route_set, route_id, source_node, target_node, flow_set, served_flows, flow_id, required_throughput, already_deallocated, prioritized_flow
                 )
                
                 logging.debug(f'\nswitching resolution...\n')
@@ -388,7 +400,7 @@ if __name__ == '__main__':
                 prioritized_flow = False
             
                 required_throughput = network_controller.NetworkController.allocate_bandwidth(
-                    graph, route_set, route_id, source_node, target_node, flow_set, flow_id, required_throughput, already_deallocated, prioritized_flow
+                    graph, route_set, route_id, source_node, target_node, flow_set, served_flows, flow_id, required_throughput, already_deallocated, prioritized_flow
                 )
                 
                 
@@ -402,6 +414,8 @@ if __name__ == '__main__':
                 )
                 
                 logging.debug(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
+                
+                served_flows.append(flow_id)
                     
                 #a = input('type to process the next flow...')
         

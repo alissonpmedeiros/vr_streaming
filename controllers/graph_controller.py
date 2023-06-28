@@ -79,6 +79,7 @@ class GraphController:
                     'network_throughput': dst_net_throughput,
                     'computing_latency': dst_node_latency,
                     'available_bandwidth': dst_net_throughput,
+                    'initial_available_bw': dst_net_throughput,
                     'allocated_bandwidth': 0
                 }
                 

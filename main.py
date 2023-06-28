@@ -434,7 +434,30 @@ if __name__ == '__main__':
         
         full_resolutions(flow_set)
         #generate_networks.plot_graph(graph.graph)
+        
+        print(f'\n*** checking all bandwidths synchonization ***')
+        for flow_id in flows_order:
+            #print(f'checking flow {flow_id}')
+            network_controller.NetworkController.check_bandwidth_synchonization(graph, flow_set, route_set, flow_id)
+        print(f'\n*** finish checking all bandwidths synchonization ***')
+        
         time.sleep(1)
+        
+        '''
+        if ITERATION == 3:
+            print(f'\nDEALOCATING ALL BW\n')
+            for flow_id in flows_order:
+                flow = flow_set[flow_id]
+                src_id = flow['client']
+                dst_id = flow['server']
+                route_id = str(src_id)
+                flow_throughput = flow['throughput'] 
+                network_controller.NetworkController.deallocate_bandwidth(graph, route_set, flow_set, route_id, flow_id)
+           
+            pprint(graph.graph) 
+            a = input('type to continue...')
+        
+        '''
         ITERATION += 1
     '''
 

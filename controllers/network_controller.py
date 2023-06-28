@@ -53,16 +53,137 @@ class NetworkController:
         return zip(src, dst)
 
     @staticmethod
+    def check_graph_bandwidth_increase_availability(graph: 'Graph', src: str, dst: str, required_bandwidth: float) -> bool:
+        graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+        current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
+        if current_available_bandwidth - required_bandwidth >= 0:
+            return True
+        return False
+    
+    @staticmethod
+    def check_graph_bandwidth_decrease_availability(graph: 'Graph', src: str, dst: str, decreased_throughput: float) -> bool:
+        graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+        current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
+        if current_allocated_bandwidth - decreased_throughput >= 0:
+            return True
+        return False
+    
+    @staticmethod
+    def check_graph_bandwidth_deallocation_availability(graph: 'Graph', src: str, dst: str, deallocated_throughput: float) -> bool:
+        graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+        current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
+        if current_allocated_bandwidth - deallocated_throughput >= 0:
+            return True
+        return False
+
+    @staticmethod
+    def check_graph_path_bandwidth_increase_availability(graph: 'Graph', route: list, required_bandwidth: float) -> bool:
+        for src, dst in NetworkController.__pairwise(route):
+            if not NetworkController.check_graph_bandwidth_increase_availability(graph, src, dst, required_bandwidth):
+                return False
+        return True
+    
+    def check_graph_path_bandwidth_decrease_availability(graph: 'Graph', route: list, decreased_throughput: float) -> bool:
+        for src, dst in NetworkController.__pairwise(route):
+            if not NetworkController.check_graph_bandwidth_decrease_availability(graph, src, dst, decreased_throughput):
+                return False
+        return True
+    
+    @staticmethod
+    def check_graph_path_bandwidth_deallocation_availability(graph: 'Graph', route: list, deallocated_throughput: float) -> bool:
+        for src, dst in NetworkController.__pairwise(route):
+            if not NetworkController.check_graph_bandwidth_deallocation_availability(graph, src, dst, deallocated_throughput):
+                return False
+        return True
+    
+    @staticmethod
+    def deallocate_bandwidth(graph: 'Graph', route_set: dict, flow_set: dict, route_id: str, flow_id: int):         
+        """deallocates the bandwidth of the route set, flow set and graph, simultaneously"""
+        current_route = route_set[route_id]['route']
+        current_route_bandwidth = route_set[route_id]['total_route_bandwidth']               
+        
+        
+        if NetworkController.check_graph_path_bandwidth_deallocation_availability(graph, current_route, current_route_bandwidth):
+            for src, dst in NetworkController.__pairwise(current_route):
+                graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+                current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
+                current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
+                
+                new_allocated_bandwidth = current_allocated_bandwidth - current_route_bandwidth
+                new_available_bandwidth = current_available_bandwidth + current_route_bandwidth
+                
+                
+                NetworkController.update_graph_pair_bandwidth(
+                    graph, 
+                    src, 
+                    dst, 
+                    new_allocated_bandwidth, 
+                    new_available_bandwidth
+                )
+        else:
+            print(f'\n*** ERROR: GRAPH WILL HAVE NEGATIVE RESOURCE ALLOCATION ***')
+            print(f'TRYING TO DEALOCATE: {current_route_bandwidth} Mbps FROM ROUTE:')    
+            print(' -> '.join(current_route))
+            
+            for src, dst in NetworkController.__pairwise(current_route):
+            
+                graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+                current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
+                current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
+                
+                new_allocated_bandwidth = current_allocated_bandwidth - current_route_bandwidth
+                new_available_bandwidth = current_available_bandwidth + current_route_bandwidth
+                
+                
+                #if new_allocated_bandwidth < 0 or new_available_bandwidth < 0:
+                print(f'\ncrashed from {src} -> {dst}')
+                print(f'previous allocated bandwidth: {current_allocated_bandwidth} Mbps')
+                print(f'previous available bandwidth: {current_available_bandwidth} Mbps')
+                print(f'new allocated bandwidth: {new_allocated_bandwidth} Mbps')
+                print(f'new available bandwidth: {new_available_bandwidth} Mbps')
+                    
+            
+            a = input('CRASHED IN DEALLOCATE_BANDWIDTH!')
+    
+        logging.debug(f'\n***updating route_set')
+        logging.debug(f'previous route bandwidth: {current_route_bandwidth}')            
+
+        route_set[route_id]['total_route_bandwidth'] = 0
+        #route_set[route_id]['route'] = []
+        
+        logging.debug(f'\nsucessfully deallocated bandwidth: {current_route_bandwidth} Mbps')
+        logging.debug(f'\nnew route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
+
+        logging.debug(f'\n*** updating flow_set')
+        flow_set[flow_id]['throughput'] = 0
+    
+    staticmethod
+    def check_bandwidth_synchonization(graph: 'Graph', flow_set: dict, route_set: dict, flow_id: str):
+        flow = flow_set[flow_id]
+        src = flow['client']
+        dst = flow['server']
+        flow_throughput = flow['throughput']
+        
+        route = route_set[str(src)]['route']
+        route_throughput = route_set[str(src)]['total_route_bandwidth']
+        
+       
+        
+        for src, dst in NetworkController.__pairwise(route):
+            if graph.graph[src][dst]['allocated_bandwidth'] - flow_throughput < 0:
+                print(f'\n*** FAIL TO SYNCHRONIZE BANDWIDTH ***')
+                print(f"from {src} -> {dst} has {graph.graph[src][dst]['allocated_bandwidth']} Mbps allocated bandwidth")
+                print(f'flow throughput: {flow_throughput} Mbps')
+                print(f'route throughput: {route_throughput} Mbps')
+        
+        
+        if flow_throughput != route_throughput:
+            print(f'GOT AN ERROR! flow throughput != route throughput')
+            a = input('')
+    
+    @staticmethod
     def update_graph_pair_bandwidth(graph: 'Graph', src: str, dst: str, new_allocated_bandwidth: float, new_available_bandwidth: float):
-        #if LOGS:
-        #    print(f'\n*** updating graph')
-        
-        if new_available_bandwidth < 0:
-            a = input('AVAILABLE CANNOT BE NEGATIVE!')
-        
-        if new_allocated_bandwidth < 0:
-            a = input('ALLOCATED CANNOT BE NEGATIVE!')    
-        
+ 
         #updating the allocated and available banwidth from src -> dst
         graph.graph[src][dst]['allocated_bandwidth'] = new_allocated_bandwidth
         graph.graph[src][dst]['available_bandwidth'] = new_available_bandwidth
@@ -94,7 +215,7 @@ class NetworkController:
         logging.debug(f'new allocated bandwidth: {new_allocated_bandwidth} Mbps')
         logging.debug(f'new available bandwidth: {new_available_bandwidth} Mbps')
 
-    
+    '''
     @staticmethod
     def deallocate_bandwidth(graph: 'Graph', route_set: dict, flow_set: dict, route_id: str, flow_id: int):
                 
@@ -114,7 +235,6 @@ class NetworkController:
             new_allocated_bandwidth = current_allocated_bandwidth - current_route_bandwidth
             new_available_bandwidth = current_available_bandwidth + current_route_bandwidth
             
-            '''
             NetworkController.show_graph_pair_bandwidth_reservation(
                 src, 
                 dst, 
@@ -123,13 +243,21 @@ class NetworkController:
                 new_allocated_bandwidth, 
                 new_available_bandwidth
             )
-            '''
+            
             
             if new_allocated_bandwidth < 0 or new_available_bandwidth < 0:
                 #print(f'printing graph...')    
                 #generate_networks.plot_graph(graph.graph)
+                NetworkController.show_graph_pair_bandwidth_reservation(
+                    src, 
+                    dst, 
+                    current_allocated_bandwidth, 
+                    current_available_bandwidth, 
+                    new_allocated_bandwidth, 
+                    new_available_bandwidth
+                )
                 print(f'previous route bandwidth: {current_route_bandwidth}')    
-                a = (f'CRASHED IN DEALLOCATE_BANDWIDTH!')
+                a = input('CRASHED IN DEALLOCATE_BANDWIDTH!')
             
             NetworkController.update_graph_pair_bandwidth(
                 graph, 
@@ -143,86 +271,110 @@ class NetworkController:
         logging.debug(f'previous route bandwidth: {current_route_bandwidth}')            
 
         route_set[route_id]['total_route_bandwidth'] = 0
-        route_set[route_id]['route'] = []
+        #route_set[route_id]['route'] = []
         
         logging.debug(f'\nsucessfully deallocated bandwidth: {current_route_bandwidth} Mbps')
         logging.debug(f'\nnew route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
     
         logging.debug(f'\n*** updating flow_set')
         flow_set[flow_id]['throughput'] = 0
+    '''
     
     @staticmethod
     def decrease_bandwidth_reservation(
         graph: 'Graph', route_set: dict, flow_set: dict, route: list, route_id: str, flow_id: int, flow_throughput: float
     ):
+        current_route_bandwidth = route_set[route_id]['total_route_bandwidth']   
         
-        if flow_throughput == MIN_THROUGHPUT:
-            logging.debug(f'\nFlow {flow_id} already reached the minimum resolution!')
-            return
-            
-        
+     
         previous_flow_throughput = bitrate_profiles.get_previous_throughput_profile(flow_throughput) 
         decreased_throughput = flow_throughput - previous_flow_throughput
         
-        logging.debug(f'\nDecreasing {decreased_throughput} Mbps for route:')
-        logging.debug(" -> ".join(route))
-        logging.debug(f'\ndecreasing {decreased_throughput} from  each pair of nodes in the route...')
+        if flow_throughput - decreased_throughput != previous_flow_throughput:
+            print(f'\n*** ERROR: FLOW THROUGHPUT != PREVIOUS THROUGHPUT ***')
+            print(f'flow throughput: {flow_throughput} Mbps')
+            print(f'previous throughput: {previous_flow_throughput} Mbps')
+            print(f'decreased throughput: {decreased_throughput} Mbps')
+            a = input('CRASHED')
         
-        for src, dst in NetworkController.__pairwise(route):
-    
-            graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
-            current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
-            current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
+        if NetworkController.check_graph_path_bandwidth_decrease_availability(graph, route, decreased_throughput):
+            #print(f'\nDecreasing {decreased_throughput} Mbps for route:')
+            #print(f'current flow throughput: {flow_throughput}')
+            #print(" -> ".join(route))
+            #print(f'\ndecreasing {decreased_throughput} from  each pair of nodes in the route...')
+            
+            for src, dst in NetworkController.__pairwise(route):
         
-            new_allocated_bandwidth = current_allocated_bandwidth - decreased_throughput
-            new_available_bandwidth = current_available_bandwidth +  decreased_throughput
+                graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+                current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
+                current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
             
-            NetworkController.show_graph_pair_bandwidth_reservation(
-                src, 
-                dst, 
-                current_allocated_bandwidth, 
-                current_available_bandwidth, 
-                new_allocated_bandwidth, 
-                new_available_bandwidth
-            )
+                new_allocated_bandwidth = current_allocated_bandwidth - decreased_throughput
+                new_available_bandwidth = current_available_bandwidth + decreased_throughput
+                
+                NetworkController.update_graph_pair_bandwidth(
+                    graph, 
+                    src, 
+                    dst, 
+                    new_allocated_bandwidth, 
+                    new_available_bandwidth
+                )
+        
+        
+        else:
+            print(f'\n*** ERROR: GRAPH WILL HAVE NEGATIVE RESOURCE AVAILABILITY ***')
+            print(f'TRYING TO DEALOCATE: {current_route_bandwidth} Mbps FROM ROUTE:')    
+            print(' -> '.join(route))
             
-            if new_available_bandwidth < 0 or new_allocated_bandwidth < 0:
-                logging.debug(f'current flow throughput: {flow_throughput}')
-                logging.debug(f'previous flow throughput: {previous_flow_throughput}')
-                a = ('\n***CRASHED in decrease_bandwidth_reservation!***')
+            for src, dst in NetworkController.__pairwise(route):
             
-            NetworkController.update_graph_pair_bandwidth(
-                graph, 
-                src, 
-                dst, 
-                new_allocated_bandwidth, 
-                new_available_bandwidth
-            )
-          
-
-        logging.debug(f'\n *** updating route_set')
-        logging.debug(f'\nprevious route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
+                graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+                current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
+                current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
+                
+                new_allocated_bandwidth = current_allocated_bandwidth - decreased_throughput
+                new_available_bandwidth = current_available_bandwidth + decreased_throughput
+                
+                
+                #if new_allocated_bandwidth < 0 or new_available_bandwidth < 0:
+                print(f'\ncrashed from {src} -> {dst}')
+                print(f'previous allocated bandwidth: {current_allocated_bandwidth} Mbps')
+                print(f'previous available bandwidth: {current_available_bandwidth} Mbps')
+                print(f'new allocated bandwidth: {new_allocated_bandwidth} Mbps')
+                print(f'new available bandwidth: {new_available_bandwidth} Mbps')
+                    
+            
+            a = input('CRASHED IN DRECRASE_BANDWIDTH!')
+            
+        
+        print(f'\n *** updating route_set')
+        print(f'\nprevious route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
         
         route_set[route_id]['total_route_bandwidth'] = previous_flow_throughput
         
-        logging.debug(f'\nnew route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
+        print(f'\nnew route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
         
-        logging.debug(f'\n*** updating flow_set')
+        print(f'\n*** updating flow_set')
         flow_set[flow_id]['throughput'] = previous_flow_throughput
-            
-        #a = input('\ntype to continue...\n')
 
     
     
     @staticmethod
     def increase_bandwidth_reservation(
-        graph: 'Graph', route_set: dict, flow_set: dict, flow_id: int, new_route: list, route_id: str, required_throughput: float
+        graph: 'Graph', route_set: dict, flow_set: dict, flow_id: int, route: list, route_id: str, required_throughput: float
     ):
-        logging.debug(f'\nIncreasing BW reservation to {required_throughput} Mbps for route:')
-        logging.debug(" -> ".join(new_route))
-        logging.debug(f'\nincreasing each pair of nodes in the route...')
+        #print(f'\nIncreasing BW reservation to {required_throughput} Mbps for route:')
+        #print(" -> ".join(route))
+        #print(f'\nincreasing each pair of nodes in the route...')
         
-        for src, dst in NetworkController.__pairwise(new_route):
+        if not NetworkController.check_graph_path_bandwidth_increase_availability(graph, route, required_throughput):
+            print(f'\n*** Widest Path found a route but there is no more available resources for route:***')
+            print(' -> '.join(route))
+            print(f'current route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
+            print(f'requested increase: {required_throughput} Mbps')
+            a = input('')
+        
+        for src, dst in NetworkController.__pairwise(route):
             
             graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
             
@@ -253,15 +405,15 @@ class NetworkController:
             )
                 
         
-        logging.debug(f'\n *** updating route_set')
-        logging.debug(f'\nprevious route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
+        #print(f'\n *** updating route_set')
+        #print(f'\nprevious route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
         
         route_set[route_id]['total_route_bandwidth'] = required_throughput
-        route_set[route_id]['route'] = new_route
+        route_set[route_id]['route'] = route
         
-        logging.debug(f'new route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
+        #print(f'new route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
 
-        logging.debug(f'\n***updating flow_set')
+        #print(f'\n***updating flow_set')
         flow_set[flow_id]['throughput'] = required_throughput
 
     staticmethod    
@@ -284,7 +436,7 @@ class NetworkController:
     def congestion_management(graph: 'Graph', route_set: dict, flow_set: dict, served_flows: list):
         
         print(f'\n***Network bandwidth congestion management***')
-        for flow_id in served_flows:
+        for flow_id in served_flows.copy():
             flow = flow_set[flow_id]
             flow_throughput = flow['throughput']
             src_id = flow['client']
@@ -293,6 +445,7 @@ class NetworkController:
             congested_edges = NetworkController.get_congested_edges_in_route(graph, route)
             if congested_edges:
                 if flow_throughput > MIN_THROUGHPUT:
+                    print(f'\nDecreasing BW for flow {flow_id}')
                     NetworkController.decrease_bandwidth_reservation(
                         graph, route_set, flow_set, route, route_id, flow_id, flow_throughput
                     )
@@ -302,9 +455,7 @@ class NetworkController:
                     served_flows.remove(flow_id)
                     #a = input('type to continue...')
             
-            print(f'finished congestion processing for flow {flow_id}, type to continue...')
-                    
-            
+                #print(f'finished congestion processing for flow {flow_id}')
 
     staticmethod
     def initialize_route_set(hmds_set: dict[str, 'VrHMD'], route_set: dict):
@@ -317,7 +468,7 @@ class NetworkController:
         
     @staticmethod
     def allocate_bandwidth(
-        graph: 'Graph', route_set: dict, route_id: str, source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, served_flows: list, flow_id: int, required_throughput: float, already_deallocated: bool, prioritized_flow: bool
+        graph: 'Graph', route_set: dict, route_id: str, source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, flow_id: int, required_throughput: float, already_deallocated: bool, prioritized_flow: bool
     ):
     
         new_route = None
@@ -344,20 +495,10 @@ class NetworkController:
                 )
                     
                 if required_throughput == MIN_THROUGHPUT and route_max_throughput == MIN_VALUE:
-                    logging.debug(f'\nFLOW PRIORITIZATION: {prioritized_flow}\n')
-                    logging.debug(f'printing graph...')    
-                    generate_networks.plot_graph(graph.graph)
-                    if not served_flows:
-                        a = input('no served flows were processed!')
-                    
-                    else:
-                        while route_max_throughput == MIN_VALUE:
-                            NetworkController.congestion_management(graph, route_set, flow_set, served_flows)
-                            
-                            new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
-                                graph, source_node, target_node, required_throughput
-                            )
-                    #a = input('\nno more resources available 1!\n')
+                    print(f'\nFLOW PRIORITIZATION: {prioritized_flow}\n')
+                    #logging.debug(f'printing graph...')    
+                    #generate_networks.plot_graph(graph.graph)
+                    a = input('\nno more resources available 1!\n')
                     
             
             route_set[route_id]['route'] = new_route
@@ -400,19 +541,33 @@ class NetworkController:
                 
                 if required_throughput == MIN_THROUGHPUT and route_max_throughput == MIN_VALUE:
                     logging.debug(f'\nFLOW PRIORITIZATION: {prioritized_flow}\n')
-                    logging.debug(f'printing graph...')    
-                    generate_networks.plot_graph(graph.graph)
+                    print(f'\n *** COULD NOT FIND A ROUTE TO FULFILL {required_throughput} Mbps ***')
+                    #logging.debug(f'printing graph...')    
+                    #generate_networks.plot_graph(graph.graph)
                     
-                    if not served_flows:
-                        a = input(f'\nno served flows were processed!')
-                    
-                    else:
+                    if not non_prioritized_served_flows:
+                        congestion_iterations = 1
+                        print(f'NON PRIORITIZED FLOWS EMPTY! RUNNING CONGESTION MANAGEMENT ON PRIORITIZED FLOWS!')
                         while route_max_throughput == MIN_VALUE:
-                            NetworkController.congestion_management(graph, route_set, flow_set, served_flows)
+                            print(f'\nCongestion iteration: {congestion_iterations}')
+                            NetworkController.congestion_management(graph, route_set, flow_set, prioritized_served_flows)
                             
                             new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                                 graph, source_node, target_node, required_throughput
                             )
+                    
+                    else:
+                        congestion_iterations = 1
+                        print(f'RUNNING CONGESTION MANAGEMENT ON NON-PRIORITIZED FLOWS!')
+                        while route_max_throughput == MIN_VALUE:
+                            print(f'\nCongestion iteration: {congestion_iterations}')
+                            NetworkController.congestion_management(graph, route_set, flow_set, non_prioritized_served_flows)
+                            
+                            new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
+                                graph, source_node, target_node, required_throughput
+                            )
+                            congestion_iterations += 1
+                        #return required_throughput
                     #a = input('\nno more resources available!\n')
             
             NetworkController.increase_bandwidth_reservation(graph, route_set, flow_set, flow_id, new_route, route_id, required_throughput)
@@ -420,6 +575,12 @@ class NetworkController:
 
         return required_throughput
         
+    @staticmethod
+    def count_total_links(graph: 'Graph') -> int:
+        total_links = 0
+        for src, dst in graph.graph.edges():
+            total_links += 1
+        return total_links
     
     @staticmethod
     def generate_network_plot(base_station_set: Dict[str, 'BaseStation'], hmds_set: Dict[str, 'VrHMD']) -> None:

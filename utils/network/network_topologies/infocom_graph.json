@@ -1,0 +1,197 @@
+{
+    "base_station_set": {
+      "1": {
+        "id": 1,
+        "bs_name": "BS1",
+        "node_label": "0\n(2.45)",
+        "node_latency": 2.45,
+        "wireless_latency": 0.23,
+        "signal_range": 0.13,
+        "position": [
+          0.2897527027412774,
+          0.4836396512363156
+        ],
+        "edges": [
+            "6",
+            "7"
+        ],
+        "edge_net_latencies": [
+            1.11,
+            0.87
+        ],
+        "edge_net_throughputs": [
+            200,
+            50.3
+        ]
+      },
+      "2": {
+        "id": 2,
+        "bs_name": "BS2",
+        "node_label": "0\n(3.5)",
+        "node_latency": 3.5,
+        "wireless_latency": 0.23,
+        "signal_range": 0.13,
+        "position": [
+          0.2897527027412774,
+          0.4836396512363156
+        ],
+        "edges": [
+            "7",
+            "8"
+        ],
+        "edge_net_latencies": [
+            0.71,
+            0.91
+        ],
+        "edge_net_throughputs": [
+            79.2,
+            95.39
+        ]
+      },
+      "3": {
+        "id": 3,
+        "bs_name": "BS3",
+        "node_label": "0\n(4.26)",
+        "node_latency": 4.26,
+        "wireless_latency": 0.23,
+        "signal_range": 0.13,
+        "position": [
+          0.2897527027412774,
+          0.4836396512363156
+        ],
+        "edges": [
+            "5",
+            "7"
+        ],
+        "edge_net_latencies": [
+            0.92,
+            0.71
+        ],
+        "edge_net_throughputs": [
+            54.18,
+            61.52
+        ]
+      },
+      "4": {
+        "id": 4,
+        "bs_name": "BS4",
+        "node_label": "0\n(4.12)",
+        "node_latency": 4.12,
+        "wireless_latency": 0.23,
+        "signal_range": 0.13,
+        "position": [
+          0.2897527027412774,
+          0.4836396512363156
+        ],
+        "edges": [
+            "5",
+            "6"
+        ],
+        "edge_net_latencies": [
+            0.98,
+            0.53
+        ],
+        "edge_net_throughputs": [
+            60.97,
+            83.53
+        ]
+      },
+      "5": {
+        "id": 5,
+        "bs_name": "BS5",
+        "node_label": "0\n(2.02)",
+        "node_latency": 2.02,
+        "wireless_latency": 0.23,
+        "signal_range": 0.13,
+        "position": [
+          0.2897527027412774,
+          0.4836396512363156
+        ],
+        "edges": [
+            "3",
+            "4"
+        ],
+        "edge_net_latencies": [
+            0.92,
+            0.98
+        ],
+        "edge_net_throughputs": [
+            54.18,
+            60.97
+        ]
+      },
+      "6": {
+        "id": 6,
+        "bs_name": "BS6",
+        "node_label": "0\n(3.71)",
+        "node_latency": 3.71,
+        "wireless_latency": 0.23,
+        "signal_range": 0.13,
+        "position": [
+          0.2897527027412774,
+          0.4836396512363156
+        ],
+        "edges": [
+            "1",
+            "4"
+        ],
+        "edge_net_latencies": [
+            1.11,
+            0.53
+        ],
+        "edge_net_throughputs": [
+            200,
+            83.53
+        ]
+      },
+      "7": {
+        "id": 7,
+        "bs_name": "BS7",
+        "node_label": "0\n(3.55)",
+        "node_latency": 3.55,
+        "wireless_latency": 0.23,
+        "signal_range": 0.13,
+        "position": [
+          0.2897527027412774,
+          0.4836396512363156
+        ],
+        "edges": [
+            "1",
+            "2",
+            "3"
+        ],
+        "edge_net_latencies": [
+            0.87,
+            0.71,
+            0.71
+        ],
+        "edge_net_throughputs": [
+            50.3,
+            79.2,
+            61.52
+        ]
+      },
+      "8": {
+        "id": 8,
+        "bs_name": "BS8",
+        "node_label": "0\n(3.34)",
+        "node_latency": 3.34,
+        "wireless_latency": 0.23,
+        "signal_range": 0.13,
+        "position": [
+          0.2897527027412774,
+          0.4836396512363156
+        ],
+        "edges": [
+            "2"
+        ],
+        "edge_net_latencies": [
+            0.91
+        ],
+        "edge_net_throughputs": [
+            95.39
+        ]
+      }
+
+    }
+}

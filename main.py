@@ -135,8 +135,8 @@ def get_expected_throughput(flow_set: dict):
 def flow_fairness_selection(flow_set):
     """ return a list of flows that will be not prioritized """
     flow_set_size = len(flow_set)
-    floor = 5 # PERCENTAGE
-    roof = 20 # PERCENTAGE
+    floor = 10 # PERCENTAGE
+    roof = 30 # PERCENTAGE
     
     percentage_deallocated_flows = random.randint(floor, roof) / 100
     total_deallocated_flows = int(flow_set_size * percentage_deallocated_flows)   
@@ -245,9 +245,10 @@ if __name__ == '__main__':
     
     while True:
         
-        start = timer()
+        #start = timer()
         flows_order = []
-        served_flows = []
+        prioritized_served_flows = [] 
+        non_prioritized_served_flows = []
 
         for i in range(len(flow_set)): 
             if i not in video_servers:
@@ -342,7 +343,7 @@ if __name__ == '__main__':
                 prioritized_flow = True
             
                 required_throughput = network_controller.NetworkController.allocate_bandwidth(
-                    graph, route_set, route_id, source_node, target_node, flow_set, served_flows, flow_id, required_throughput, already_deallocated, prioritized_flow
+                    graph, route_set, route_id, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id, required_throughput, already_deallocated, prioritized_flow
                 )
                
                 logging.debug(f'\nswitching resolution...\n')
@@ -355,6 +356,8 @@ if __name__ == '__main__':
                 logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 
                 logging.debug(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
+                
+                prioritized_served_flows.append(flow_id)
             
         if ITERATION > 1:
             logging.info(f'\n****************************************************')
@@ -400,7 +403,7 @@ if __name__ == '__main__':
                 prioritized_flow = False
             
                 required_throughput = network_controller.NetworkController.allocate_bandwidth(
-                    graph, route_set, route_id, source_node, target_node, flow_set, served_flows, flow_id, required_throughput, already_deallocated, prioritized_flow
+                    graph, route_set, route_id, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id, required_throughput, already_deallocated, prioritized_flow
                 )
                 
                 
@@ -415,11 +418,11 @@ if __name__ == '__main__':
                 
                 logging.debug(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
                 
-                served_flows.append(flow_id)
+                non_prioritized_served_flows.append(flow_id)
                     
                 #a = input('type to process the next flow...')
         
-        end = timer()
+        #end = timer()
         #print(f'\nelapsed time: {end - start}')
         updated_throughput = get_current_throughput(flow_set)
         logging.info(f'\n****************************************************\n')
@@ -430,10 +433,9 @@ if __name__ == '__main__':
         logging.info(f'\n***current CND edge throughput: {cdn_bandwidth}') 
         
         full_resolutions(flow_set)
-        generate_networks.plot_graph(graph.graph)
+        #generate_networks.plot_graph(graph.graph)
         time.sleep(1)
         ITERATION += 1
-
     '''
 
     ###########################################################################

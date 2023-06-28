@@ -59,6 +59,9 @@ class Graph():
         '''
         '''
         for neighbour in neighbours.copy():
+            if self.graph[source_node][neighbour]['available_bandwidth'] < required_throughput:
+                neighbours.remove(neighbour)
+            '''
             #print(f'*** \nchecking neighbour {neighbour} ***')
             if self.graph[source_node][neighbour]['available_bandwidth'] >= required_throughput:
                 #print(f'\n{source_node} -> {neighbour} CAN allocate ({required_throughput}) because it has {self.graph[source_node][neighbour]["available_bandwidth"]}')
@@ -68,6 +71,7 @@ class Graph():
                 neighbours.remove(neighbour)
                 
                 #pass
+            '''
             
         #print(f'\nneighbours after:')
         #print(neighbours)

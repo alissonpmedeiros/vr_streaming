@@ -26,6 +26,7 @@ from models.migration_algorithms.nm import NoMigration
 from models.migration_algorithms.am import AlwaysMigrate'''
 
 """others modules"""
+import sys
 import time
 import random
 import logging
@@ -68,6 +69,27 @@ CLIENTS_PER_SERVER = OVERALL_VIDEO_CLIENTS / OVERALL_VIDEO_SERVERS
 
 CDN_SERVER_ID = 136
 CDN_CLIENT_ID = 161
+
+#FILE_NAME = '{}.csv'.format(sys.argv[1])
+
+FILE_HEADER = [
+    'net_congested_level',
+    'total_allocate_bw',
+    'expected_allocated_bw',
+    'allocated_bw',
+    'net_latency', 
+    'e2e_latency', 
+    'standard_fps',
+    'standard_8k', 
+    'standard_4k', 
+    'standard_1440p', 
+    'standard_1080p',
+    'high_fps',
+    'high_8k',
+    'high_4k',
+    'high_1440p',
+    'high_1080p',
+]
 
 
 ITERATION = 1
@@ -135,8 +157,8 @@ def get_expected_throughput(flow_set: dict):
 def flow_fairness_selection(flow_set):
     """ return a list of flows that will be not prioritized """
     flow_set_size = len(flow_set)
-    floor = 10 # PERCENTAGE
-    roof = 30 # PERCENTAGE
+    floor = 5 # PERCENTAGE
+    roof = 20 # PERCENTAGE
     
     percentage_deallocated_flows = random.randint(floor, roof) / 100
     total_deallocated_flows = int(flow_set_size * percentage_deallocated_flows)   
@@ -188,8 +210,8 @@ if __name__ == '__main__':
     graph = graph_controller.GraphController.get_graph(base_station_set)
 
     
-    ### ROUTES###
-    route_set = {}
+    #### ROUTES###
+    #route_set = {}
 
     ### VIDEO SERVERS AND CLIENTS ###
     video_servers = []
@@ -227,8 +249,10 @@ if __name__ == '__main__':
                 flow_set[pairs] = {
                         'server': server,
                         'client': client,
+                        'route': [],
                         'throughput': bitrate_quotas[first_hmd_quota]['throughput'],
-                        'previous_throughput': None
+                        'previous_throughput': None,
+                        'next_throughput': None,
                 }
                 pairs += 1
                 clients += 1
@@ -236,15 +260,16 @@ if __name__ == '__main__':
         clients = 0   
         video_servers.remove(server)
 
-    logging.info(f'\n*** initializing route_set ***')
-    network_controller.NetworkController.initialize_route_set(hmds_set, route_set)
+    #logging.info(f'\n*** initializing route_set ***')
+    #network_controller.NetworkController.initialize_route_set(hmds_set, route_set)
 
     cdn_graph_id = 'BS' + str(CDN_SERVER_ID)
     
     logging.info(f'\n*** starting system ***')
+
+    
     
     while True:
-        
         #start = timer()
         flows_order = []
         prioritized_served_flows = [] 
@@ -281,17 +306,13 @@ if __name__ == '__main__':
                 logging.debug(f'\n______________________________________________________')
                 cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
-                
-                flow_throughput = flow_set[flow_id]['throughput']
-                flow_set[flow_id]['previous_throughput'] = flow_throughput
                 flow = flow_set[flow_id]
-                src_id = flow['client']
-                route_id = str(src_id)
-                route = route_set[route_id]['route']
+                flow_set[flow_id]['previous_throughput'] = flow_throughput
+    
                 logging.debug(f'\n dealocating {flow_throughput} Mbps from the following route:')
-                logging.debug('->'.join(route))
+                logging.debug('->'.join(flow['route']))
                 
-                network_controller.NetworkController.deallocate_bandwidth(graph, route_set, flow_set, route_id, flow_id)
+                network_controller.NetworkController.deallocate_bandwidth(graph, flow_set, flow_id)
                 
                 cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 logging.debug(f'\n***new CDN edge throughput: {cdn_bandwidth}') 
@@ -305,20 +326,20 @@ if __name__ == '__main__':
                 logging.debug(f'\n______________________________________________________')
                 cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
+                
                 flow = flow_set[flow_id]
                 
                 src_id = flow['client']
                 dst_id = flow['server']
-                route_id = str(src_id)
-                
                 flow_throughput = flow['throughput']
                 
-                previous_throughput = flow_throughput
                 required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
                
                 logging.debug(f'\n___________________________________________')
                 logging.debug(f'*** \nFLOW ID: {flow_id} *** ') 
                 logging.debug(f'\n*** REQUESTING {required_throughput} Mbps ***\n')
+                
+                flow_set[flow_id]['next_throughput'] = required_throughput
                         
                 video_client = hmds_set[str(src_id)]
                 source_node_id = str(hmds_set[str(src_id)].current_base_station)
@@ -339,11 +360,12 @@ if __name__ == '__main__':
                 target_mec_id = str(dst_id)
                 target_node = base_station_set[target_mec_id]
                 
-                already_deallocated = False
-                prioritized_flow = True
-            
+                network_controller.NetworkController.deallocate_bandwidth(
+                    graph, flow_set, flow_id
+                )
+                
                 required_throughput = network_controller.NetworkController.allocate_bandwidth(
-                    graph, route_set, route_id, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id, required_throughput, already_deallocated, prioritized_flow
+                    graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
                 )
                
                 logging.debug(f'\nswitching resolution...\n')
@@ -369,17 +391,15 @@ if __name__ == '__main__':
                 cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 flow_count += 1
-                flow = flow_set[flow_id]
                 
+                flow = flow_set[flow_id]
                 src_id = flow['client']
                 dst_id = flow['server']
-                route_id = str(src_id)
-                
                 flow_throughput = flow['previous_throughput']
                 
                 previous_throughput = flow_throughput
                 required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
-                
+                flow_set[flow_id]['next_throughput'] = required_throughput
                 
                 logging.debug(f'\n___________________________________________')
                 logging.debug(f'*** \nFLOW ID: {flow_id} - NON-PRIORITIZED ({flow_count}/{len(deallocated_flows_list)})*** ') 
@@ -399,11 +419,8 @@ if __name__ == '__main__':
                 target_mec_id = str(dst_id)
                 target_node = base_station_set[target_mec_id]
                 
-                already_deallocated = True
-                prioritized_flow = False
-            
                 required_throughput = network_controller.NetworkController.allocate_bandwidth(
-                    graph, route_set, route_id, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id, required_throughput, already_deallocated, prioritized_flow
+                    graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
                 )
                 
                 
@@ -433,31 +450,10 @@ if __name__ == '__main__':
         logging.info(f'\n***current CND edge throughput: {cdn_bandwidth}') 
         
         full_resolutions(flow_set)
-        #generate_networks.plot_graph(graph.graph)
-        
-        print(f'\n*** checking all bandwidths synchonization ***')
-        for flow_id in flows_order:
-            #print(f'checking flow {flow_id}')
-            network_controller.NetworkController.check_bandwidth_synchonization(graph, flow_set, route_set, flow_id)
-        print(f'\n*** finish checking all bandwidths synchonization ***')
+        generate_networks.plot_graph(graph.graph)
         
         time.sleep(1)
-        
-        '''
-        if ITERATION == 3:
-            print(f'\nDEALOCATING ALL BW\n')
-            for flow_id in flows_order:
-                flow = flow_set[flow_id]
-                src_id = flow['client']
-                dst_id = flow['server']
-                route_id = str(src_id)
-                flow_throughput = flow['throughput'] 
-                network_controller.NetworkController.deallocate_bandwidth(graph, route_set, flow_set, route_id, flow_id)
-           
-            pprint(graph.graph) 
-            a = input('type to continue...')
-        
-        '''
+       
         ITERATION += 1
     '''
 

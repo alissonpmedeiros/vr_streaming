@@ -113,6 +113,9 @@ class NetworkController:
         flow = flow_set[flow_id]
         flow_route = flow['route']
         flow_route_throughput = flow['throughput']               
+        if len(flow_route) == 1:
+            print(f'\n*** ERROR: THIS ROUTE IS ALREADY DEALLOCATED! ***')
+            a = input('CRASHED IN DEALLOCATE_BANDWIDTH!')
         
         if NetworkController.check_graph_path_bandwidth_deallocation_availability(graph, flow_route, flow_route_throughput):
             for src, dst in NetworkController.__pairwise(flow_route):
@@ -459,8 +462,8 @@ class NetworkController:
                 graph, source_node, target_node, required_throughput
             )
             
-            while route_max_throughput == MIN_VALUE:
-                logging.debug(f'\n*** no routes to fulfill {required_throughput} Mbps ***')
+            if route_max_throughput == MIN_VALUE:
+                print(f'\n*** no routes to fulfill {required_throughput} Mbps: flow id: {flow_id} ***')
                 logging.debug(f'*** recalculating a new route ***')
                     
                 previous_throughput = required_throughput
@@ -473,33 +476,34 @@ class NetworkController:
                     graph, source_node, target_node, required_throughput
                 )
                 
-                if required_throughput == MIN_THROUGHPUT and route_max_throughput == MIN_VALUE:
+                while route_max_throughput == MIN_VALUE:
                     #print(f'\n *** COULD NOT FIND A ROUTE TO FULFILL {required_throughput} Mbps ***')
                     
                     if not non_prioritized_served_flows:
                         congestion_iterations = 1
                         print(f'NON PRIORITIZED FLOWS EMPTY! RUNNING CONGESTION MANAGEMENT ON PRIORITIZED FLOWS!')
-                        a = input('type to continue...')
+                        #a = input('type to continue...')
                         while route_max_throughput == MIN_VALUE:
-                            print(f'\nCongestion iteration: {congestion_iterations}')
+                            print(f'\nCongestion iteration: {congestion_iterations} -> PRIORITIZED FLOWS')
                             NetworkController.congestion_management(graph, flow_set, prioritized_served_flows)
                             
                             new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                                 graph, source_node, target_node, required_throughput
                             )
+                            congestion_iterations = 1
                     
                     else:
                         congestion_iterations = 1
                         print(f'RUNNING CONGESTION MANAGEMENT ON NON-PRIORITIZED FLOWS!')
                         while route_max_throughput == MIN_VALUE:
-                            print(f'\nCongestion iteration: {congestion_iterations}')
+                            print(f'\nCongestion iteration: {congestion_iterations} -> NON-PRIORITIZED FLOWS')
                             NetworkController.congestion_management(graph, flow_set, non_prioritized_served_flows)
                             
                             new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                                 graph, source_node, target_node, required_throughput
                             )
                             congestion_iterations += 1
-            
+
             
             NetworkController.increase_bandwidth_reservation(graph, flow_set, flow_id, new_route, required_throughput)
 

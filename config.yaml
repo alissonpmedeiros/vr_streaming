@@ -10,7 +10,7 @@ SYSTEM:
 
 # variables for mininet-wifi 
 NETWORK:
-  HMDS: 7000
+  HMDS: 2000
   HMD_RANGE: 0.05
   SERVICE_PER_HMD: 1
   BASE_STATIONS: 100

@@ -94,11 +94,66 @@ FILE_HEADER = [
 
 ITERATION = 1
 
-#hmd_controller = hmd_controller.HmdController()
 json_controller = json_controller.DecoderController()
 
-dijkstra_controller = dijkstra_controller.DijkstraController()
+def get_average_allocated_bandwidth(flow_set: dict):
+    average_allocated_bandwidth = 0
+    for flow in flow_set.values():
+        average_allocated_bandwidth += flow['throughput']
+    
+    average_allocated_bandwidth = average_allocated_bandwidth / len(flow_set)
+    return round(average_allocated_bandwidth, 2)
 
+def get_average_e2e_latency(graph, flow_set: dict):
+    """ get the average latency of a all paths """
+    
+    average_e2e_latency = 0
+    
+    for flow in flow_set.values():
+        src_id = flow['client']
+        dst_id = flow['server']
+        
+        source_node_id = str(hmds_set[str(src_id)].current_base_station)
+        source_node = base_station_set[source_node_id]
+            
+        target_mec_id = str(dst_id)
+        target_node = base_station_set[target_mec_id]
+        
+        path, e2e_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path(
+            graph, source_node, target_node
+        )
+        
+        average_e2e_latency += e2e_latency
+    
+    average_e2e_latency = average_e2e_latency / len(flow_set)
+    return round(average_e2e_latency, 2)
+
+
+def get_average_net_latency(graph, flow_set: dict):
+    """ get the average latency of a all paths """
+    
+    average_net_latency = 0
+    
+    for flow in flow_set.values():
+        src_id = flow['client']
+        dst_id = flow['server']
+        
+        source_node_id = str(hmds_set[str(src_id)].current_base_station)
+        source_node = base_station_set[source_node_id]
+            
+        target_mec_id = str(dst_id)
+        target_node = base_station_set[target_mec_id]
+        
+        path, net_latency = dijkstra_controller.DijkstraController.get_shortest_path(
+            graph, source_node, target_node
+        )
+        
+        average_net_latency += net_latency
+    
+    average_net_latency = average_net_latency / len(flow_set)
+    return round(average_net_latency, 2)
+        
+        
 
 
 def start_system():
@@ -160,11 +215,23 @@ def flow_fairness_selection(flow_set):
     floor = 5 # PERCENTAGE
     roof = 20 # PERCENTAGE
     
+    percentage = random.uniform(floor, roof)
+    
+    # Calculate the number of elements to select based on the percentage
+    num_elements = int(len(flow_set) * (percentage / 100))
+    
+    # Randomly select the elements from the list
+    selected_elements = random.sample(flow_set, num_elements)
+    
+    return selected_elements
+    
+    '''
     percentage_deallocated_flows = random.randint(floor, roof) / 100
     total_deallocated_flows = int(flow_set_size * percentage_deallocated_flows)   
     deallocated_flows_list = random.sample(range(0, flow_set_size-1), total_deallocated_flows)
     
     return deallocated_flows_list
+    '''
 
 def get_available_bandwidth_of_node_edges(graph, src: str):
     available_bandwidth = 0
@@ -281,7 +348,6 @@ if __name__ == '__main__':
         
         random.shuffle(flows_order)
         
-        #update_hmds_bandwidth_allocation(hmds_set, flow_set)
         
         current_throughput = get_current_throughput(flow_set)
         expected_throughput = get_expected_throughput(flow_set)
@@ -304,8 +370,8 @@ if __name__ == '__main__':
             logging.info(f'{len(deallocated_flows_list)}/{len(flow_set)} flows will be deallocated')
             for flow_id in deallocated_flows_list:
                 logging.debug(f'\n______________________________________________________')
-                cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
-                logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
+                #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+                #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 flow = flow_set[flow_id]
                 flow_set[flow_id]['previous_throughput'] = flow_throughput
     
@@ -314,8 +380,8 @@ if __name__ == '__main__':
                 
                 network_controller.NetworkController.deallocate_bandwidth(graph, flow_set, flow_id)
                 
-                cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
-                logging.debug(f'\n***new CDN edge throughput: {cdn_bandwidth}') 
+                #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+                #logging.debug(f'\n***new CDN edge throughput: {cdn_bandwidth}') 
 
         
         logging.info(f'\n****************************************************')
@@ -324,8 +390,8 @@ if __name__ == '__main__':
         for flow_id in flows_order:
             if flow_id not in deallocated_flows_list:
                 logging.debug(f'\n______________________________________________________')
-                cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
-                logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
+                #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+                #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 
                 flow = flow_set[flow_id]
                 
@@ -374,8 +440,8 @@ if __name__ == '__main__':
                     video_client, manifest, required_throughput
                 )
                 
-                cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
-                logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
+                #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+                #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 
                 logging.debug(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
                 
@@ -388,8 +454,8 @@ if __name__ == '__main__':
             flow_count = 0
             for flow_id in deallocated_flows_list:
                 logging.debug(f'\n______________________________________________________')
-                cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
-                logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
+                #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+                #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 flow_count += 1
                 
                 flow = flow_set[flow_id]
@@ -424,8 +490,8 @@ if __name__ == '__main__':
                 )
                 
                 
-                cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
-                logging.debug(f'\n***new CDN edge throughput: {cdn_bandwidth}') 
+                #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+                #logging.debug(f'\n***new CDN edge throughput: {cdn_bandwidth}') 
                 
                 logging.debug(f'\nswitching resolution...\n')
                 
@@ -441,16 +507,20 @@ if __name__ == '__main__':
         
         #end = timer()
         #print(f'\nelapsed time: {end - start}')
+        average_net_latency = get_average_net_latency(graph, flow_set)
+        averge_e2e_latency = get_average_e2e_latency(graph, flow_set)
         updated_throughput = get_current_throughput(flow_set)
-        logging.info(f'\n****************************************************\n')
-        logging.info(f'\nPREVIOUS THROUGHPUT: {current_throughput} Mbps')
-        logging.info(f'EXPECTED THROUGHPUT: {expected_throughput} Mbps')
-        logging.info(f'UPDATED  THROUGHPUT: {updated_throughput} Mbps')
+        print(f'\n****************************************************\n')
+        print(f'PREVIOUS BW: {current_throughput} Mbps')
+        print(f'EXPECTED BW: {expected_throughput} Mbps')
+        print(f'UPDATED  BW: {updated_throughput} Mbps')
         cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
-        logging.info(f'\n***current CND edge throughput: {cdn_bandwidth}') 
+        print(f'CURRENT AV. CND BW: {cdn_bandwidth}')
+        print(f'AVERAGE NET LATENCY: {average_net_latency} ms')
+        print(f'AVERAGE E2E LATENCY: {averge_e2e_latency} ms')
         
         full_resolutions(flow_set)
-        generate_networks.plot_graph(graph.graph)
+        #generate_networks.plot_graph(graph.graph)
         
         time.sleep(1)
        

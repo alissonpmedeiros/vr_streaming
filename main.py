@@ -55,11 +55,13 @@ MAX_THROUGHPUT = 250
 ### CONFIG ###
 
 CONFIG = config_controller.ConfigController.get_config()
+json_controller = json_controller.DecoderController()
 
 data_dir = CONFIG['SYSTEM']['DATA_DIR']
 hmds_file = CONFIG['SYSTEM']['HMDS_FILE']
 mecs_file = CONFIG['SYSTEM']['MEC_FILE']
 
+ITERATION = 1
 
 OVERALL_MECS = CONFIG['MEC_SERVERS']['OVERALL_MECS']
 OVERALL_VIDEO_SERVERS = 1
@@ -79,22 +81,108 @@ FILE_HEADER = [
     'allocated_bw',
     'net_latency', 
     'e2e_latency', 
+    'average_fps'
     'standard_fps',
     'standard_8k', 
     'standard_4k', 
-    'standard_1440p', 
-    'standard_1080p',
+    'standard_2k', 
+    'standard_1k',
     'high_fps',
     'high_8k',
     'high_4k',
-    'high_1440p',
-    'high_1080p',
+    'high_2k',
+    'high_1k',
 ]
 
-
-ITERATION = 1
-
-json_controller = json_controller.DecoderController()
+def get_fps_resolution(flow_set: dict):
+    average_fps = 0
+    standard_fps = 0
+    standard_8k = 0 
+    standard_4k = 0 
+    standard_2k = 0 
+    standard_1k = 0
+    high_fps = 0
+    high_8k = 0
+    high_4k = 0
+    high_2k = 0
+    high_1k = 0
+    
+    throughput_profiles = bitrate_profiles.get_throughput_profiles()
+    
+    for flow in flow_set.values():
+        flow_throughput = flow['throughput']
+        #  	Video Bitrate for 1K (1080p), Standard Frame Rate (24, 25, 30)
+        if flow_throughput >= 10 and flow_throughput < 16:
+            standard_1k += 1
+            standard_fps += throughput_profiles[flow_throughput]['frame_rate']
+            average_fps += throughput_profiles[flow_throughput]['frame_rate'] 
+            
+        
+        # Video Bitrate for 1K (1080p), High Frame Rate (48, 50, 60)
+        elif flow_throughput >= 16 and flow_throughput < 20:
+            high_1k += 1
+            high_fps += throughput_profiles[flow_throughput]['frame_rate']
+            average_fps += throughput_profiles[flow_throughput]['frame_rate']
+        
+        #  	Video Bitrate for 2K (1440p), Standard Frame Rate (24, 25, 30)
+        elif flow_throughput >= 20 and flow_throughput < 30:
+            standard_2k += 1
+            standard_fps += throughput_profiles[flow_throughput]['frame_rate']
+            average_fps += throughput_profiles[flow_throughput]['frame_rate']
+        
+        # Video Bitrate for 2K (1440p), High Frame Rate (48, 50, 60)
+        elif flow_throughput >= 30 and flow_throughput < 44:
+            high_2k += 1
+            high_fps += throughput_profiles[flow_throughput]['frame_rate']
+            average_fps += throughput_profiles[flow_throughput]['frame_rate']
+                
+        #  	Video Bitrate for 4K, Standard Frame Rate (24, 25, 30)
+        elif flow_throughput >= 44 and flow_throughput < 66:
+            standard_4k += 1
+            standard_fps += throughput_profiles[flow_throughput]['frame_rate']
+            average_fps += throughput_profiles[flow_throughput]['frame_rate']
+            
+        # Video Bitrate for 4K, High Frame Rate (48, 50, 60)
+        elif flow_throughput >= 66 and flow_throughput < 100:
+            high_4k += 1
+            high_fps += throughput_profiles[flow_throughput]['frame_rate']
+            average_fps += throughput_profiles[flow_throughput]['frame_rate']
+            
+        #  	Video Bitrate for 8K, Standard Frame Rate (24, 25, 30)
+        elif flow_throughput >= 100 and flow_throughput < 151:
+            standard_8k += 1
+            standard_fps += throughput_profiles[flow_throughput]['frame_rate']
+            average_fps += throughput_profiles[flow_throughput]['frame_rate']
+            
+        # Video Bitrate for 8K, High Frame Rate (48, 50, 60)
+        elif flow_throughput >= 151 and flow_throughput < 300:
+            high_8k += 1
+            high_fps += throughput_profiles[flow_throughput]['frame_rate']
+            average_fps += throughput_profiles[flow_throughput]['frame_rate']
+    
+    total_standard_fps = standard_8k + standard_4k + standard_2k + standard_1k
+    total_high_fps = high_8k + high_4k + high_2k + high_1k
+    total_fps_flows = total_standard_fps + total_high_fps 
+    
+    average_fps = average_fps / total_fps_flows 
+    standard_fps = standard_fps / total_standard_fps
+    high_fps = high_fps / total_high_fps
+    
+    result = {
+        'standard_fps': standard_fps,
+        'standard_8k': standard_8k,
+        'standard_4k': standard_4k,
+        'standard_2k': standard_2k,
+        'standard_1k': standard_1k,
+        'high_fps': high_fps,
+        'high_8k': high_8k,
+        'high_4k': high_4k,
+        'high_2k': high_2k,
+        'high_1k': high_1k,
+    }
+    
+    return result
+        
 
 def get_average_allocated_bandwidth(flow_set: dict):
     average_allocated_bandwidth = 0
@@ -181,17 +269,15 @@ def start_system():
         '''
 
 def full_resolutions(flow_set: dict) -> bool:
-    result = True
+    #result = True
     flow_in_max_throughput = 0
     
     for flow in flow_set.values():
-        if flow['throughput'] < MAX_THROUGHPUT:
-            result = False
-        else:
-            flow_in_max_throughput += 1
+        if flow['throughput'] >= MAX_THROUGHPUT:
+           flow_in_max_throughput += 1
     
     logging.info(f'\nFLOWS IN MAX THROUGHPUT: {flow_in_max_throughput} OUT OF {len(flow_set)}\n')
-    return result
+    #return result
 
 def get_current_throughput(flow_set: dict):
     current_throughput = 0
@@ -316,7 +402,7 @@ if __name__ == '__main__':
                 flow_set[pairs] = {
                         'server': server,
                         'client': client,
-                        'route': [],
+                        'route': None,
                         'throughput': bitrate_quotas[first_hmd_quota]['throughput'],
                         'previous_throughput': None,
                         'next_throughput': None,
@@ -373,6 +459,7 @@ if __name__ == '__main__':
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 flow = flow_set[flow_id]
+                flow_throughput = flow['throughput']
                 flow_set[flow_id]['previous_throughput'] = flow_throughput
     
                 logging.debug(f'\n dealocating {flow_throughput} Mbps from the following route:')
@@ -509,18 +596,21 @@ if __name__ == '__main__':
         #print(f'\nelapsed time: {end - start}')
         average_net_latency = get_average_net_latency(graph, flow_set)
         averge_e2e_latency = get_average_e2e_latency(graph, flow_set)
+        average_allocated_bw = get_average_allocated_bandwidth(flow_set)
         updated_throughput = get_current_throughput(flow_set)
+        fps_resoulution = get_fps_resolution(flow_set)
         print(f'\n****************************************************\n')
         print(f'PREVIOUS BW: {current_throughput} Mbps')
         print(f'EXPECTED BW: {expected_throughput} Mbps')
         print(f'UPDATED  BW: {updated_throughput} Mbps')
         cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
-        print(f'CURRENT AV. CND BW: {cdn_bandwidth}')
+        print(f'CURRENT AVl. CND BW: {cdn_bandwidth}')
         print(f'AVERAGE NET LATENCY: {average_net_latency} ms')
         print(f'AVERAGE E2E LATENCY: {averge_e2e_latency} ms')
-        
+        print(f'AVERAGE BW ALLOCATED: {average_allocated_bw} Mbps')
+        pprint(fps_resoulution)
         full_resolutions(flow_set)
-        #generate_networks.plot_graph(graph.graph)
+        generate_networks.plot_graph(graph.graph)
         
         time.sleep(1)
        

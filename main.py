@@ -13,17 +13,24 @@ bitrate_profiles = BitRateProfiles()
 
 
 
-'''import typing 
+import typing
+from typing import Dict
 if typing.TYPE_CHECKING:
-    """ model modules"""
+    from models.mec import Mec
+    from models.graph import Graph 
+    from models.base_station import BaseStation
+    from models.quotas import Quota
     from models.migration_ABC import Migration
+    from models.hmd import VrHMD
 
+'''
 from models.migration_algorithms.la import LA
 from models.migration_algorithms.lra import LRA
 from models.migration_algorithms.scg import SCG
 from models.migration_algorithms.dscp import DSCP
 from models.migration_algorithms.nm import NoMigration
-from models.migration_algorithms.am import AlwaysMigrate'''
+from models.migration_algorithms.am import AlwaysMigrate
+'''
 
 """others modules"""
 import sys
@@ -36,6 +43,9 @@ from pprint import pprint as pprint
 from utils.csv_encoder import CSV
 
 logging.basicConfig(level=logging.INFO)
+
+
+
 '''
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -92,6 +102,7 @@ FILE_HEADER = [
     'updated_allocated_bw',
     'allocated_bw',
     'net_latency', 
+    'desired_net_latency',
     'e2e_latency', 
     'average_fps',
     'standard_fps',
@@ -127,24 +138,6 @@ def calculate_network_overload(graph):
     
     network_overload_percentage = (graph_allocated_bw * 100) / graph_total_bw 
     return round(network_overload_percentage, 2)
-    
-    '''
-    total_load = 0
-
-    for node, node_data in graph.items():
-        for neighbor, neighbor_data in node_data.items():
-            if neighbor.startswith('BS'):
-                allocated_bw = neighbor_data['allocated_bandwidth']
-                available_bw = neighbor_data['available_bandwidth']
-                network_throughput = neighbor_data['network_throughput']
-
-                if available_bw < allocated_bw:
-                    load = (allocated_bw - available_bw) / network_throughput
-                    total_load += load
-
-    return total_load
-    '''
-
 
 def get_fps_resolution(flow_set: dict):
     average_fps = 0
@@ -284,8 +277,15 @@ def get_average_net_latency(graph, flow_set: dict):
         flow_route = flow['route']
         flow_route_latency = network_controller.NetworkController.get_route_net_latency(graph, flow_route)
         average_net_latency += flow_route_latency
+    
+    average_net_latency = average_net_latency / len(flow_set)
+    return round(average_net_latency, 2)
         
-        '''
+
+def get_average_desired_net_latency(graph, flow_set: dict):
+    average_net_latency = 0
+    
+    for flow in flow_set.values():
         src_id = flow['client']
         dst_id = flow['server']
         
@@ -300,37 +300,9 @@ def get_average_net_latency(graph, flow_set: dict):
         )
         
         average_net_latency += net_latency
-        '''
     
     average_net_latency = average_net_latency / len(flow_set)
-    return round(average_net_latency, 2)
-        
-        
 
-
-def start_system():
-
-    while True:
-        network_controller.NetworkController.generate_network_plot(base_station_set, hmds_set)
-        hmd_controller.update_hmd_positions(base_station_set, hmds_set)
-        a = input('')
-        
-        '''
-        INITIAL SETUP
-        1. define the connections between hmds and video servers
-        2. update hmds positions
-        3. switch the video resolution of the hmds based on initial quotas 
-        4. allocate bandwidth for each connection
-        
-        
-        AFTER STARTING THE SYSTEM
-        1. update hmds positions
-        2. check throughput of each connection
-        3. update banwidth allocation
-        4. calculate the bitrate of all hmds
-        5. switch the resoluitons of the videos
-
-        '''
 
 def full_resolutions(flow_set: dict) -> bool:
     #result = True
@@ -381,6 +353,55 @@ def get_available_bandwidth_of_node_edges(graph, src: str):
         
     return round(available_bandwidth, 2)
     
+    
+def offload_services(
+    base_station_set: Dict[str, 'BaseStation'], mec_set: Dict[str, 'Mec'], hmds_set: Dict[str, 'VrHMD'], graph
+):
+        count = 0
+        for hmd_id, hmd in hmds_set.items():
+            for service_id in hmd.services_ids:
+                print(f'\n*** offloading service {service_id} ***')
+                #print(f'\nhmd before offloading:')
+                #pprint(hmd)
+                extracted_service = hmd_controller.HmdController.remove_vr_service(
+                    hmd, service_id
+                )
+                
+                #print(f'\nhmd after offloading:')
+                #pprint(hmd)
+                
+                start_node = bs_controller.BaseStationController.get_base_station(
+                    base_station_set, hmd.current_base_station
+                )
+
+                dst_node: Dict[str, 'Mec'] = mec_controller.MecController.discover_mec(
+                    base_station_set, 
+                    mec_set, 
+                    graph, 
+                    start_node, 
+                    extracted_service,
+                )
+                
+                dst_mec: 'Mec' = dst_node.get('mec')
+
+                print(f'\nmec before offloading:')
+                pprint(dst_node)
+                pprint(dst_mec)
+                a = input('')
+                
+                if dst_mec is not None:
+                    mec_controller.MecController.deploy_service(dst_mec, extracted_service)
+                else:
+                    count+=1
+                    hmd_controller.HmdController.deploy_vr_service(hmds_set, hmd_id, extracted_service)
+                    print(f'\n*** service {extracted_service} could not be offloaded ***')
+                print(f'\nmec after offloading:')
+                pprint(dst_mec)
+                
+                a = input('')
+        if count > 1:
+            print(f'could not offload {count} services')
+            #a = input("press any key to continue")
 
 
 if __name__ == '__main__':
@@ -413,6 +434,11 @@ if __name__ == '__main__':
     ### GRAPH ###
     logging.info(f'\n*** getting graph ***')
     graph = graph_controller.GraphController.get_graph(base_station_set)
+    
+    ### SERVICE OFFLOADING ###
+    #print(len(graph.graph))
+    #print(len(mec_set))
+
     
     #### ROUTES###
     #route_set = {}
@@ -499,6 +525,8 @@ if __name__ == '__main__':
         logging.info(f'ITERATION: {ITERATION}')
         logging.info(f'updating hmd positions...')
         hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+        offload_services(base_station_set, mec_set, hmds_set, graph)
+        a = input('finished offloading: type to cotinue')
         #network_controller.NetworkController.print_network(base_station_set, hmds_set)
         
         if ITERATION > 1:
@@ -560,6 +588,9 @@ if __name__ == '__main__':
                 video_id = list(video_server.video_set.keys())[0]
                 
                 manifest = hmd_controller.HmdController.request_manifest(mec_set, video_id)
+                
+                #pprint(manifest)
+                #a = input('')
                     
                 target_mec_id = str(dst_id)
                 target_node = base_station_set[target_mec_id]
@@ -579,9 +610,14 @@ if __name__ == '__main__':
                
                 logging.debug(f'\nswitching resolution...\n')
                 
+                #print(f'requested throughput: {required_throughput} Mbps')
+                #pprint(video_client)
+                #print(f'\nswitching resolution...\n')
                 hmd_controller.HmdController.switch_resolution_based_on_throughput(
                     video_client, manifest, required_throughput
                 )
+                #pprint(video_client)
+                #a = input('')
                 
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
@@ -660,6 +696,7 @@ if __name__ == '__main__':
         average_allocated_bw = get_average_allocated_bandwidth(flow_set)
         updated_throughput = get_current_throughput(flow_set)
         fps_resoulution = get_fps_resolution(flow_set)
+        average_desired_net_latency = get_average_desired_net_latency(graph, flow_set)
         print(f'\n****************************************************\n')
         print(f'PREVIOUS BW: {current_throughput} Mbps')
         print(f'EXPECTED BW: {expected_throughput} Mbps')
@@ -680,6 +717,7 @@ if __name__ == '__main__':
         results_data.append(updated_throughput)
         results_data.append(average_allocated_bw)
         results_data.append(average_net_latency)
+        results_data.append(average_desired_net_latency)
         results_data.append(averge_e2e_latency)
         results_data.append(fps_resoulution['average_fps'])
         results_data.append(fps_resoulution['standard_fps'])

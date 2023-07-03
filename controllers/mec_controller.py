@@ -92,6 +92,8 @@ class MecController:
         # Iterate over the sorted shortest path (list of tuples) and checks whether a mec server can host the service
         for node in shortest_path:    
             bs_name = node[0]
+            print(bs_name)
+            a  = input('')
             bs =  bs_controller.BaseStationController.get_base_station_by_name(base_station_set, bs_name)
             base_station: BaseStation = bs.get('base_station')
             bs_mec = MecController.get_mec(mec_set, base_station)

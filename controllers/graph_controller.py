@@ -15,32 +15,7 @@ from pprint import pprint as pprint
 from typing import Dict
 
 
-class GraphController:
-    
-    ''' 
-    @staticmethod
-    def allocate_bandwidth(
-        graph: Graph, source: 'BaseStation', destination: 'BaseStation', bandwidth: float
-    ):
-        """allocates bandwidth in the graph"""
-        """ 
-        1. get the widest path between source and destination
-        2. check if the required bandwidth is available at each path
-        3. If so, allocate the bandwidth
-        4. Otherwise, we have to calculate another widest path by excluding the paths that have no available bandwidth
-        
-        """
-        
-        
-        
-        source_name = source.bs_name
-        destination_name = destination.bs_name
-        graph.graph[source_name][destination_name]['allocated_bandwidth'] += bandwidth
-        graph.graph[source_name][destination_name]['available_banwidth'] -= bandwidth
-        
-    '''
-        
-    
+class GraphController: 
     @staticmethod
     def print_graph(graph: Graph):
         pprint(graph.graph)
@@ -79,7 +54,7 @@ class GraphController:
                     'network_throughput': dst_net_throughput,
                     'computing_latency': dst_node_latency,
                     'available_bandwidth': dst_net_throughput,
-                    'initial_available_bw': dst_net_throughput,
+                    'total_bandwidth': dst_net_throughput,
                     'allocated_bandwidth': 0
                 }
                 

@@ -50,7 +50,7 @@ class DijkstraController:
     
     @staticmethod
     def get_ETE_shortest_path(
-        graph: 'Graph', start_node: 'BaseStation', target_node: 'BaseStation' 
+        graph: 'Graph', start_node: 'BaseStation', target_node: 'BaseStation',  
     ):
         """gets the end-to-end latency between start node and the target node, considering the network latency to reach the target and the computing latency of the target node"""
         
@@ -62,6 +62,19 @@ class DijkstraController:
             previous_nodes, shortest_path, start_node, target_node
         )
     
+    @staticmethod
+    def get_ETE_shortest_path_with_throughput_restriction(
+        graph: 'Graph', start_node: 'BaseStation', target_node: 'BaseStation', required_throughput: float 
+    ):
+        """gets the end-to-end latency between start node and the target node, considering the network latency to reach the target and the computing latency of the target node"""
+        
+        previous_nodes, shortest_path = Dijkstra.build_E2E_shortest_path_with_throughput_restriction(
+            graph, start_node, required_throughput
+        )
+        
+        return Dijkstra.calculate_ETE_shortest_path(
+            previous_nodes, shortest_path, start_node, target_node
+        )
     
     #TODO: this method should not be called here anymore, instead it should be called from widest_path_controller
     @staticmethod
@@ -76,8 +89,8 @@ class DijkstraController:
         
         return Dijkstra.calculate_widest_path(
             previous_nodes, widest_path, start_node, target_node
-        )
-        
+        )     
+     
     @staticmethod
     def get_ETE_zone_shortest_path(mec_set: Dict[str,'Mec'], graph: 'Graph', start_node: 'BaseStation', zones: bool = False, latency_check: bool = False):
         """gets the shortest path from one node to all other nodes, where the weights are given in E2E latency"""
@@ -191,12 +204,12 @@ class DijkstraController:
                 
     @staticmethod
     def get_E2E_throughput_widest_path_all_paths(
-        graph: 'Graph', start_node: 'BaseStation', base_station_set: Dict[str,'BaseStation'] 
+        graph: 'Graph', base_station_set: Dict[str,'BaseStation'], start_node: 'BaseStation', required_throughput: float
     ):
         """calculates the end-to-end throughput between start node and the target node"""
         print(f'\n################ WIDEST PATH (BANDWIDTH) ################\n')
         previous_nodes, widest_path = Dijkstra.build_widest_path(
-            graph, start_node
+            graph, start_node, required_throughput
         )
         candidates = {}
         max_throughput = 0
@@ -214,8 +227,8 @@ class DijkstraController:
         widest_path[start_node.bs_name] = '---'
         #print(f'\nPrevious Nodes')
         #pprint(previous_nodes)
-        print(f'\nAll Widest Paths')
-        pprint(widest_path)
+        #print(f'\nAll Widest Paths')
+        #pprint(widest_path)
         print(f'\nCandidates')
         pprint(candidates)  
         

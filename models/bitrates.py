@@ -378,6 +378,31 @@ class BitRateProfiles:
     
     
     @staticmethod
+    def get_previous_latency_profile(required_latency: float):
+        bitrate_latency_profiles = BitRateProfiles.get_latency_profiles()
+        profile_keys = list(bitrate_latency_profiles.keys())
+        profile_keys.sort()
+        previous_latency = None
+        
+        for latency in profile_keys:
+            if latency >= required_latency:
+                return previous_latency
+            previous_latency = latency
+        return None
+    
+    @staticmethod
+    def get_next_latency_profile(required_latency: float):
+        bitrate_latency_profiles = BitRateProfiles.get_latency_profiles()
+        profile_keys = list(bitrate_latency_profiles.keys())
+        profile_keys.sort()
+        
+        for latency in profile_keys:
+            if latency > required_latency:
+                return latency
+            
+        return required_latency
+    
+    @staticmethod
     def get_previous_throughput_profile(required_throughput: float):
         bitrate_throughput_profiles = BitRateProfiles.get_throughput_profiles()
         profile_keys = list(bitrate_throughput_profiles.keys())

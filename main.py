@@ -33,6 +33,7 @@ import logging
 from random import choice
 from timeit import default_timer as timer
 from pprint import pprint as pprint
+from utils.csv_encoder import CSV
 
 logging.basicConfig(level=logging.INFO)
 '''
@@ -60,6 +61,7 @@ json_controller = json_controller.DecoderController()
 data_dir = CONFIG['SYSTEM']['DATA_DIR']
 hmds_file = CONFIG['SYSTEM']['HMDS_FILE']
 mecs_file = CONFIG['SYSTEM']['MEC_FILE']
+results_dir = CONFIG['SYSTEM']['RESULTS_DIR']
 
 ITERATION = 1
 
@@ -72,16 +74,17 @@ CLIENTS_PER_SERVER = OVERALL_VIDEO_CLIENTS / OVERALL_VIDEO_SERVERS
 CDN_SERVER_ID = 136
 CDN_CLIENT_ID = 161
 
-#FILE_NAME = '{}.csv'.format(sys.argv[1])
+FILE_NAME = 'bandwidth.csv'
 
 FILE_HEADER = [
     'net_congested_level',
     'total_allocate_bw',
     'expected_allocated_bw',
+    'updated_allocated_bw',
     'allocated_bw',
     'net_latency', 
     'e2e_latency', 
-    'average_fps'
+    'average_fps',
     'standard_fps',
     'standard_8k', 
     'standard_4k', 
@@ -92,7 +95,47 @@ FILE_HEADER = [
     'high_4k',
     'high_2k',
     'high_1k',
+    'full_8k'
 ]
+
+CSV.create_file(results_dir, FILE_NAME, FILE_HEADER)
+
+def calculate_network_overload(graph):
+    
+    graph_allocated_bw = 0
+    graph_total_bw = 0
+
+    visited_nodes = []
+    for node, node_data in graph.items():
+        for neighbor, neighbor_data in node_data.items():
+            if neighbor.startswith('BS') and neighbor not in visited_nodes:
+                allocated_bw = neighbor_data['allocated_bandwidth']
+                total_bandwidth = neighbor_data['total_bandwidth']
+                graph_allocated_bw += allocated_bw
+                graph_total_bw += total_bandwidth
+        visited_nodes.append(node)
+
+    
+    network_overload_percentage = (graph_allocated_bw * 100) / graph_total_bw 
+    return round(network_overload_percentage, 2)
+    
+    '''
+    total_load = 0
+
+    for node, node_data in graph.items():
+        for neighbor, neighbor_data in node_data.items():
+            if neighbor.startswith('BS'):
+                allocated_bw = neighbor_data['allocated_bandwidth']
+                available_bw = neighbor_data['available_bandwidth']
+                network_throughput = neighbor_data['network_throughput']
+
+                if available_bw < allocated_bw:
+                    load = (allocated_bw - available_bw) / network_throughput
+                    total_load += load
+
+    return total_load
+    '''
+
 
 def get_fps_resolution(flow_set: dict):
     average_fps = 0
@@ -106,6 +149,7 @@ def get_fps_resolution(flow_set: dict):
     high_4k = 0
     high_2k = 0
     high_1k = 0
+    full_8k = 0
     
     throughput_profiles = bitrate_profiles.get_throughput_profiles()
     
@@ -159,14 +203,16 @@ def get_fps_resolution(flow_set: dict):
             high_8k += 1
             high_fps += throughput_profiles[flow_throughput]['frame_rate']
             average_fps += throughput_profiles[flow_throughput]['frame_rate']
+            if flow_throughput >= MAX_THROUGHPUT:
+                full_8k += 1
     
     total_standard_fps = standard_8k + standard_4k + standard_2k + standard_1k
     total_high_fps = high_8k + high_4k + high_2k + high_1k
     total_fps_flows = total_standard_fps + total_high_fps 
     
-    average_fps = average_fps / total_fps_flows 
-    standard_fps = standard_fps / total_standard_fps
-    high_fps = high_fps / total_high_fps
+    average_fps = round(average_fps / total_fps_flows, 2) 
+    standard_fps = round(standard_fps / total_standard_fps, 2)
+    high_fps = round(high_fps / total_high_fps, 2)
     
     result = {
         'standard_fps': standard_fps,
@@ -179,6 +225,8 @@ def get_fps_resolution(flow_set: dict):
         'high_4k': high_4k,
         'high_2k': high_2k,
         'high_1k': high_1k,
+        'full_8k': full_8k,
+        'average_fps': average_fps
     }
     
     return result
@@ -297,27 +345,15 @@ def get_expected_throughput(flow_set: dict):
 
 def flow_fairness_selection(flow_set):
     """ return a list of flows that will be not prioritized """
-    flow_set_size = len(flow_set)
     floor = 5 # PERCENTAGE
     roof = 20 # PERCENTAGE
     
     percentage = random.uniform(floor, roof)
-    
-    # Calculate the number of elements to select based on the percentage
     num_elements = int(len(flow_set) * (percentage / 100))
-    
-    # Randomly select the elements from the list
     selected_elements = random.sample(flow_set, num_elements)
     
     return selected_elements
     
-    '''
-    percentage_deallocated_flows = random.randint(floor, roof) / 100
-    total_deallocated_flows = int(flow_set_size * percentage_deallocated_flows)   
-    deallocated_flows_list = random.sample(range(0, flow_set_size-1), total_deallocated_flows)
-    
-    return deallocated_flows_list
-    '''
 
 def get_available_bandwidth_of_node_edges(graph, src: str):
     available_bandwidth = 0
@@ -361,7 +397,6 @@ if __name__ == '__main__':
     ### GRAPH ###
     logging.info(f'\n*** getting graph ***')
     graph = graph_controller.GraphController.get_graph(base_station_set)
-
     
     #### ROUTES###
     #route_set = {}
@@ -517,7 +552,7 @@ if __name__ == '__main__':
                     graph, flow_set, flow_id
                 )
                 
-                required_throughput = network_controller.NetworkController.allocate_bandwidth(
+                required_throughput = network_controller.NetworkController.allocate_bandwidth_based_on_latency(
                     graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
                 )
                
@@ -572,7 +607,7 @@ if __name__ == '__main__':
                 target_mec_id = str(dst_id)
                 target_node = base_station_set[target_mec_id]
                 
-                required_throughput = network_controller.NetworkController.allocate_bandwidth(
+                required_throughput = network_controller.NetworkController.allocate_bandwidth_based_on_latency(
                     graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
                 )
                 
@@ -609,10 +644,34 @@ if __name__ == '__main__':
         print(f'AVERAGE E2E LATENCY: {averge_e2e_latency} ms')
         print(f'AVERAGE BW ALLOCATED: {average_allocated_bw} Mbps')
         pprint(fps_resoulution)
-        full_resolutions(flow_set)
-        generate_networks.plot_graph(graph.graph)
+        congestion = calculate_network_overload(graph.graph)
+        print(f'CONGESTION: {congestion}')
         
-        time.sleep(1)
+        results_data = []
+        results_data.append(congestion)
+        results_data.append(current_throughput)
+        results_data.append(expected_throughput)
+        results_data.append(updated_throughput)
+        results_data.append(average_allocated_bw)
+        results_data.append(average_net_latency)
+        results_data.append(averge_e2e_latency)
+        results_data.append(fps_resoulution['average_fps'])
+        results_data.append(fps_resoulution['standard_fps'])
+        results_data.append(fps_resoulution['standard_8k'])
+        results_data.append(fps_resoulution['standard_4k'])
+        results_data.append(fps_resoulution['standard_2k'])
+        results_data.append(fps_resoulution['standard_1k'])
+        results_data.append(fps_resoulution['high_fps'])
+        results_data.append(fps_resoulution['high_8k'])
+        results_data.append(fps_resoulution['high_4k'])
+        results_data.append(fps_resoulution['high_2k'])
+        results_data.append(fps_resoulution['high_1k'])
+        results_data.append(fps_resoulution['full_8k'])
+        
+        CSV.save_data(results_dir, FILE_NAME, results_data)
+        #full_resolutions(flow_set)
+        #generate_networks.plot_graph(graph.graph)
+        #time.sleep(1)
        
         ITERATION += 1
     '''

@@ -15,6 +15,7 @@ bitrate_profiles = BitRateProfiles()
 
 
 """ other modules """
+import sys
 import logging
 from typing import Dict
 from itertools import tee
@@ -38,8 +39,11 @@ logger.addHandler(console_handler)
 '''
 
 MIN_VALUE = -10**9
+MAX_VALUE = sys.maxsize
 MIN_THROUGHPUT = 10
 MAX_THROUGHPUT = 250
+MIN_LATENCY = 5
+MAX_LATENCY = 51
 
 MINIMUN_AVAILABLE_BANDWIDTH = 50 #Mbps
 
@@ -164,19 +168,6 @@ class NetworkController:
     
         flow_set[flow_id]['throughput'] = 0
         flow_set[flow_id]['route'] = [-1]
-        '''
-        logging.debug(f'\n***updating route_set')
-        logging.debug(f'previous route bandwidth: {flow_route_throughput}')            
-
-        route_set[route_id]['total_route_bandwidth'] = 0
-        #route_set[route_id]['route'] = []
-        
-        logging.debug(f'\nsucessfully deallocated bandwidth: {flow_route_throughput} Mbps')
-        logging.debug(f'\nnew route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
-
-        logging.debug(f'\n*** updating flow_set')
-        flow_set[flow_id]['throughput'] = 0
-        '''
         
     
     @staticmethod
@@ -285,25 +276,7 @@ class NetworkController:
             
         
         flow_set[flow_id]['throughput'] = previous_flow_throughput
-        #flow_set[flow_id]['route'] = new_route
-        
-        '''
-        print(f'\n *** updating route_set')
-        print(f'previous route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
-        
-        route_set[route_id]['total_route_bandwidth'] = previous_flow_throughput
-        
-        print(f'new route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
-        
-        print(f'\n*** updating flow_set')
-        print(f'previous flow throughput: {flow_set[flow_id]["throughput"]} Mbps')
-        flow_set[flow_id]['throughput'] = previous_flow_throughput
-        print(f'new flow throughput: {flow_set[flow_id]["throughput"]} Mbps')
-        
-        
-        print(f'\n***FLOW {flow_id}: {flow_set[flow_id]["throughput"]} Mbps | ROUTE {route_id}: {route_set[route_id]["total_route_bandwidth"]} Mbps')
-        '''
-        #a = input('type to continue...')
+       
 
     
     
@@ -352,23 +325,9 @@ class NetworkController:
                 new_allocated_bandwidth, 
                 new_available_bandwidth
             )
-                
         
         flow_set[flow_id]['throughput'] = required_throughput
         flow_set[flow_id]['route'] = new_route
-        
-        '''
-        #print(f'\n *** updating route_set')
-        #print(f'\nprevious route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
-        
-        route_set[route_id]['total_route_bandwidth'] = required_throughput
-        route_set[route_id]['route'] = new_route
-        
-        #print(f'new route bandwidth: {route_set[route_id]["total_route_bandwidth"]} Mbps')
-
-        #print(f'\n***updating flow_set')
-        flow_set[flow_id]['throughput'] = required_throughput
-        '''
     
     staticmethod    
     def congested_route(graph: 'Graph', src: str, dst: str) -> bool:
@@ -387,37 +346,64 @@ class NetworkController:
         return congested_edges
     
     @staticmethod
-    def congestion_management(graph: 'Graph', flow_set: dict, served_flows: list):
-        
-        print(f'\n***Network bandwidth congestion management***')
-        
-        for served_flow_id in served_flows.copy():
-            served_flow = flow_set[served_flow_id]
+    def congestion_management(
+        graph: 'Graph', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, congestion_iterations: int
+    ) -> None:
+        reachable_flows = False
+        for non_prioritized_flow in non_prioritized_served_flows.copy():
+            served_flow = flow_set[non_prioritized_flow]
             served_flow_route = served_flow['route']
             served_flow_throughput = served_flow['throughput']
             
             congested_edges = NetworkController.get_congested_edges_in_route(graph, served_flow_route)
             
-            if congested_edges:
-                #print('\n*********************************************')     
-                #print(f'served flow:')
-                #pprint(served_flow)
-                
-                #print('\n_______________________________________')
-                
+            if congested_edges:            
                 if served_flow_throughput > MIN_THROUGHPUT:
                     NetworkController.decrease_bandwidth_reservation(
-                        graph, flow_set, served_flow_id
+                        graph, flow_set, non_prioritized_flow
                     )
+                    reachable_flows = True
                 else:
-                    #print(f'Flow {served_flow_id} already reached the minimum resolution!')
-                    #print(f'Removing flow {served_flow_id} from served flows')
-                    served_flows.remove(served_flow_id)
-                    #a = input('type to continue...')
-           
+                    non_prioritized_served_flows.remove(non_prioritized_flow)
+                    
+        if not reachable_flows:
+            for prioritized_flow in prioritized_served_flows.copy():
+                served_flow = flow_set[prioritized_flow]
+                served_flow_route = served_flow['route']
+                served_flow_throughput = served_flow['throughput']
+                
+                congested_edges = NetworkController.get_congested_edges_in_route(graph, served_flow_route)
+                
+                if congested_edges:            
+                    if served_flow_throughput > MIN_THROUGHPUT:
+                        NetworkController.decrease_bandwidth_reservation(
+                            graph, flow_set, prioritized_flow
+                        )
+                    else:
+                        prioritized_served_flows.remove(prioritized_flow)
+                        
+        if not reachable_flows:
+            print(f'\nCongestion iteration: {congestion_iterations} -> NON-PRIORITIZED FLOWS')
+        else:
+            print(f'\nCongestion iteration: {congestion_iterations} -> PRIORITIZED FLOWS')
+        
+    @staticmethod
+    def calculate_route_latency(graph: 'Graph', route: list) -> float:
+        #print(f'\n*** calculating route latency ***')
+        #print(f' -> '.join(route))
+        route.reverse()
+        latency = 0
+        for src, dst in NetworkController.__pairwise(route):
+            latency += graph.graph[src][dst]['network_latency']
+            #print(f'dst: {dst} | {type(dst)}')
+            #print(f'last: {route[-1]} | {type(route[-1])}')
             
-        #a = input('\nFINISHED CONGESTION MANAGEMENT!\n')     
-            
+            if dst == route[-1]:
+                latency += graph.graph[dst]['computing_latency']
+                #print(f'\n*** geting the processing latency of {dst}\n')
+    
+        return latency    
+    
         
     @staticmethod
     def allocate_bandwidth(
@@ -444,45 +430,75 @@ class NetworkController:
             if required_throughput is None:
                 required_throughput = previous_throughput
                 
+            NetworkController.congestion_management(
+                graph, flow_set, prioritized_served_flows, non_prioritized_served_flows, congestion_iterations
+            )
+            
+            congestion_iterations += 1
+            
             new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
                 graph, source_node, target_node, required_throughput
             )
-            
-            if not non_prioritized_served_flows:
-                #print(f'\nCongestion iteration: {congestion_iterations} -> PRIORITIZED FLOWS')
-                NetworkController.congestion_management(graph, flow_set, prioritized_served_flows)
-                
-                new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
-                    graph, source_node, target_node, required_throughput
-                )
-                congestion_iterations += 1
-            
-            else:
-                #print(f'\nCongestion iteration: {congestion_iterations} -> NON-PRIORITIZED FLOWS')
-                NetworkController.congestion_management(graph, flow_set, non_prioritized_served_flows)
-                
-                new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
-                    graph, source_node, target_node, required_throughput
-                )
-                congestion_iterations += 1
-
-        #print(f'required throughput: {required_throughput} Mbps')
-        #print(f'route max throughput: {route_max_throughput} Mbps')
-        #print(' -> '.join(new_route))
         
         NetworkController.increase_bandwidth_reservation(graph, flow_set, flow_id, new_route, required_throughput)
 
         return required_throughput
         
-        
-        
-        
     @staticmethod
-    def count_total_links(graph: 'Graph') -> int:
-        total_links = 0
-        for src, dst in graph.graph.edges():
-            total_links += 1
-        return total_links
+    def allocate_bandwidth_based_on_latency(
+        graph: 'Graph', source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, flow_id: int
+    ):
+
+        flow = flow_set[flow_id]
+        required_throughput = flow['next_throughput']
+        
+        #HERE, THE SHORTEST PATH CALCULATION SHOULD BE PERFORMED FROM THE SERVER TO THE HMD OR EDGE NODE, BECAUSE THE LAST NODE IS THE NODE CONTAINING THE COMPUTING CAPACITY
+        new_route = None
+        new_route, route_max_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
+            graph, target_node, source_node, required_throughput
+        )
+        
+        latency_profiles = BitRateProfiles.get_latency_profiles()
+        previous_latency = bitrate_profiles.get_previous_latency_profile(route_max_latency)
+        if previous_latency is None:
+            previous_latency = MAX_LATENCY
+        latency_profile = latency_profiles[previous_latency]
+        route_throughput = latency_profile['throughput']
+                
+        congestion_iterations = 1
+        
+        while route_max_latency == MAX_VALUE or route_throughput < required_throughput:
+            print(f'\nLATENCY TEST\n')
+            
+            print(f'\n*** no routes to fulfill {required_throughput} Mbps: flow id: {flow_id} ***')
+            
+            print(f'latency found: {route_max_latency} ms')
+            print(f'required throughput: {required_throughput} Mbps')
+            print(f'previous latency: {previous_latency} ms')
+            print(f'desired route throughput: {route_throughput} Mbps')
+            
+            
+            a = input('')
+                
+            previous_throughput = required_throughput
+            required_throughput = bitrate_profiles.get_previous_throughput_profile(required_throughput)
+            
+            if required_throughput is None:
+                required_throughput = previous_throughput
+                
+            NetworkController.congestion_management(
+                graph, flow_set, prioritized_served_flows, non_prioritized_served_flows, congestion_iterations
+            )
+            
+            congestion_iterations += 1
+            
+            new_route, route_max_latency = dijkstra_controller.DijkstraController.get_widest_path(
+                graph, source_node, target_node, required_throughput
+            )
+        
+        NetworkController.increase_bandwidth_reservation(graph, flow_set, flow_id, new_route, required_throughput)
+
+        return required_throughput
     
     @staticmethod
     def generate_network_plot(base_station_set: Dict[str, 'BaseStation'], hmds_set: Dict[str, 'VrHMD']) -> None:

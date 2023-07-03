@@ -40,42 +40,23 @@ class Graph():
         for out_node in self.nodes:
             if self.graph[source_node].get(out_node, False) != False:
                 neighbours.append(out_node)
-        
+        '''
+        for neighbour in neighbours.copy():
+            if self.graph[source_node][neighbour]['available_bandwidth'] < required_throughput:
+                neighbours.remove(neighbour)    
+        '''
         return neighbours
     
     def get_outgoing_edges_throughput(self, source_node, required_throughput):
         "Returns the neighbors of a node based on throughput availability."
         neighbours = []
-        #print(f'\nNodes:')
-        #print(self.nodes)
-        #print(f'\nGraph:')
-        #print(self.graph)
         for out_node in self.nodes:
             if self.graph[source_node].get(out_node, False) != False:
                 neighbours.append(out_node)
         
-        #print(f'\nneighbours before:')
-        #print(neighbours)
-        '''
-        '''
         for neighbour in neighbours.copy():
             if self.graph[source_node][neighbour]['available_bandwidth'] < required_throughput:
                 neighbours.remove(neighbour)
-            '''
-            #print(f'*** \nchecking neighbour {neighbour} ***')
-            if self.graph[source_node][neighbour]['available_bandwidth'] >= required_throughput:
-                #print(f'\n{source_node} -> {neighbour} CAN allocate ({required_throughput}) because it has {self.graph[source_node][neighbour]["available_bandwidth"]}')
-                pass
-            else:
-                #print(f'{source_node} -> {neighbour} CANNOT allocate ({required_throughput}) because it has only {self.graph[source_node][neighbour]["available_bandwidth"]}')
-                neighbours.remove(neighbour)
-                
-                #pass
-            '''
-            
-        #print(f'\nneighbours after:')
-        #print(neighbours)
-        #a = input('')
         return neighbours
     
     def get_computing_latency(self, node1, node2):

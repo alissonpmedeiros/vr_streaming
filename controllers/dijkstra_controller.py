@@ -61,6 +61,20 @@ class DijkstraController:
         return Dijkstra.calculate_ETE_shortest_path(
             previous_nodes, shortest_path, start_node, target_node
         )
+        
+    @staticmethod
+    def get_shortest_path_with_throughput_restriction(
+        graph: 'Graph', start_node: 'BaseStation', target_node: 'BaseStation', required_throughput: float 
+    ):
+        """gets the end-to-end latency between start node and the target node, considering the network latency to reach the target and the computing latency of the target node"""
+        
+        previous_nodes, shortest_path = Dijkstra.build_shortest_path_with_throughput_restriction(
+            graph, start_node, required_throughput
+        )
+        
+        return Dijkstra.calculate_ETE_shortest_path(
+            previous_nodes, shortest_path, start_node, target_node
+        )
     
     @staticmethod
     def get_ETE_shortest_path_with_throughput_restriction(

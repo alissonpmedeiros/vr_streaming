@@ -74,7 +74,16 @@ CLIENTS_PER_SERVER = OVERALL_VIDEO_CLIENTS / OVERALL_VIDEO_SERVERS
 CDN_SERVER_ID = 136
 CDN_CLIENT_ID = 161
 
-FILE_NAME = 'bandwidth.csv'
+'''
+net_file_dir = CONFIG['NETWORK']['NETWORK_FILE_DIR']
+
+network_controller.NetworkController.reduce_edge_net_latencies(net_file_dir, 'network.json')
+a = input('')
+'''
+
+#FILE_NAME = 'bandwidth.csv'
+ARG = sys.argv[1]
+FILE_NAME = '{}.csv'.format(ARG)
 
 FILE_HEADER = [
     'net_congested_level',
@@ -240,6 +249,7 @@ def get_average_allocated_bandwidth(flow_set: dict):
     average_allocated_bandwidth = average_allocated_bandwidth / len(flow_set)
     return round(average_allocated_bandwidth, 2)
 
+#TODO: this method should use get_route_net_latency and add on top of it the latency of the MEC serverd attached to the last node of the route...
 def get_average_e2e_latency(graph, flow_set: dict):
     """ get the average latency of a all paths """
     
@@ -271,6 +281,11 @@ def get_average_net_latency(graph, flow_set: dict):
     average_net_latency = 0
     
     for flow in flow_set.values():
+        flow_route = flow['route']
+        flow_route_latency = network_controller.NetworkController.get_route_net_latency(graph, flow_route)
+        average_net_latency += flow_route_latency
+        
+        '''
         src_id = flow['client']
         dst_id = flow['server']
         
@@ -285,6 +300,7 @@ def get_average_net_latency(graph, flow_set: dict):
         )
         
         average_net_latency += net_latency
+        '''
     
     average_net_latency = average_net_latency / len(flow_set)
     return round(average_net_latency, 2)
@@ -552,9 +568,14 @@ if __name__ == '__main__':
                     graph, flow_set, flow_id
                 )
                 
-                required_throughput = network_controller.NetworkController.allocate_bandwidth_based_on_latency(
-                    graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
-                )
+                if ARG == 'latency_bw_restriction':
+                    required_throughput = network_controller.NetworkController.allocate_bandwidth_with_latency_bandwidth_restrictions(
+                        graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
+                    )
+                else:
+                    required_throughput = network_controller.NetworkController.allocate_bandwidth(
+                        graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
+                    )
                
                 logging.debug(f'\nswitching resolution...\n')
                 
@@ -607,9 +628,14 @@ if __name__ == '__main__':
                 target_mec_id = str(dst_id)
                 target_node = base_station_set[target_mec_id]
                 
-                required_throughput = network_controller.NetworkController.allocate_bandwidth_based_on_latency(
-                    graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
-                )
+                if ARG == 'latency_bw_restriction':    
+                    required_throughput = network_controller.NetworkController.allocate_bandwidth_with_latency_bandwidth_restrictions(
+                        graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
+                    )
+                else:
+                    required_throughput = network_controller.NetworkController.allocate_bandwidth(
+                        graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
+                    )
                 
                 
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)

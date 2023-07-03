@@ -111,7 +111,51 @@ class Dijkstra:
             unvisited_nodes.remove(current_min_node)
             
         return previous_nodes, dist
-       
+    
+    @staticmethod 
+    def build_shortest_path_with_throughput_restriction(graph: 'Graph', start_node: 'BaseStation', required_throughput: float):
+        """builds the shortest path based on the network latency"""
+        
+        unvisited_nodes = list(graph.get_nodes())
+        """
+        We'll use this dict to save the cost of visiting each node and update it as we move along the graph. 
+        This variable is similar to dist in the standard Dijkstra's algorithm.
+        """   
+        dist = {}
+    
+        """We'll use this dict to save the shortest known path to a node found so far"""
+        previous_nodes = {}
+    
+        """We'll use max_value to initialize the "infinity" value of the unvisited nodes"""   
+        max_value = sys.maxsize
+        for node in unvisited_nodes:
+            dist[node] = max_value
+            
+        """However, we initialize the  starting node with wireless latency of the Base station to reach the attached MEC and the computing latency of the MEC """   
+        dist[start_node.bs_name] = start_node.wireless_latency 
+        
+        """The algorithm executes until we visit all nodes"""
+        while unvisited_nodes:
+            """The code block below finds the node with the lowest score"""
+            current_min_node = None
+            for node in unvisited_nodes: 
+                if current_min_node == None:
+                    current_min_node = node
+                elif dist[node] < dist[current_min_node]:
+                    current_min_node = node
+              
+            """The code block below retrieves the current node's neighbors and updates their distances"""
+            neighbors = graph.get_outgoing_edges_throughput(current_min_node, required_throughput)
+            for neighbor in neighbors:
+                new_distance = dist[current_min_node] + graph.get_network_latency(current_min_node, neighbor)
+                if new_distance < dist[neighbor]:
+                    dist[neighbor] = round(new_distance, 2)
+                    """We also update the best path to the current node"""
+                    previous_nodes[neighbor] = current_min_node
+                
+            """After visiting its neighbors, we mark the node as 'visited'"""
+            unvisited_nodes.remove(current_min_node)
+        return previous_nodes, dist
     
     @staticmethod 
     def build_E2E_shortest_path_with_throughput_restriction(graph: 'Graph', start_node: 'BaseStation', required_throughput: float):

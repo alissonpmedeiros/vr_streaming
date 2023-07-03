@@ -16,6 +16,7 @@ bitrate_profiles = BitRateProfiles()
 
 """ other modules """
 import sys
+import json
 import logging
 from typing import Dict
 from itertools import tee
@@ -42,8 +43,8 @@ MIN_VALUE = -10**9
 MAX_VALUE = sys.maxsize
 MIN_THROUGHPUT = 10
 MAX_THROUGHPUT = 250
-MIN_LATENCY = 5
-MAX_LATENCY = 51
+MIN_LATENCY = 10
+MAX_LATENCY = 56
 
 MINIMUN_AVAILABLE_BANDWIDTH = 50 #Mbps
 
@@ -388,21 +389,12 @@ class NetworkController:
             print(f'\nCongestion iteration: {congestion_iterations} -> PRIORITIZED FLOWS')
         
     @staticmethod
-    def calculate_route_latency(graph: 'Graph', route: list) -> float:
-        #print(f'\n*** calculating route latency ***')
-        #print(f' -> '.join(route))
-        route.reverse()
-        latency = 0
+    def get_route_net_latency(graph: 'Graph', route: list) -> float:
+        net_latency = 0
         for src, dst in NetworkController.__pairwise(route):
-            latency += graph.graph[src][dst]['network_latency']
-            #print(f'dst: {dst} | {type(dst)}')
-            #print(f'last: {route[-1]} | {type(route[-1])}')
-            
-            if dst == route[-1]:
-                latency += graph.graph[dst]['computing_latency']
-                #print(f'\n*** geting the processing latency of {dst}\n')
-    
-        return latency    
+            net_latency += graph.graph[src][dst]['network_latency']
+             
+        return net_latency    
     
         
     @staticmethod
@@ -445,54 +437,65 @@ class NetworkController:
         return required_throughput
         
     @staticmethod
-    def allocate_bandwidth_based_on_latency(
+    def allocate_bandwidth_with_latency_bandwidth_restrictions(
         graph: 'Graph', source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, flow_id: int
     ):
 
         flow = flow_set[flow_id]
         required_throughput = flow['next_throughput']
+        throughput_profiles = bitrate_profiles.get_throughput_profiles()
+        desired_net_latency = throughput_profiles[required_throughput]['network_latency']
         
-        #HERE, THE SHORTEST PATH CALCULATION SHOULD BE PERFORMED FROM THE SERVER TO THE HMD OR EDGE NODE, BECAUSE THE LAST NODE IS THE NODE CONTAINING THE COMPUTING CAPACITY
         new_route = None
         new_route, route_max_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
-            graph, target_node, source_node, required_throughput
+            graph, source_node, target_node, required_throughput
         )
         
-        latency_profiles = BitRateProfiles.get_latency_profiles()
-        previous_latency = bitrate_profiles.get_previous_latency_profile(route_max_latency)
-        if previous_latency is None:
-            previous_latency = MAX_LATENCY
-        latency_profile = latency_profiles[previous_latency]
-        route_throughput = latency_profile['throughput']
+        #HERE, THE SHORTEST PATH CALCULATION SHOULD BE PERFORMED FROM THE SERVER TO THE HMD OR EDGE NODE, BECAUSE THE LAST NODE IS THE NODE CONTAINING THE COMPUTING CAPACITY
+        #new_route, route_max_latency = dijkstra_controller.DijkstraController.#get_ETE_shortest_path_with_throughput_restriction(
+        #    graph, target_node, source_node, required_throughput
+        #)
+        
+        
                 
         congestion_iterations = 1
         
-        while route_max_latency == MAX_VALUE or route_throughput < required_throughput:
-            print(f'\nLATENCY TEST\n')
+        while route_max_latency == MAX_VALUE or route_max_latency > desired_net_latency:
+            #print(f'\nLATENCY TEST\n')
             
+            '''
             print(f'\n*** no routes to fulfill {required_throughput} Mbps: flow id: {flow_id} ***')
             
-            print(f'latency found: {route_max_latency} ms')
+            print(f'\nLATENCY TEST\n')
             print(f'required throughput: {required_throughput} Mbps')
-            print(f'previous latency: {previous_latency} ms')
-            print(f'desired route throughput: {route_throughput} Mbps')
-            
-            
-            a = input('')
-                
+            print(f'desired net latency: {desired_net_latency} ms')
+            print(f'latency found: {route_max_latency} ms')
+            print(' -> '.join(new_route))
+            ''' 
+           
             previous_throughput = required_throughput
             required_throughput = bitrate_profiles.get_previous_throughput_profile(required_throughput)
             
             if required_throughput is None:
                 required_throughput = previous_throughput
-                
+            
+            desired_net_latency = throughput_profiles[required_throughput]['network_latency']
+            
+            '''
+            print(f'\nprevious latency: {desired_net_latency} ms')
+            print(f'previous throughput: {required_throughput} Mbps')
+            
+            a = input('')
+            '''
+               
             NetworkController.congestion_management(
                 graph, flow_set, prioritized_served_flows, non_prioritized_served_flows, congestion_iterations
             )
             
             congestion_iterations += 1
             
-            new_route, route_max_latency = dijkstra_controller.DijkstraController.get_widest_path(
+            
+            new_route, route_max_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
                 graph, source_node, target_node, required_throughput
             )
         
@@ -533,3 +536,20 @@ class NetworkController:
         plt.figure(figsize=(12, 12))
         while True:
             NetworkController.generate_network_plot(base_station_set, hmds_set)
+
+    @staticmethod
+    def reduce_edge_net_latencies(file_dir, json_file):
+        # Load the JSON data from the file
+        
+        with open("{}{}".format(file_dir, json_file)) as f:
+            data = json.load(f)
+        
+        # Reduce 0.3 from each value in the "edge_net_latencies" list
+        for bs_data in data["base_station_set"].values():
+            edge_net_latencies = bs_data["edge_net_latencies"]
+            bs_data["edge_net_latencies"] = [latency - 0.3 for latency in edge_net_latencies]
+            bs_data["edge_net_latencies"] = [round(latency, 2)  for latency in edge_net_latencies]
+        
+        # Write the updated JSON data back to the file
+        with open("{}{}".format(file_dir, json_file), "w") as f:
+            json.dump(data, f, indent=2)

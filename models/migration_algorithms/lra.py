@@ -2,9 +2,9 @@ import typing
 if typing.TYPE_CHECKING:
     """ model modules"""
     from models.mec import Mec 
-    from models.vr import VrHMD 
+    from models.hmd import VrHMD 
     from models.graph import Graph 
-    from models.vr import VrService 
+    from models.hmd import VrService 
     from models.base_station import BaseStation 
 
 """ controller modules """

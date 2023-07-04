@@ -23,9 +23,9 @@ if typing.TYPE_CHECKING:
     from models.migration_ABC import Migration
     from models.hmd import VrHMD
 
-from models.migration_algorithms.lra import LRA
-'''
 from models.migration_algorithms.la import LA
+'''
+from models.migration_algorithms.lra import LRA
 from models.migration_algorithms.scg import SCG
 from models.migration_algorithms.dscp import DSCP
 from models.migration_algorithms.nm import NoMigration
@@ -60,7 +60,7 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 '''
 
-MIGRATION_ALGORITHM = LRA()
+MIGRATION_ALGORITHM = LA()
 
 MAX_THROUGHPUT = 250
 
@@ -359,54 +359,57 @@ def get_available_bandwidth_of_node_edges(graph, src: str):
 def offload_services(
     base_station_set: Dict[str, 'BaseStation'], mec_set: Dict[str, 'Mec'], hmds_set: Dict[str, 'VrHMD'], graph
 ):
-        count = 0
-        for hmd_id, hmd in hmds_set.items():
-            for service_id in hmd.services_ids:
-                #print(f'\n*** offloading service {service_id} ***')
-                #print(f'\nhmd before offloading:')
-                #pprint(hmd)
-                extracted_service = hmd_controller.HmdController.remove_vr_service(
-                    hmd, service_id
-                )
-                
-                #print(f'\nhmd after offloading:')
-                #pprint(hmd)
-                
-                start_node = bs_controller.BaseStationController.get_base_station(
-                    base_station_set, hmd.current_base_station
-                )
+    count = 0
+    for hmd_id, hmd in hmds_set.items():
+        for service_id in hmd.services_ids:
+            #print(f'\n*** offloading service {service_id} ***')
+            #print(f'\nhmd before offloading:')
+            #pprint(hmd)
+            extracted_service = hmd_controller.HmdController.remove_vr_service(
+                hmd, service_id
+            )
+            
+            #print(f'\nhmd after offloading:')
+            #pprint(hmd)
+            
+            start_node = bs_controller.BaseStationController.get_base_station(
+                base_station_set, hmd.current_base_station
+            )
 
-                dst_node: Dict[str, 'Mec'] = mec_controller.MecController.discover_mec(
-                    base_station_set, 
-                    mec_set, 
-                    graph, 
-                    start_node, 
-                    extracted_service,
-                )
-                
-                dst_mec: 'Mec' = dst_node.get('mec')
-                dst_mec_id = dst_node.get('id')
+            dst_node: Dict[str, 'Mec'] = mec_controller.MecController.discover_mec(
+                base_station_set, 
+                mec_set, 
+                graph, 
+                start_node, 
+                extracted_service,
+            )
+            
+            dst_mec: 'Mec' = dst_node.get('mec')
+            dst_mec_id = dst_node.get('id')
 
-                #print(f'\nmec before offloading:')
-                #pprint(dst_mec)
-                
-                
-                if dst_mec is not None:
-                    mec_controller.MecController.deploy_service(dst_mec, extracted_service)
-                    hmd.offloaded_server = dst_mec_id
-                    #pprint(hmd)
-                    #a = input('')
-                else:
-                    count+=1
-                    hmd_controller.HmdController.deploy_vr_service(hmds_set, hmd_id, extracted_service)
-                    #print(f'\n*** service {extracted_service} could not be offloaded ***')
-                #print(f'\nmec after offloading:')
-                #pprint(dst_mec)
-                
+            #pprint(dst_node)
+            #a = input('')
+            #print(f'\nmec before offloading:')
+            #pprint(dst_mec)
+            
+            
+            if dst_mec is not None:
+                mec_controller.MecController.deploy_service(dst_mec, extracted_service)
+                hmd.offloaded_server = dst_mec_id
+                hmd.service_offloaded = True
+                #pprint(hmd)
                 #a = input('')
-        if count > 1:
-            print(f'could not offload {count} services')
-            #a = input("press any key to continue")
+            else:
+                count+=1
+                hmd_controller.HmdController.deploy_vr_service(hmds_set, hmd_id, extracted_service)
+                #print(f'\n*** service {extracted_service} could not be offloaded ***')
+            #print(f'\nmec after offloading:')
+            #pprint(dst_mec)
+            
+            #a = input('')
+    if count > 1:
+        print(f'could not offload {count} services')
+        #a = input("press any key to continue")
 
 
 if __name__ == '__main__':
@@ -537,6 +540,7 @@ if __name__ == '__main__':
         if ITERATION > 1:
             logging.info(f'updating hmd positions...')
             hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+            logging.info(f'checking service migration...')
             MIGRATION_ALGORITHM.check_services(base_station_set, mec_set, hmds_set, graph)
             #TODO: need to check if this method is working properly
             
@@ -585,7 +589,7 @@ if __name__ == '__main__':
                 
                 flow_set[flow_id]['next_throughput'] = required_throughput
                         
-                video_client: VrHMD = hmds_set[str(src_id)]
+                video_client: 'VrHMD' = hmds_set[str(src_id)]
                 source_node_id = video_client.current_base_station
                 previous_source_node_id = video_client.previous_base_station
                 
@@ -669,7 +673,7 @@ if __name__ == '__main__':
                 logging.debug(f'\n*** REQUESTING {required_throughput} Mbps ***')
                 logging.debug(f'*** PREVIOUS THROUGHPUT: {previous_throughput} Mbps ***\n')
                             
-                video_client: VrHMD = hmds_set[str(src_id)]
+                video_client: 'VrHMD' = hmds_set[str(src_id)]
                 source_node_id = video_client.current_base_station
                 previous_source_node_id = video_client.previous_base_station
            

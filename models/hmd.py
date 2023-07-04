@@ -199,6 +199,7 @@ class VrHMD:
     current_base_station: str = '' 
     previous_base_station: str = ''
     offloaded_server: str = ''
+    service_offloading: bool = field(default=False, init=True)
     position: List[float] = field(default_factory=list, init=True)
     video_client: VideoClient = field(default_factory=VideoClient, init=True)
     services_ids: List[str] = field(default_factory=list, init=True)

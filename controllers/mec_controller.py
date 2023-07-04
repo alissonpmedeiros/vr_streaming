@@ -91,20 +91,15 @@ class MecController:
         
         # Iterate over the sorted shortest path (list of tuples) and checks whether a mec server can host the service
         for node in shortest_path:    
-            #pprint(node)
             bs_id = node[0][2:]
             base_station: BaseStation = base_station_set[bs_id]
-            #pprint(base_station)
-            bs_mec: Mec = mec_set[bs_id]
-            #pprint(bs_mec)
+            bs_mec: Mec = mec_set[base_station.mec_id]
             
             if MecController.check_deployment(bs_mec, service):
                 mec_dict.update({'id': base_station.mec_id, 'mec': bs_mec})
-                #print(f'\ndiscovered mec {bs_mec.name} supports deployment!')
-                #a = input('')
                 break
             
-        if mec_dict.get('mec') is None:
+        if not mec_dict.get('mec'):
             print(f'\nALL MEC servers are overloaded! Discarting...')
             a = input('')    
         

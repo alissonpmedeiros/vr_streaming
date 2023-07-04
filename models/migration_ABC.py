@@ -42,20 +42,21 @@ class Migration(ABC):
         hmds_set: Dict[str,'VrHMD'],
         graph: 'Graph', 
     ) -> None:
-        #print('\n################### START SERVICE CHECK #######################')
+        print('\n################### START SERVICE CHECK #######################')
         for hmd in hmds_set.values():
-            if hmd.current_location != hmd.previous_location:
-                for service_id in hmd.services_ids:
-                    service = None 
-                    if any(service_id == vr_service.id for vr_service in hmd.services_set): 
-                        service_index = [vr_service.id for vr_service in hmd.services_set].index(service_id)
-                        service = hmd.services_set[service_index]
-                    else: 
-                        service = mec_controller.MecController.get_mec_service(mec_set, service_id)
-                    
-                    self.service_migration(
-                        base_station_set, mec_set, hmds_set, graph, service
-                    )
+            if hmd.current_base_station and hmd.previous_base_station:
+                if hmd.current_base_station != hmd.previous_base_station:
+                    for service_id in hmd.services_ids:
+                        service = None 
+                        if any(service_id == vr_service.id for vr_service in hmd.services_set): 
+                            service_index = [vr_service.id for vr_service in hmd.services_set].index(service_id)
+                            service = hmd.services_set[service_index]
+                        else: 
+                            service = mec_controller.MecController.get_mec_service(mec_set, service_id)
+                        
+                        self.service_migration(
+                            base_station_set, mec_set, hmds_set, graph, service
+                        )
         '''
         #print('\n################### FINISH SERVICE CHECK #######################')
         

@@ -85,25 +85,28 @@ class MecController:
             'mec': None
         }   
         
-        shortest_path = shortest_path = dijkstra_controller.DijkstraController.get_ETE_zone_shortest_path(
-            mec_set, graph, start_node
+        shortest_path = dijkstra_controller.DijkstraController.get_all_E2E_shortest_paths(
+            graph, start_node
         )
         
         # Iterate over the sorted shortest path (list of tuples) and checks whether a mec server can host the service
         for node in shortest_path:    
-            bs_name = node[0]
-            print(bs_name)
-            a  = input('')
-            bs =  bs_controller.BaseStationController.get_base_station_by_name(base_station_set, bs_name)
-            base_station: BaseStation = bs.get('base_station')
-            bs_mec = MecController.get_mec(mec_set, base_station)
+            #pprint(node)
+            bs_id = node[0][2:]
+            base_station: BaseStation = base_station_set[bs_id]
+            #pprint(base_station)
+            bs_mec: Mec = mec_set[bs_id]
+            #pprint(bs_mec)
             
             if MecController.check_deployment(bs_mec, service):
                 mec_dict.update({'id': base_station.mec_id, 'mec': bs_mec})
+                #print(f'\ndiscovered mec {bs_mec.name} supports deployment!')
+                #a = input('')
                 break
             
-        #if mec_dict.get('mec') is None:
-            #print(f'\nALL MEC servers are overloaded! Discarting...')
+        if mec_dict.get('mec') is None:
+            print(f'\nALL MEC servers are overloaded! Discarting...')
+            a = input('')    
         
         return mec_dict
     

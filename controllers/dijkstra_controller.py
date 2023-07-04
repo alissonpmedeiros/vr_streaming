@@ -49,6 +49,30 @@ class DijkstraController:
     
     
     @staticmethod
+    def get_all_E2E_shortest_paths(
+        graph: 'Graph', start_node: 'BaseStation'
+    ):
+        
+        previous_nodes = None
+        shortest_path = None
+        
+        previous_nodes, shortest_path = Dijkstra.build_E2E_shortest_path(
+            graph, start_node
+        )
+        
+        """sorts (ascendent) the shortest path dict into a list of tuples based on latency."""
+        sorted_shortest_path = sorted(shortest_path.items(), key=operator.itemgetter(1))
+        #print(f'start node: {start_node.bs_name}')
+        """The first element is the start node, then the weight is 0"""
+        #pprint(sorted_shortest_path)
+        #a = input('')
+        del sorted_shortest_path[0] 
+        #print(f'get all E2E shortest paths')
+        #print(sorted_shortest_path)
+        #a = input('')
+        return sorted_shortest_path
+    
+    @staticmethod
     def get_ETE_shortest_path(
         graph: 'Graph', start_node: 'BaseStation', target_node: 'BaseStation',  
     ):

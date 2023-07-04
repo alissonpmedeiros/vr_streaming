@@ -23,9 +23,9 @@ if typing.TYPE_CHECKING:
     from models.migration_ABC import Migration
     from models.hmd import VrHMD
 
+from models.migration_algorithms.lra import LRA
 '''
 from models.migration_algorithms.la import LA
-from models.migration_algorithms.lra import LRA
 from models.migration_algorithms.scg import SCG
 from models.migration_algorithms.dscp import DSCP
 from models.migration_algorithms.nm import NoMigration
@@ -59,6 +59,8 @@ console_handler.setFormatter(formatter)
 
 logger.addHandler(console_handler)
 '''
+
+MIGRATION_ALGORITHM = LRA()
 
 MAX_THROUGHPUT = 250
 
@@ -360,7 +362,7 @@ def offload_services(
         count = 0
         for hmd_id, hmd in hmds_set.items():
             for service_id in hmd.services_ids:
-                print(f'\n*** offloading service {service_id} ***')
+                #print(f'\n*** offloading service {service_id} ***')
                 #print(f'\nhmd before offloading:')
                 #pprint(hmd)
                 extracted_service = hmd_controller.HmdController.remove_vr_service(
@@ -383,22 +385,25 @@ def offload_services(
                 )
                 
                 dst_mec: 'Mec' = dst_node.get('mec')
+                dst_mec_id = dst_node.get('id')
 
-                print(f'\nmec before offloading:')
-                pprint(dst_node)
-                pprint(dst_mec)
-                a = input('')
+                #print(f'\nmec before offloading:')
+                #pprint(dst_mec)
+                
                 
                 if dst_mec is not None:
                     mec_controller.MecController.deploy_service(dst_mec, extracted_service)
+                    hmd.offloaded_server = dst_mec_id
+                    #pprint(hmd)
+                    #a = input('')
                 else:
                     count+=1
                     hmd_controller.HmdController.deploy_vr_service(hmds_set, hmd_id, extracted_service)
-                    print(f'\n*** service {extracted_service} could not be offloaded ***')
-                print(f'\nmec after offloading:')
-                pprint(dst_mec)
+                    #print(f'\n*** service {extracted_service} could not be offloaded ***')
+                #print(f'\nmec after offloading:')
+                #pprint(dst_mec)
                 
-                a = input('')
+                #a = input('')
         if count > 1:
             print(f'could not offload {count} services')
             #a = input("press any key to continue")
@@ -410,10 +415,13 @@ if __name__ == '__main__':
     base_station_set = json_controller.decode_net_config_file()  
 
     ### MECS ###
+    '''
+    logging.info(f'\n*** creating mecs ***')
     mec_controller.MecController.create_mec_servers(
         base_station_set, OVERALL_MECS
     )
-
+    '''
+   
     logging.info(f'\n*** decoding mecs ***')
     mec_set = json_controller.decoding_to_dict(
         data_dir, mecs_file
@@ -497,7 +505,10 @@ if __name__ == '__main__':
     
     logging.info(f'\n*** starting system ***')
 
-    
+    logging.info(f'updating hmd positions...')
+    hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+    logging.info(f'start offloading...')
+    offload_services(base_station_set, mec_set, hmds_set, graph)
     
     while True:
         #start = timer()
@@ -523,11 +534,12 @@ if __name__ == '__main__':
         
         logging.info(f'\n\n################ ITERATION ################\n')
         logging.info(f'ITERATION: {ITERATION}')
-        logging.info(f'updating hmd positions...')
-        hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
-        offload_services(base_station_set, mec_set, hmds_set, graph)
-        a = input('finished offloading: type to cotinue')
-        #network_controller.NetworkController.print_network(base_station_set, hmds_set)
+        if ITERATION > 1:
+            logging.info(f'updating hmd positions...')
+            hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+            MIGRATION_ALGORITHM.check_services(base_station_set, mec_set, hmds_set, graph)
+            #TODO: need to check if this method is working properly
+            
         
         if ITERATION > 1:
             logging.info(f'\n****************************************************')
@@ -573,9 +585,9 @@ if __name__ == '__main__':
                 
                 flow_set[flow_id]['next_throughput'] = required_throughput
                         
-                video_client = hmds_set[str(src_id)]
-                source_node_id = str(hmds_set[str(src_id)].current_base_station)
-                previous_source_node_id = str(hmds_set[str(src_id)].previous_base_station)
+                video_client: VrHMD = hmds_set[str(src_id)]
+                source_node_id = video_client.current_base_station
+                previous_source_node_id = video_client.previous_base_station
                 
                 previous_source_node = None
                 if previous_source_node_id:
@@ -600,6 +612,12 @@ if __name__ == '__main__':
                 )
                 
                 if ARG == 'latency_bw_restriction':
+                    required_throughput = network_controller.NetworkController.allocate_bandwidth_with_latency_bandwidth_restrictions(
+                        graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
+                    )
+                elif ARG == 'offloading':
+                    source_node_id = str(video_client.offloaded_server)
+                    source_node = base_station_set[source_node_id]
                     required_throughput = network_controller.NetworkController.allocate_bandwidth_with_latency_bandwidth_restrictions(
                         graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
                     )
@@ -651,9 +669,9 @@ if __name__ == '__main__':
                 logging.debug(f'\n*** REQUESTING {required_throughput} Mbps ***')
                 logging.debug(f'*** PREVIOUS THROUGHPUT: {previous_throughput} Mbps ***\n')
                             
-                video_client = hmds_set[str(src_id)]
-                source_node_id = str(hmds_set[str(src_id)].current_base_station)
-                source_node = base_station_set[source_node_id]
+                video_client: VrHMD = hmds_set[str(src_id)]
+                source_node_id = video_client.current_base_station
+                previous_source_node_id = video_client.previous_base_station
            
                 mec_server = mec_set[str(dst_id)]
                 video_server = mec_server.video_server
@@ -665,6 +683,12 @@ if __name__ == '__main__':
                 target_node = base_station_set[target_mec_id]
                 
                 if ARG == 'latency_bw_restriction':    
+                    required_throughput = network_controller.NetworkController.allocate_bandwidth_with_latency_bandwidth_restrictions(
+                        graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
+                    )
+                elif ARG == 'offloading':
+                    source_node_id = str(video_client.offloaded_server)
+                    source_node = base_station_set[source_node_id]
                     required_throughput = network_controller.NetworkController.allocate_bandwidth_with_latency_bandwidth_restrictions(
                         graph, source_node, target_node, flow_set, prioritized_served_flows, non_prioritized_served_flows, flow_id
                     )

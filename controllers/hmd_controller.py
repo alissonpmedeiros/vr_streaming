@@ -178,18 +178,11 @@ class HmdController:
     def get_vr_service_owner(hmds_set: Dict[str, VrHMD], service: VrService) -> Dict[str, VrHMD]:
         """gets the VrHMD that owns the service"""
         
-        hmd_dict: Dict[str, VrHMD] = {
-            'id': None,
-            'hmd': None
-        }
-        
         for id, hmd in hmds_set.items():
             for service_id in hmd.services_ids:
                 if service_id == service.id:
-                    hmd_dict.update({'id': id, 'hmd': hmd})
-                    break
-
-        return hmd_dict
+                    return hmd
+        return None
 
     @staticmethod
     def get_hmd(hmds_set: Dict[str, VrHMD], hmd_ip: str) -> VrHMD:

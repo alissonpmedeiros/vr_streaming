@@ -396,7 +396,7 @@ def offload_services(
             if dst_mec is not None:
                 mec_controller.MecController.deploy_service(dst_mec, extracted_service)
                 hmd.offloaded_server = dst_mec_id
-                hmd.service_offloaded = True
+                hmd.service_offloading = True
                 #pprint(hmd)
                 #a = input('')
             else:
@@ -478,7 +478,7 @@ if __name__ == '__main__':
     
     logging.info(f'\n*** creating video and client servers ***')
     
-
+    '''
     for server in video_servers.copy():
         for client in video_clients.copy():
             if clients == CLIENTS_PER_SERVER:
@@ -486,12 +486,12 @@ if __name__ == '__main__':
             else:
                 mec_id = str(server)
                 bitrate_quotas = bitrate_profiles.get_bitrate_quota_profiles()
-                first_hmd_quota = hmds_set[str(client)].services_set[0].quota.name
+                hmd_quota = hmds_set[str(client)].services_set[0].quota.name
                 flow_set[pairs] = {
                         'server': server,
                         'client': client,
                         'route': None,
-                        'throughput': bitrate_quotas[first_hmd_quota]['throughput'],
+                        'throughput': bitrate_quotas[hmd_quota]['throughput'],
                         'previous_throughput': None,
                         'next_throughput': None,
                 }
@@ -500,6 +500,20 @@ if __name__ == '__main__':
                 video_clients.remove(client) 
         clients = 0   
         video_servers.remove(server)
+    '''
+    
+    bitrate_quotas = bitrate_profiles.get_bitrate_quota_profiles()
+    for hmd_id, hmd in hmds_set.items():
+        hmd_quota = hmd.services_set[0].quota.name
+        flow_set[int(hmd_id)] = {
+                'server': int(CDN_SERVER_ID),
+                'client': int(hmd_id),
+                'route': None,
+                'throughput': bitrate_quotas[hmd_quota]['throughput'],
+                'previous_throughput': None,
+                'next_throughput': None,
+        }
+        
 
     #logging.info(f'\n*** initializing route_set ***')
     #network_controller.NetworkController.initialize_route_set(hmds_set, route_set)
@@ -510,8 +524,27 @@ if __name__ == '__main__':
 
     logging.info(f'updating hmd positions...')
     hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
-    logging.info(f'start offloading...')
+    hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+    hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+    logging.info(f'offloading services...')
     offload_services(base_station_set, mec_set, hmds_set, graph)
+    
+    '''
+    for flow_id, flow in flow_set.items():
+        if flow['client'] == 0:            
+            print(f'\nroute for hmd 0')
+            #print('->'.join(flow['route']))
+            pprint(f'flow id: {flow_id}')
+        if flow['client'] == 1: 
+            print(f'\nroute for hmd 1')
+            #print('->'.join(flow['route']))
+            pprint(f'flow id: {flow_id}')
+        if flow['client'] == 2: 
+            print(f'\nroute for hmd 2')
+            #print('->'.join(flow['route']))
+            pprint(f'flow id: {flow_id}')
+    
+    '''
     
     while True:
         #start = timer()
@@ -537,9 +570,24 @@ if __name__ == '__main__':
         
         logging.info(f'\n\n################ ITERATION ################\n')
         logging.info(f'ITERATION: {ITERATION}')
-        if ITERATION > 1:
-            logging.info(f'updating hmd positions...')
-            hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+        
+        logging.info(f'updating hmd positions...')
+        hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+        
+        if ITERATION > 1 and ARG == 'offloading':
+            '''
+           
+            print(f'\nroute for hmd 0')
+            print('->'.join(flow_set[0]["route"]))
+            
+            print(f'\nroute for hmd 1')
+            print('->'.join(flow_set[1]["route"]))
+            
+            print(f'\nroute for hmd 2')
+            print('->'.join(flow_set[2]["route"]))
+            
+           '''
+                    
             logging.info(f'checking service migration...')
             MIGRATION_ALGORITHM.check_services(base_station_set, mec_set, hmds_set, graph)
             #TODO: need to check if this method is working properly
@@ -553,7 +601,6 @@ if __name__ == '__main__':
                 logging.debug(f'\n______________________________________________________')
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
-                flow = flow_set[flow_id]
                 flow_throughput = flow['throughput']
                 flow_set[flow_id]['previous_throughput'] = flow_throughput
     
@@ -725,18 +772,20 @@ if __name__ == '__main__':
         updated_throughput = get_current_throughput(flow_set)
         fps_resoulution = get_fps_resolution(flow_set)
         average_desired_net_latency = get_average_desired_net_latency(graph, flow_set)
+        congestion = calculate_network_overload(graph.graph)
+        cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+        '''
         print(f'\n****************************************************\n')
         print(f'PREVIOUS BW: {current_throughput} Mbps')
         print(f'EXPECTED BW: {expected_throughput} Mbps')
         print(f'UPDATED  BW: {updated_throughput} Mbps')
-        cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
         print(f'CURRENT AVl. CND BW: {cdn_bandwidth}')
         print(f'AVERAGE NET LATENCY: {average_net_latency} ms')
         print(f'AVERAGE E2E LATENCY: {averge_e2e_latency} ms')
         print(f'AVERAGE BW ALLOCATED: {average_allocated_bw} Mbps')
         pprint(fps_resoulution)
-        congestion = calculate_network_overload(graph.graph)
         print(f'CONGESTION: {congestion}')
+        '''
         
         results_data = []
         results_data.append(congestion)

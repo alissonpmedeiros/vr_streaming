@@ -93,7 +93,7 @@ class MecController:
         for node in shortest_path:    
             bs_id = node[0][2:]
             base_station: BaseStation = base_station_set[bs_id]
-            bs_mec: Mec = mec_set[base_station.mec_id]
+            bs_mec: Mec = mec_set[str(base_station.mec_id)]
             
             if MecController.check_deployment(bs_mec, service):
                 mec_dict.update({'id': base_station.mec_id, 'mec': bs_mec})

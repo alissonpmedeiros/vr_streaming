@@ -84,7 +84,7 @@ class Dijkstra:
             dist[node] = max_value
             
         """However, we initialize the  starting node with wireless latency of the Base station to reach the attached MEC and the computing latency of the MEC """   
-        dist[start_node.bs_name] = start_node.wireless_latency + start_node.node_latency  
+        dist[start_node.bs_name] = start_node.node_latency  
         
         """The algorithm executes until we visit all nodes"""
         while unvisited_nodes:

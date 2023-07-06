@@ -59,7 +59,7 @@ class Migration(ABC):
                             base_station_set, mec_set, hmds_set, graph, service
                         )
         print('################### END SERVICE CHECK #######################\n')
-        a = input('press any key to continue')
+        #a = input('press any key to continue')
         return
         
     def service_migration(

@@ -215,7 +215,8 @@ def get_fps_resolution(flow_set: dict):
     total_fps_flows = total_standard_fps + total_high_fps 
     
     average_fps = round(average_fps / total_fps_flows, 2) 
-    standard_fps = round(standard_fps / total_standard_fps, 2)
+    if total_standard_fps > 0:
+        standard_fps = round(standard_fps / total_standard_fps, 2)
     high_fps = round(high_fps / total_high_fps, 2)
     
     result = {
@@ -274,10 +275,35 @@ def get_average_net_latency(graph, flow_set: dict):
     """ get the average latency of a all paths """
     
     average_net_latency = 0
-    
     for flow in flow_set.values():
+        
         flow_route = flow['route']
+        
         flow_route_latency = network_controller.NetworkController.get_route_net_latency(graph, flow_route)
+        
+        if ARG == 'offloading':
+            src_id = flow['client']
+            flow_hmd = hmds_set[str(src_id)]
+            source_node_id = str(flow_hmd.current_base_station)
+            source_node = base_station_set[source_node_id]
+            
+            target_mec_id = str(flow_hmd.offloaded_server)
+            target_node = base_station_set[target_mec_id]
+            
+            path, net_latency_from_hmd_to_offloaded_mec = dijkstra_controller.DijkstraController.get_shortest_path(
+                graph, source_node, target_node
+            )
+            
+            '''
+            print(f'route latency: {flow_route_latency}')
+            print(' -> '.join(flow_route))
+            print(f'\nhmd to offloaded mec: {net_latency_from_hmd_to_offloaded_mec}')
+            print(' -> '.join(path))
+            a = input('')
+            '''
+            
+            flow_route_latency += net_latency_from_hmd_to_offloaded_mec
+        
         average_net_latency += flow_route_latency
     
     average_net_latency = average_net_latency / len(flow_set)
@@ -286,7 +312,7 @@ def get_average_net_latency(graph, flow_set: dict):
 
 def get_average_desired_net_latency(graph, flow_set: dict):
     average_net_latency = 0
-    
+    #print(f'\n*** getting average desired net latency ***\n')
     for flow in flow_set.values():
         src_id = flow['client']
         dst_id = flow['server']
@@ -300,10 +326,10 @@ def get_average_desired_net_latency(graph, flow_set: dict):
         path, net_latency = dijkstra_controller.DijkstraController.get_shortest_path(
             graph, source_node, target_node
         )
-        
         average_net_latency += net_latency
     
     average_net_latency = average_net_latency / len(flow_set)
+    return round(average_net_latency, 2)
 
 
 def full_resolutions(flow_set: dict) -> bool:
@@ -333,14 +359,14 @@ def get_expected_throughput(flow_set: dict):
     
     return expected_throughput
 
-def flow_fairness_selection(flow_set):
+def flow_fairness_selection(flow_order):
     """ return a list of flows that will be not prioritized """
     floor = 5 # PERCENTAGE
     roof = 20 # PERCENTAGE
     
     percentage = random.uniform(floor, roof)
-    num_elements = int(len(flow_set) * (percentage / 100))
-    selected_elements = random.sample(flow_set, num_elements)
+    num_elements = int(len(flow_order) * (percentage / 100))
+    selected_elements = random.sample(flow_order, num_elements)
     
     return selected_elements
     
@@ -409,7 +435,7 @@ def offload_services(
             #a = input('')
     if count > 1:
         print(f'could not offload {count} services')
-        #a = input("press any key to continue")
+        a = input("press any key to continue")
 
 
 if __name__ == '__main__':
@@ -474,7 +500,6 @@ if __name__ == '__main__':
     clients = 0
     pairs = 0
 
-    process_list = []
     
     logging.info(f'\n*** creating video and client servers ***')
     
@@ -522,12 +547,20 @@ if __name__ == '__main__':
     
     logging.info(f'\n*** starting system ***')
 
-    logging.info(f'updating hmd positions...')
-    hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
-    hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
-    hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
-    logging.info(f'offloading services...')
-    offload_services(base_station_set, mec_set, hmds_set, graph)
+    if ARG == 'offloading':
+        logging.info(f'updating hmd positions...')
+        hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+        logging.info(f'offloading services...')
+        offload_services(base_station_set, mec_set, hmds_set, graph)
+        
+        '''
+        for mec in mec_set.values():
+            print(f'{mec.name} -> {mec.allocated_cpu}({mec.overall_cpu}) | {mec.allocated_gpu}({mec.overall_gpu})')
+        
+        a = input('')
+        '''
+        
+        
     
     '''
     for flow_id, flow in flow_set.items():
@@ -545,18 +578,20 @@ if __name__ == '__main__':
             pprint(f'flow id: {flow_id}')
     
     '''
+    flows_order = []
+    for i in range(len(flow_set)): 
+        flows_order.append(i) 
+        #if i not in video_servers:
+            #flows_order.append(i) 
+    
     
     while True:
         #start = timer()
-        flows_order = []
+        #pprint(flow_set)
+        #a = input('')
+        random.shuffle(flows_order)
         prioritized_served_flows = [] 
         non_prioritized_served_flows = []
-
-        for i in range(len(flow_set)): 
-            if i not in video_servers:
-                flows_order.append(i) 
-        
-        random.shuffle(flows_order)
         
         
         current_throughput = get_current_throughput(flow_set)
@@ -598,14 +633,19 @@ if __name__ == '__main__':
             logging.info(f'\n***decallocating route of non-prioritized flows...')
             logging.info(f'{len(deallocated_flows_list)}/{len(flow_set)} flows will be deallocated')
             for flow_id in deallocated_flows_list:
-                logging.debug(f'\n______________________________________________________')
+                #logging.debug(f'\n______________________________________________________')
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
+                
+                #logging.info(f'\n___________________________________________')
+                #logging.info(f'*** \nFLOW ID: {flow_id} *** ') 
+                flow = flow_set[flow_id]
                 flow_throughput = flow['throughput']
                 flow_set[flow_id]['previous_throughput'] = flow_throughput
     
-                logging.debug(f'\n dealocating {flow_throughput} Mbps from the following route:')
-                logging.debug('->'.join(flow['route']))
+                #logging.info(f'\n dealocating {flow_throughput} Mbps from the following route:')
+                
+                #logging.info('->'.join(flow['route']))
                 
                 network_controller.NetworkController.deallocate_bandwidth(graph, flow_set, flow_id)
                 
@@ -618,7 +658,7 @@ if __name__ == '__main__':
         
         for flow_id in flows_order:
             if flow_id not in deallocated_flows_list:
-                logging.debug(f'\n______________________________________________________')
+                #logging.debug(f'\n______________________________________________________')
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 
@@ -630,9 +670,10 @@ if __name__ == '__main__':
                 
                 required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
                
-                logging.debug(f'\n___________________________________________')
-                logging.debug(f'*** \nFLOW ID: {flow_id} *** ') 
-                logging.debug(f'\n*** REQUESTING {required_throughput} Mbps ***\n')
+                #logging.info(f'\n___________________________________________')
+                #logging.info(f'*** \nFLOW ID: {flow_id} *** ') 
+                #logging.info(f'\n*** REQUESTING {required_throughput} Mbps ***\n')
+                #pprint(flow)
                 
                 flow_set[flow_id]['next_throughput'] = required_throughput
                         
@@ -691,7 +732,11 @@ if __name__ == '__main__':
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
                 
-                logging.debug(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
+                #logging.info(f'\nFINAL FLOW REQUEST OF {required_throughput} Mbps from {src_id} -> {dst_id}')
+                
+                #pprint(flow)
+                
+                #a = input('')
                 
                 prioritized_served_flows.append(flow_id)
             
@@ -701,9 +746,12 @@ if __name__ == '__main__':
             #a = input('')
             flow_count = 0
             for flow_id in deallocated_flows_list:
-                logging.debug(f'\n______________________________________________________')
+                #logging.debug(f'\n______________________________________________________')
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
                 #logging.debug(f'\n***current CND edge throughput: {cdn_bandwidth}') 
+                #logging.info(f'\n___________________________________________')
+                #logging.info(f'*** \nFLOW ID: {flow_id} *** ') 
+                
                 flow_count += 1
                 
                 flow = flow_set[flow_id]
@@ -715,10 +763,10 @@ if __name__ == '__main__':
                 required_throughput = bitrate_profiles.get_next_throughput_profile(flow_throughput)
                 flow_set[flow_id]['next_throughput'] = required_throughput
                 
-                logging.debug(f'\n___________________________________________')
-                logging.debug(f'*** \nFLOW ID: {flow_id} - NON-PRIORITIZED ({flow_count}/{len(deallocated_flows_list)})*** ') 
-                logging.debug(f'\n*** REQUESTING {required_throughput} Mbps ***')
-                logging.debug(f'*** PREVIOUS THROUGHPUT: {previous_throughput} Mbps ***\n')
+                #logging.debug(f'\n___________________________________________')
+                #logging.debug(f'*** \nFLOW ID: {flow_id} - NON-PRIORITIZED ({flow_count}/{len(deallocated_flows_list)})*** ') 
+                #logging.debug(f'\n*** REQUESTING {required_throughput} Mbps ***')
+                #logging.debug(f'*** PREVIOUS THROUGHPUT: {previous_throughput} Mbps ***\n')
                             
                 video_client: 'VrHMD' = hmds_set[str(src_id)]
                 source_node_id = video_client.current_base_station
@@ -766,6 +814,8 @@ if __name__ == '__main__':
         
         #end = timer()
         #print(f'\nelapsed time: {end - start}')
+        #pprint(flow_set)
+        #a = input('')
         average_net_latency = get_average_net_latency(graph, flow_set)
         averge_e2e_latency = get_average_e2e_latency(graph, flow_set)
         average_allocated_bw = get_average_allocated_bandwidth(flow_set)
@@ -774,8 +824,12 @@ if __name__ == '__main__':
         average_desired_net_latency = get_average_desired_net_latency(graph, flow_set)
         congestion = calculate_network_overload(graph.graph)
         cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
+        #print(f'\n****************************************************\n')
+        #print(f'average net latency: {average_net_latency} ms')
+        #print(f'desired net latency: {average_desired_net_latency} ms')
+        #time.sleep(3)
+        
         '''
-        print(f'\n****************************************************\n')
         print(f'PREVIOUS BW: {current_throughput} Mbps')
         print(f'EXPECTED BW: {expected_throughput} Mbps')
         print(f'UPDATED  BW: {updated_throughput} Mbps')

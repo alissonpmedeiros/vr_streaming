@@ -61,7 +61,7 @@ class LA(Migration):
         service: 'VrService'
     ) -> Dict[str,'Mec']:
         """ discovers a nearby MEC server to either offload or migrate the service not considering the resource availaiblity of MEC nodes"""
-        print(f'\ndiscovering mec')
+        #print(f'\ndiscovering mec')
         mec_dict: Dict[str,'Mec'] = {
             'id': None,
             'mec': None
@@ -79,11 +79,11 @@ class LA(Migration):
             
             if mec_controller.MecController.check_deployment(bs_mec, service):
                 mec_dict.update({'id': base_station.mec_id, 'mec': bs_mec})
-            break
+                return mec_dict
         
         if not mec_dict.get('mec'):
             print(f'\nALL MEC servers are overloaded! Discarting...')
-            a = input('')
+        #    a = input('')
         
         return mec_dict
 
@@ -99,11 +99,11 @@ class LA(Migration):
         provides the service migration of service i, which is based on the
         current distance between hmd_ip and where the service is deployed
         """
-        print(f'\nperforming migration\n')
+        #print(f'\nperforming migration\n')
         service_owner_hmd: 'VrHMD' = hmd_controller.HmdController.get_vr_service_owner(
             hmds_set, service
         )
-        print(f'\nservice hmd owner {service_owner_hmd.id}')
+        #print(f'\nservice hmd owner {service_owner_hmd.id}')
         
         
         
@@ -115,10 +115,10 @@ class LA(Migration):
             service_mec_server = mec_set[str(service_owner_hmd.offloaded_server)]
             service_mec_server_bs = base_station_set[str(service_owner_hmd.offloaded_server)]
             
-        print(f'\nHMD is connected to base station {hmd_base_station.id}')
+        #print(f'\nHMD is connected to base station {hmd_base_station.id}')
         #print(f'\nHMD was connected to base station {service_owner_hmd.previous_base_station}')
-        print(f'\nHMD services  are deployed on mec server {service_mec_server.name}')
-        print(f'\nMEC server {service_mec_server.name} is connected to base station {service_mec_server_bs.id}')
+        #print(f'\nHMD services  are deployed on mec server {service_mec_server.name}')
+        #print(f'\nMEC server {service_mec_server.name} is connected to base station {service_mec_server_bs.id}')
         
         
         
@@ -131,10 +131,13 @@ class LA(Migration):
         )
         
         mec_candidate_id: int = dst_node.get('id')
-        candidate_base_station = base_station_set[str(mec_candidate_id)]
         mec_candidate: 'Mec' = dst_node.get('mec')
+        if not mec_candidate:
+            #print(f'\nNo mec server available for migration!')
+            self.unsuccessful_migrations += 1
+            return False
+        candidate_base_station = base_station_set[str(mec_candidate_id)]
         #print(f'\nCandidate mec server: {mec_candidate.name} | current_mec_server: {service_mec_server.name}')
-        
         
         
         if mec_candidate and mec_candidate.name != service_mec_server.name:

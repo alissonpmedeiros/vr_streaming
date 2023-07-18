@@ -11,7 +11,7 @@ from controllers import network_controller
 from models.bitrates import BitRateProfiles
 bitrate_profiles = BitRateProfiles()
 
-
+import sys, math, heapq
 
 import typing
 from typing import Dict
@@ -438,6 +438,82 @@ def offload_services(
         a = input("press any key to continue")
 
 
+
+
+
+def A_star(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'],  start_node: 'BaseStation', goal_node: 'BaseStation'):
+        unvisited_nodes = set(graph.get_nodes())
+        dist = {}
+        previous_nodes = {}
+        
+        max_value = sys.maxsize
+        for node in unvisited_nodes:
+            dist[node] = max_value
+        
+        dist[start_node.bs_name] = 0
+        
+        # Heuristic function
+        def heuristic(node, goal_node):
+            # Assuming nodes have x and y coordinates
+            x1, y1 = node.position[0], node.position[1]
+            x2, y2 = goal_node.position[0], goal_node.position[1]
+            
+            # Calculate Euclidean distance
+            distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+            
+            return distance
+        
+        # Priority queue for open nodes
+        open_nodes = [(dist[start_node.bs_name] + heuristic(start_node, goal_node), start_node.bs_name)]
+        
+        while open_nodes:
+            print(open_nodes)
+            _, current_node = heapq.heappop(open_nodes)
+            
+            if current_node == goal_node:
+                break
+            
+            if current_node in unvisited_nodes:
+                unvisited_nodes.remove(current_node)
+                
+                neighbors = graph.get_outgoing_edges(current_node)
+                for neighbor in neighbors:
+                    new_distance = dist[current_node] + graph.get_network_latency(current_node, neighbor)
+                    if new_distance < dist[neighbor]:
+                        dist[neighbor] = new_distance
+                        previous_nodes[neighbor] = current_node
+                        neighbor_bs = base_station_set[neighbor[2:]]
+                        heapq.heappush(open_nodes, (new_distance + heuristic(neighbor_bs, goal_node), neighbor))
+        
+        #pprint(dist)
+        #pprint(previous_nodes)
+        
+        return previous_nodes, dist
+
+
+def calculate_shortest_path( 
+        previous_nodes, shortest_path, start_node: 'BaseStation', target_node: 'BaseStation'
+    ):
+        """ returns the shortest path (lowest ETE latency) between the source and destination node and the path cost """
+        path = []
+        node = target_node.bs_name
+        
+        while node != start_node.bs_name:
+            path.append(node)
+            if node in previous_nodes:
+                node = previous_nodes[node]
+            else:
+                break
+    
+        """ Adds the start node manually """
+        path.append(start_node.bs_name)
+        
+        path.reverse()
+        return path, round(shortest_path[target_node.bs_name], 2)
+
+
+
+""" 
 if __name__ == '__main__':
     ### BASE STATIONS ###
     logging.info(f'\n*** decoding base stations ***')
@@ -877,34 +953,40 @@ if __name__ == '__main__':
 
     '''
     '''
-    first_hmd_id = list(hmds_set.keys())[0]
-    hmd = hmds_set[first_hmd_id]
+"""
 
 
-    mec_id = list(mec_set.keys())[0]
-    mec_server = mec_set[mec_id]
+if __name__ == '__main__':
+    
+    logging.info(f'\n*** decoding base stations ***')
+    base_station_set = json_controller.decode_net_config_file()  
+    
+    logging.info(f'\n*** building network graph ***')
+    graph = graph_controller.GraphController.get_graph(base_station_set)
 
-    video_server = mec_server.video_server
+    #while True:
+    #    generate_networks.plot_graph(graph.graph)
+    #    time.sleep(3)
 
-    video_id = list(video_server.video_set.keys())[0]
+    source_node = base_station_set['6']
+    target_node = base_station_set['29']
+    
+    
+    """
+    print(f'\nShortest path')
+    path, cost = dijkstra_controller.DijkstraController.get_shortest_path(graph, source_node, target_node)
+    print(" -> ".join(path))
+    print(f'cost: {cost}')
 
-
-    ### RESOLUTION TEST ###
-    #print(f'\n*** Starting video operations ***\n')
-    #print(f'requesting manifest of video id: {first_video_id}')
-    manifest = hmd_controller.request_manifest(mec_set, video_id)
-
-    #pprint(manifest)
-
-
-    ### PLOT TEST ###
-
-    start_system()
-
-
-
-
-
+    """
+    print(f'\nA*')
+    
+    previous_nodes, shortest_path, = A_star(graph, base_station_set, source_node, target_node)
+    path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
+    print(" -> ".join(path))
+    print(f'cost: {cost}')
+    
+    """
     ###########################################################################
 
     ### SHORTEST AND WIDEST PATH TEST###
@@ -913,19 +995,21 @@ if __name__ == '__main__':
     print(source_node.bs_name) 
     #pprint(graph.graph)
     #a = input('')
-    dijkstra_controller.get_shortest_path_all_paths(
+    dijkstra_controller.DijkstraController.get_shortest_path_all_paths(
         graph, source_node, base_station_set
     )
 
-    dijkstra_controller.get_E2E_shortest_path_all_paths(
+    dijkstra_controller.DijkstraController.get_E2E_shortest_path_all_paths(
         graph, source_node, base_station_set
     )
 
-    dijkstra_controller.get_E2E_throughput_widest_path_all_paths(
+    dijkstra_controller.DijkstraController.get_E2E_throughput_widest_path_all_paths_without_restrictions(
         graph, source_node, base_station_set
     )
+    """
 
 
+    """ 
     print(f'\n##################### THROUGHPUT ########################\n')
 
     path, e2e_throughput = dijkstra_controller.get_widest_path(
@@ -973,6 +1057,7 @@ if __name__ == '__main__':
 
 
     '''
+    """
 
 
 

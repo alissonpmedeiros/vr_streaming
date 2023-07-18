@@ -43,6 +43,8 @@ class DijkstraController:
             graph, start_node
         )
         
+        
+        
         return Dijkstra.calculate_ETE_shortest_path(
             previous_nodes, shortest_path, start_node, target_node
         )
@@ -283,3 +285,48 @@ class DijkstraController:
             print(" -> ".join(path))
             print(f'with cost {distance}')
     
+    
+    @staticmethod
+    def get_E2E_throughput_widest_path_all_paths_without_restrictions(
+        graph: 'Graph', start_node: 'BaseStation', base_station_set: Dict[str,'BaseStation']
+    ):
+        """calculates the end-to-end throughput between start node and the target node"""
+        print(f'\n################ WIDEST PATH (BANDWIDTH) ################\n')
+        previous_nodes, widest_path = Dijkstra. build_widest_path_without_bw_restriction(
+            graph, start_node
+        )
+        candidates = {}
+        max_throughput = 0
+        for node, bandwidth in widest_path.items():
+            if node != start_node.bs_name:
+                
+                if bandwidth == max_throughput:
+                    candidates[node] = bandwidth
+                
+                elif bandwidth > max_throughput:
+                    candidates.clear()
+                    candidates[node] = bandwidth
+                    max_throughput = bandwidth 
+        
+        widest_path[start_node.bs_name] = '---'
+        #print(f'\nPrevious Nodes')
+        #pprint(previous_nodes)
+        #print(f'\nAll Widest Paths')
+        #pprint(widest_path)
+        print(f'\nCandidates')
+        pprint(candidates)  
+        
+        for node, bandwidth in candidates.items():
+            target_node_id = node
+            target_node_id = target_node_id[2:]
+            target_node = base_station_set[target_node_id]
+            
+            path, distance =  Dijkstra.calculate_widest_path(
+                previous_nodes, widest_path, start_node, target_node
+            )
+            print(f'\n')
+            
+            print(" -> ".join(path))
+            print(f'with cost {distance}')
+    
+   

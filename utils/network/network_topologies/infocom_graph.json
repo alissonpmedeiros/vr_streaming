@@ -3,8 +3,8 @@
       "1": {
         "id": 1,
         "bs_name": "BS1",
-        "node_label": "0\n(2.45)",
-        "node_latency": 2.45,
+        "node_label": "0\n(5.45)",
+        "node_latency": 5.45,
         "wireless_latency": 0.23,
         "signal_range": 0.13,
         "position": [
@@ -13,15 +13,18 @@
         ],
         "edges": [
             "6",
-            "7"
+            "7",
+            "4"
         ],
         "edge_net_latencies": [
             1.11,
-            0.87
+            0.87,
+            2.83
         ],
         "edge_net_throughputs": [
-            200,
-            50.3
+            170,
+            50.3,
+            189
         ]
       },
       "2": {
@@ -51,8 +54,8 @@
       "3": {
         "id": 3,
         "bs_name": "BS3",
-        "node_label": "0\n(4.26)",
-        "node_latency": 4.26,
+        "node_label": "0\n(2.26)",
+        "node_latency": 2.26,
         "wireless_latency": 0.23,
         "signal_range": 0.13,
         "position": [
@@ -64,7 +67,7 @@
             "7"
         ],
         "edge_net_latencies": [
-            0.92,
+            0.32,
             0.71
         ],
         "edge_net_throughputs": [
@@ -85,22 +88,25 @@
         ],
         "edges": [
             "5",
-            "6"
+            "6",
+            "1"
         ],
         "edge_net_latencies": [
-            0.98,
-            0.53
+            0.68,
+            0.53,
+            2.83
         ],
         "edge_net_throughputs": [
             60.97,
-            83.53
+            83.53,
+            189
         ]
       },
       "5": {
         "id": 5,
         "bs_name": "BS5",
-        "node_label": "0\n(2.02)",
-        "node_latency": 2.02,
+        "node_label": "0\n(4.02)",
+        "node_latency": 4.02,
         "wireless_latency": 0.23,
         "signal_range": 0.13,
         "position": [
@@ -112,8 +118,8 @@
             "4"
         ],
         "edge_net_latencies": [
-            0.92,
-            0.98
+            0.32,
+            0.68
         ],
         "edge_net_throughputs": [
             54.18,
@@ -140,7 +146,7 @@
             0.53
         ],
         "edge_net_throughputs": [
-            200,
+            170,
             83.53
         ]
       },

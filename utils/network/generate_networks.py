@@ -702,7 +702,7 @@ def plot_graph(network_graph: dict):
                     net_throughput=network_throughput
                 )
                 
-    draw_graph(di_graph, 'any.pdf', throughput=True)
+    draw_graph(di_graph, 'any.pdf', throughput=False)
 
 
 if __name__ == "__main__":

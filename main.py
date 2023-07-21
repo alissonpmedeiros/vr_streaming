@@ -9,6 +9,7 @@ from controllers import dijkstra_controller
 from utils.network import generate_networks 
 from controllers import network_controller
 from models.bitrates import BitRateProfiles
+from itertools import tee
 bitrate_profiles = BitRateProfiles()
 
 import sys, math, heapq
@@ -438,10 +439,127 @@ def offload_services(
         a = input("press any key to continue")
 
 
+def euclidean_distance(node, goal_node):
+    x1, y1 = node.position[0], node.position[1]
+    x2, y2 = goal_node.position[0], goal_node.position[1]
+    distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)    
+    return distance
 
 
 
-def A_star(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'],  start_node: 'BaseStation', goal_node: 'BaseStation'):
+
+def normalize(value, min_val, max_val):
+    normalized_value = (value - min_val) / (max_val - min_val)
+    return normalized_value
+
+def ER6VA(node: 'BaseStation', goal_node: 'BaseStation', predecessor: str, graph: 'Graph') -> float:
+    
+    # Get the network throughput and congestion level of the edge from node to goal_node
+    throughput = graph.get_network_available_throughput(node.bs_name, predecessor)
+    latency = graph.get_network_latency(node.bs_name, predecessor)
+    congestion = graph.get_link_congestion_level(node.bs_name, predecessor)
+    
+    
+    # Compute the geographical distance between node and goal_node (e.g., using their (x, y) coordinates)
+    x1, y1 = node.position[0], node.position[1]
+    x2, y2 = goal_node.position[0], goal_node.position[1]
+    
+    # Calculate Euclidean distance
+    distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    
+def pairwise(iterable):
+        src, dst = tee(iterable)
+        next(dst, None)
+        return zip(src, dst)
+
+
+
+
+
+
+
+# # Heuristic function
+# def heuristic(node, goal_node, predecessor):
+#     #the throughput and latency between the node and its predecessor are calculated as follows 
+#     throughput = graph.get_network_available_throughput(node.bs_name, predecessor)
+#     latency = graph.get_network_latency(node.bs_name, predecessor)
+#     congestion = graph.get_link_congestion_level(node.bs_name, predecessor)
+    
+#     # Assuming nodes have x and y coordinates
+#     x1, y1 = node.position[0], node.position[1]
+#     x2, y2 = goal_node.position[0], goal_node.position[1]
+    
+#     # Calculate Euclidean distance
+#     distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    
+#     return distance
+
+# def FLATWISE(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'],  start_node: 'BaseStation', goal_node: 'BaseStation'):
+#         initial_distance = euclidean_distance(source_node, target_node)
+#         latency_requirement = 10
+#         achieved_latency = 0
+#         desired_latency = 0
+        
+#         unvisited_nodes = set(graph.get_nodes())
+#         dist = {}
+#         previous_nodes = {}
+        
+#         max_value = sys.maxsize
+#         for node in unvisited_nodes:
+#             dist[node] = max_value
+        
+#         dist[start_node.bs_name] = 0
+        
+#         # Priority queue for open nodes
+#         open_nodes = [(dist[start_node.bs_name] + heuristic(start_node, goal_node, predecessor=None), start_node.bs_name)]
+#         it = 0
+#         while open_nodes:
+            
+#             _, current_node = heapq.heappop(open_nodes)
+#             current_node_bs = base_station_set[current_node[2:]]
+#             current_distance = euclidean_distance(current_node_bs, goal_node)
+#             current_percentage = (current_distance * 100) / initial_distance
+#             # print(f'current node {current_node} is {current_percentage}% away from goal node {goal_node.bs_name}')
+#             # pprint(open_nodes)
+#             # a = input('')
+#             if current_node == goal_node.bs_name:
+#                 break
+            
+#             if current_node in unvisited_nodes:
+#                 unvisited_nodes.remove(current_node)
+                
+#                 neighbors = graph.get_outgoing_edges(current_node)
+#                 for neighbor in neighbors:
+#                     if neighbor in unvisited_nodes:
+#                         it += 1
+#                         new_distance = dist[current_node] + graph.get_network_latency(current_node, neighbor)
+#                         if new_distance < dist[neighbor]:
+#                             dist[neighbor] = new_distance
+#                             previous_nodes[neighbor] = current_node
+#                             neighbor_bs = base_station_set[neighbor[2:]]
+#                             # pprint(neighbor_bs)
+#                             # a = input('')
+#                             heapq.heappush(open_nodes, (new_distance + heuristic
+#                         (neighbor_bs, goal_node, predecessor=current_node), neighbor))
+#                             # heapq.heappush(open_nodes, (new_distance + ER6VA(neighbor_bs, goal_node, current_node, graph), neighbor))
+                
+                
+#                 # pprint(open_nodes)
+#                 # for neighbor in neighbors:
+#                 #     print(f'dist[{neighbor}]: {dist[neighbor]}')
+#                 # a = input()
+                
+#                 # pprint(open_nodes)
+#                 # a = input('')
+        
+#         #pprint(dist)
+#         #pprint(previous_nodes)
+#         # print(f'\n***iterations: {it}\n')
+#         return previous_nodes, dist
+
+
+
+def A_estrela_bk(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'],  start_node: 'BaseStation', goal_node: 'BaseStation'):
         unvisited_nodes = set(graph.get_nodes())
         dist = {}
         previous_nodes = {}
@@ -465,12 +583,13 @@ def A_star(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'],  start_no
         
         # Priority queue for open nodes
         open_nodes = [(dist[start_node.bs_name] + heuristic(start_node, goal_node), start_node.bs_name)]
-        
+        it = 0
         while open_nodes:
-            print(open_nodes)
+            # print(open_nodes)
+            # a = input('')
             _, current_node = heapq.heappop(open_nodes)
             
-            if current_node == goal_node:
+            if current_node == goal_node.bs_name:
                 break
             
             if current_node in unvisited_nodes:
@@ -478,18 +597,19 @@ def A_star(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'],  start_no
                 
                 neighbors = graph.get_outgoing_edges(current_node)
                 for neighbor in neighbors:
-                    new_distance = dist[current_node] + graph.get_network_latency(current_node, neighbor)
-                    if new_distance < dist[neighbor]:
-                        dist[neighbor] = new_distance
-                        previous_nodes[neighbor] = current_node
-                        neighbor_bs = base_station_set[neighbor[2:]]
-                        heapq.heappush(open_nodes, (new_distance + heuristic(neighbor_bs, goal_node), neighbor))
+                    if neighbor in unvisited_nodes:
+                        it += 1
+                        new_distance = dist[current_node] + graph.get_network_latency(current_node, neighbor)
+                        if new_distance < dist[neighbor]:
+                            dist[neighbor] = new_distance
+                            previous_nodes[neighbor] = current_node
+                            neighbor_bs = base_station_set[neighbor[2:]]
+                            heapq.heappush(open_nodes, (new_distance + heuristic(neighbor_bs, goal_node), neighbor))
         
         #pprint(dist)
         #pprint(previous_nodes)
-        
+        # print(f'\n***iterations: {it}\n')
         return previous_nodes, dist
-
 
 def calculate_shortest_path( 
         previous_nodes, shortest_path, start_node: 'BaseStation', target_node: 'BaseStation'
@@ -955,36 +1075,146 @@ if __name__ == '__main__':
     '''
 """
 
+# Heuristic function
+def FLATWISE_heuristic(node, goal_node, predecessor, latency_requirement, current_dist):
+
+    latency_requirement = latency_requirement + (latency_requirement * 0.1)
+
+    x1, y1 = node.position[0], node.position[1]
+    x2, y2 = goal_node.position[0], goal_node.position[1]
+
+    distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    
+    if not predecessor:
+        return distance
+
+    latency = graph.get_network_latency(node.bs_name, predecessor)
+    
+    # Calculate the desired latency based on the current latency and latency requirement
+    desired_latency_percentage = (latency * 100) / latency_requirement
+    
+    desired_latency_difference = abs(latency_requirement - desired_latency_percentage)
+    
+    # desired_latency_value = desired_latency_difference + (latency_requirement / 10)
+    
+    # desired_latency_value = desired_latency_difference + (latency_requirement / current_dist)
+    
+    desired_latency_value = desired_latency_difference + (latency_requirement / (current_dist - (current_dist * 0.05)))
+    
+    return distance * desired_latency_value
+
+def FLATWISE(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], start_node: 'BaseStation', goal_node: 'BaseStation', latency_requirement: float):
+    unvisited_nodes = set(graph.get_nodes())
+    dist = {}
+    previous_nodes = {}
+
+    max_value = sys.maxsize
+    for node in unvisited_nodes:
+        dist[node] = max_value
+
+    dist[start_node.bs_name] = 0
+
+    # Priority queue for open nodes
+    open_nodes = [(dist[start_node.bs_name] + FLATWISE_heuristic(start_node, goal_node, None, latency_requirement, 0), start_node.bs_name)]
+    it = 0
+    while open_nodes:
+
+        _, current_node = heapq.heappop(open_nodes)
+        if current_node == goal_node.bs_name:
+            break
+
+        if current_node in unvisited_nodes:
+            unvisited_nodes.remove(current_node)
+
+            neighbors = graph.get_outgoing_edges(current_node)
+            for neighbor in neighbors:
+                if neighbor in unvisited_nodes:
+                    it += 1
+                    new_distance = dist[current_node] + graph.get_network_latency(current_node, neighbor)
+                    if new_distance < dist[neighbor]:
+                        dist[neighbor] = new_distance
+                        previous_nodes[neighbor] = current_node
+                        neighbor_bs = base_station_set[neighbor[2:]]
+                        heapq.heappush(open_nodes, (new_distance + FLATWISE_heuristic(neighbor_bs, goal_node, current_node, latency_requirement, dist[neighbor]), neighbor))
+            
+    
+    # print(f'\n***iterations: {it}\n')
+    return previous_nodes, dist
+
 
 if __name__ == '__main__':
     
-    logging.info(f'\n*** decoding base stations ***')
+    # logging.info(f'\n*** decoding base stations ***')
     base_station_set = json_controller.decode_net_config_file()  
     
-    logging.info(f'\n*** building network graph ***')
+    # logging.info(f'\n*** building network graph ***')
     graph = graph_controller.GraphController.get_graph(base_station_set)
+    # generate_networks.plot_graph(graph.graph)
 
-    #while True:
+    # while True:
     #    generate_networks.plot_graph(graph.graph)
-    #    time.sleep(3)
+    #    time.sleep(5)
 
-    source_node = base_station_set['6']
-    target_node = base_station_set['29']
+    # source_node = base_station_set['4']
+    # target_node = base_station_set['8']
     
+    source_node = base_station_set['207']
+    target_node = base_station_set['15']
+    
+    # source_node = base_station_set['14']
+    # target_node = base_station_set['29']
     
     """
-    print(f'\nShortest path')
+    """
+    print(f'\n*** SHORTEST PATH ALGORITHM ***\n')
     path, cost = dijkstra_controller.DijkstraController.get_shortest_path(graph, source_node, target_node)
+    print(f'route found with cost ({cost} ms)')
     print(" -> ".join(path))
-    print(f'cost: {cost}')
-
-    """
-    print(f'\nA*')
     
-    previous_nodes, shortest_path, = A_star(graph, base_station_set, source_node, target_node)
-    path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
+    print(f'________________________________________________________________')
+
+    print(f'\n*** WIDEST PATH ALGORITHM ***\n')
+    path, cost = dijkstra_controller.DijkstraController.get_widest_path(graph, source_node, target_node)
+    latency_cost = network_controller.NetworkController.get_route_net_latency(graph, path)
+    print(f'route found with cost ({latency_cost} ms)')
     print(" -> ".join(path))
-    print(f'cost: {cost}')
+    
+    print(f'________________________________________________________________')
+
+    print(f'\n*** LATENCY-AWARE SHORTEST PATH ALGORITHM ***')
+    
+    latency_requirement = 3.5
+    print(f'\nLATENCY REQUIREMENT: {latency_requirement} ms')
+    previous_nodes, shortest_path, = FLATWISE(graph, base_station_set, source_node, target_node, latency_requirement)
+    path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
+    print(f'route found with cost ({cost} ms)')
+    print(" -> ".join(path))
+    # print(f'cost: {cost}')
+    
+    for i in range(4, 15):
+        
+        latency_requirement = i
+        print(f'\nLATENCY REQUIREMENT: {latency_requirement} ms')
+        previous_nodes, shortest_path, = FLATWISE(graph, base_station_set, source_node, target_node, latency_requirement)
+        path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
+        print(f'route found with cost ({cost} ms)')
+        print(" -> ".join(path))
+        # print(f'cost: {cost}')
+        
+    # initial_distance = euclidean_distance(source_node, target_node)
+
+    # for src, dst in pairwise(path):
+    #     src_bs = base_station_set[src[2:]]
+    #     current_distance = euclidean_distance(src_bs, target_node)
+    #     current_percentage = (current_distance * 100) / initial_distance
+    #     print(f'current node {src} is {current_percentage}% away from goal node {target_node.bs_name}')
+     
+    
+    # print(" -> ".join(path))
+    # print(f'cost: {cost}')
+    
+    # print(f'\nWIDEST PATH')
+    # network_controller.NetworkController.get_route_net_throughput(graph, path)
     
     """
     ###########################################################################

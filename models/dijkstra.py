@@ -42,8 +42,8 @@ class Dijkstra:
         """However, we initialize the  starting node with wireless latency of the Base station to reach the attached MEC and the computing latency of the MEC """   
         dist[start_node.bs_name] = 0#start_node.wireless_latency #+ start_node_mec.computing_latency  
         
-        print(f'\nsource node: {start_node.bs_name}')
-        
+        # print(f'\nsource node: {start_node.bs_name}')
+        it = 0
         while unvisited_nodes:
             """finds the node with the lowest score"""
             current_min_node = None
@@ -53,30 +53,31 @@ class Dijkstra:
                 elif dist[node] < dist[current_min_node]:
                     current_min_node = node
                     
-               
                     
-            print(f'\n\ncurrent min node: {current_min_node}')
+            # print(f'\n\ncurrent min node: {current_min_node}')
             #print(f'current max node: {current_max_node}')
             """retrieves the current node's neighbors and updates their distances"""
             neighbors = graph.get_outgoing_edges(current_min_node)
             for neighbor in neighbors:
+                it += 1
                 if neighbor in unvisited_nodes:
-                    print(f'\nneighbor: {neighbor}')
+                    # print(f'\nneighbor: {neighbor}')
                     new_distance = dist[current_min_node] + graph.get_network_latency(current_min_node, neighbor)
-                    print(f'new distance: {new_distance}')
+                    # print(f'new distance: {new_distance}')
                     if new_distance < dist[neighbor]:
-                        print(f'new distance: {new_distance} < dist[neighbor]: {dist[neighbor]}')
-                        print(f'updating dist[neighbor]({dist[neighbor]}) to {new_distance}')
+                        # print(f'new distance: {new_distance} < dist[neighbor]: {dist[neighbor]}')
+                        # print(f'updating dist[neighbor]({dist[neighbor]}) to {new_distance}')
                         dist[neighbor] = round(new_distance, 2)
                         """We also update the best path to the current node"""
                         previous_nodes[neighbor] = current_min_node
-                        print(f'updating previous_nodes[neighbor] to {current_min_node}')
+                        # print(f'updating previous_nodes[neighbor] to {current_min_node}')
                 
             """After visiting its neighbors, we mark the node as 'visited'"""
             unvisited_nodes.remove(current_min_node)
 
         #pprint(dist)
         #pprint(previous_nodes)
+        # print(f'\n***iterations: {it}\n')
         return previous_nodes, dist
     
     @staticmethod 
@@ -280,7 +281,7 @@ class Dijkstra:
         return previous_nodes, dist
     
     @staticmethod 
-    def build_widest_path(graph: 'Graph', start_node: 'BaseStation', required_throughput: float):
+    def build_widest_path(graph: 'Graph', start_node: 'BaseStation'):
         """builds the shortest path based on the E2E throughput"""
         #print(f'\nsource node: {start_node.bs_name}')
         unvisited_nodes = list(graph.get_nodes()) 
@@ -316,7 +317,7 @@ class Dijkstra:
               
             """retrieves the current node's neighbors and updates their throughputs"""
             
-            neighbors = graph.get_outgoing_edges_throughput(current_max_node, required_throughput)
+            neighbors = graph.get_outgoing_edges(current_max_node)
            
             
             for neighbor in neighbors:

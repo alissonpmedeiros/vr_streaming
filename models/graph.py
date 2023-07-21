@@ -71,6 +71,18 @@ class Graph():
         " returns the network throughput between two nodes"
         return self.graph[node1][node2]['network_throughput']
     
+    def get_network_available_throughput(self, node1, node2):
+        " returns the available network throughput between two nodes"
+        return self.graph[node1][node2]['available_bandwidth']
+    
+    def get_link_congestion_level(self, node1, node2):
+        " returns the link congestion level between two nodes"
+        total_bandwidth = self.graph[node1][node2]['network_throughput']
+        allocated_bandwidth = self.graph[node1][node2]['allocated_bandwidth']
+        congestion_level = (allocated_bandwidth * 100) / total_bandwidth
+        return congestion_level
+    
+    
     def get_node_computing_latency(self, node):
         """ returns the computing latency of a node """
         return self.graph[node]['computing_latency']

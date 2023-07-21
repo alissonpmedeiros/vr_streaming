@@ -394,7 +394,17 @@ class NetworkController:
         for src, dst in NetworkController.__pairwise(route):
             net_latency += graph.graph[src][dst]['network_latency']
              
-        return net_latency    
+        return net_latency
+    
+    @staticmethod
+    def get_route_net_throughput(graph: 'Graph', route: list) -> float:
+        net_throughput = 0
+        for src, dst in NetworkController.__pairwise(route):
+            if graph.graph[src][dst]['network_throughput'] > net_throughput:
+                net_throughput += graph.graph[src][dst]['network_throughput']
+            
+        print(round(net_throughput, 2))
+        return net_throughput    
     
         
     @staticmethod

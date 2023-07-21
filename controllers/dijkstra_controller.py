@@ -119,12 +119,12 @@ class DijkstraController:
     #TODO: this method should not be called here anymore, instead it should be called from widest_path_controller
     @staticmethod
     def get_widest_path(
-        graph: 'Graph', start_node: 'BaseStation', target_node: 'BaseStation', required_throughput: float 
+        graph: 'Graph', start_node: 'BaseStation', target_node: 'BaseStation' 
     ):
         """gets the widest path (maximum throughput) between start node and the target node"""
         
         previous_nodes, widest_path = Dijkstra.build_widest_path(
-            graph, start_node, required_throughput
+            graph, start_node
         )
         
         return Dijkstra.calculate_widest_path(

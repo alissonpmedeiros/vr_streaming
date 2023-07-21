@@ -1,12 +1,12 @@
 SYSTEM:
   ETE_LATENCY_THRESHOLD: 5
-  #DATA_DIR: '/Users/alisson-cds/Desktop/vr_streaming/data_sets/'
-  DATA_DIR: 'C:\Users\Alisson Cds\Downloads\vr_streaming\data_sets\'
+  DATA_DIR: '/Users/alisson-cds/Desktop/vr_streaming/data_sets/'
+  #DATA_DIR: 'C:\Users\Alisson Cds\Downloads\vr_streaming\data_sets\'
   BS_FILE: 'base_stations.json'
   MEC_FILE: 'mecs.json'
   HMDS_FILE: 'hmds_4k.json'
-  #RESULTS_DIR: '/Users/alisson-cds/Desktop/vr_streaming/results/4k/'
-  RESULTS_DIR: 'C:\Users\Alisson Cds\Downloads\vr_streaming\results\'
+  RESULTS_DIR: '/Users/alisson-cds/Desktop/vr_streaming/results/4k/'
+  #RESULTS_DIR: 'C:\Users\Alisson Cds\Downloads\vr_streaming\results\'
   #SERVICE_PER_USER: Bern -> 10, 20, 30 | Geneva -> 25, 35, 45 | Zurich -> 50, 55, 60
 
 # variables for mininet-wifi 
@@ -19,10 +19,10 @@ NETWORK:
   #NETWORK_FILE: base_stations.json
   #NETWORK_FILE_DIR: C:\Users\Alisson Cds\OneDrive\Desktop\vr_streaming\data_sets\ 
   #NETWORK_FILE_DIR: /Users/alisson-cds/Desktop/vr_streaming/data_sets/
-  NETWORK_FILE: network.json
-  #NETWORK_FILE: example.json
-  #NETWORK_FILE_DIR: /Users/alisson-cds/Desktop/vr_streaming/utils/network/network_topologies/
-  NETWORK_FILE_DIR: C:\Users\Alisson Cds\Downloads\vr_streaming\utils\network\network_topologies\ 
+  # NETWORK_FILE: network.json
+  NETWORK_FILE: infocom_graph.json
+  NETWORK_FILE_DIR: /Users/alisson-cds/Desktop/vr_streaming/utils/network/network_topologies/
+  #NETWORK_FILE_DIR: C:\Users\Alisson Cds\Downloads\vr_streaming\utils\network\network_topologies\ 
   #NET_GRAPH_DIMENSION: 2000
   #HMD_MIN_VELOCITY: 1000
   #HMD_MAX_VELOCITY: 1500

@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
 """ controller modules """
 from controllers import bs_controller 
 from controllers import mec_controller
-from controllers import dijkstra_controller 
+from controllers import path_controller 
 
 """LA migration module"""
 from models.migration_algorithms.la import LA
@@ -62,7 +62,7 @@ class LRA(LA):
             'mec': None
         }   
         
-        shortest_path = dijkstra_controller.DijkstraController.get_shortest_path(
+        shortest_path = path_controller.DijkstraController.get_shortest_path(
             mec_set, graph, start_node
         )
         # Iterate over the sorted shortest path (list of tuples) and checks whether a mec server can host the service

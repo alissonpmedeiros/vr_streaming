@@ -14,7 +14,7 @@ from controllers import vr_controller
 from controllers import bs_controller 
 from controllers import scg_controller 
 from controllers import mec_controller
-from controllers import dijkstra_controller 
+from controllers import path_controller 
 
 """other modules"""
 from typing import Dict

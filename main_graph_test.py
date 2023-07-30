@@ -1,6 +1,6 @@
 from controllers import graph_controller
 from controllers import bs_controller
-from controllers import dijkstra_controller
+from controllers import path_controller
 from controllers import json_controller
 from controllers import config_controller
 
@@ -31,16 +31,16 @@ print(f'\n################ START NODE ################\n')
 print(start_node.bs_name) 
 #pprint(graph.graph)
 #a = input('')
-dijkstra_controller.DijkstraController.get_shortest_path_all_paths(graph, start_node, base_station_set)
-dijkstra_controller.DijkstraController.get_E2E_shortest_path_all_paths(graph, start_node, base_station_set)
-dijkstra_controller.DijkstraController.get_E2E_throughput_widest_path_all_paths(graph, start_node, base_station_set)
+path_controller.DijkstraController.get_shortest_path_all_paths(graph, start_node, base_station_set)
+path_controller.DijkstraController.get_E2E_shortest_path_all_paths(graph, start_node, base_station_set)
+path_controller.DijkstraController.get_E2E_throughput_widest_path_all_paths(graph, start_node, base_station_set)
 '''
 '''
 a = input('')
 
 print(f'\n##################### THROUGHPUT ########################\n')
 
-path, e2e_throughput = dijkstra_controller.DijkstraController.get_widest_path(
+path, e2e_throughput = path_controller.DijkstraController.get_widest_path(
     graph, start_node, target_node
 )
 
@@ -49,7 +49,7 @@ print(e2e_throughput)
 
 print(f'\n##################### E2E LATENCY ########################\n')
 
-path, e2e_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path(
+path, e2e_latency = path_controller.DijkstraController.get_ETE_shortest_path(
     graph, start_node, target_node
 )
 
@@ -67,7 +67,7 @@ result = {
 
 print(f'\n##################### NETWORK LATENCY ########################\n')
 
-path, e2e_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path(
+path, e2e_latency = path_controller.DijkstraController.get_ETE_shortest_path(
     graph, start_node, target_node
 )
 

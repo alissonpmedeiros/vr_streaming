@@ -13,7 +13,7 @@ from models.migration_algorithms.scg import SCG
 """ controller modules """
 from controllers import bs_controller 
 from controllers import mec_controller
-from controllers import dijkstra_controller 
+from controllers import path_controller 
 
 """other modules"""
 from typing import Dict
@@ -87,7 +87,7 @@ class DSCP(SCG):
         #print(f'*** Discovering MEC ***')
         
         """here, the parameter zones is not set, then the algorithm will find out all posibilities"""
-        shortest_path = dijkstra_controller.DijkstraController.get_ETE_shortest_path(
+        shortest_path = path_controller.DijkstraController.get_ETE_shortest_path(
             mec_set, graph, start_node
         )
         

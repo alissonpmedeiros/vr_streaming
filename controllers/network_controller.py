@@ -7,7 +7,7 @@ if typing.TYPE_CHECKING:
     from models.graph import Graph
 
 
-from controllers import dijkstra_controller
+from controllers import path_controller
 from models.bitrates import BitRateProfiles
 from utils.network import generate_networks 
 
@@ -329,6 +329,41 @@ class NetworkController:
         
         flow_set[flow_id]['throughput'] = required_throughput
         flow_set[flow_id]['route'] = new_route
+        
+    @staticmethod
+    def increase_bandwidth_reservation_test(
+        graph: 'Graph', route, required_throughput: float
+    ):
+        
+        for src, dst in NetworkController.__pairwise(route):
+            
+            graph_bandwidth = NetworkController.get_graph_pair_bandwidth(graph, src, dst)
+            
+            current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
+            current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
+        
+            new_allocated_bandwidth = current_allocated_bandwidth + required_throughput
+            new_available_bandwidth = current_available_bandwidth - required_throughput
+            
+            NetworkController.show_graph_pair_bandwidth_reservation(
+                src, 
+                dst, 
+                current_allocated_bandwidth, 
+                current_available_bandwidth, 
+                new_allocated_bandwidth, 
+                new_available_bandwidth
+            )
+            
+            if new_available_bandwidth < 0 or new_allocated_bandwidth < 0:
+                a = input('\n***CRASHED in increase_bandwidth_reservation!***')
+            
+            NetworkController.update_graph_pair_bandwidth(
+                graph, 
+                src, 
+                dst, 
+                new_allocated_bandwidth, 
+                new_available_bandwidth
+            )
     
     staticmethod    
     def congested_route(graph: 'Graph', src: str, dst: str) -> bool:
@@ -394,7 +429,7 @@ class NetworkController:
         for src, dst in NetworkController.__pairwise(route):
             net_latency += graph.graph[src][dst]['network_latency']
              
-        return net_latency
+        return round(net_latency, 2)
     
     @staticmethod
     def get_route_net_throughput(graph: 'Graph', route: list) -> float:
@@ -404,7 +439,16 @@ class NetworkController:
                 net_throughput += graph.graph[src][dst]['network_throughput']
             
         print(round(net_throughput, 2))
-        return net_throughput    
+        return net_throughput
+    
+    @staticmethod
+    def get_route_widest_throughput(graph: 'Graph', route: list) -> float:
+        widest_throughput = MAX_VALUE
+        for src, dst in NetworkController.__pairwise(route):
+            if graph.graph[src][dst]['available_bandwidth'] < widest_throughput:
+                widest_throughput = graph.graph[src][dst]['available_bandwidth']
+            
+        return widest_throughput    
     
         
     @staticmethod
@@ -416,7 +460,7 @@ class NetworkController:
         required_throughput = flow['next_throughput']
         
         new_route = None
-        new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
+        new_route, route_max_throughput = path_controller.DijkstraController.get_widest_path(
             graph, source_node, target_node, required_throughput
         )
         
@@ -438,7 +482,7 @@ class NetworkController:
             
             congestion_iterations += 1
             
-            new_route, route_max_throughput = dijkstra_controller.DijkstraController.get_widest_path(
+            new_route, route_max_throughput = path_controller.DijkstraController.get_widest_path(
                 graph, source_node, target_node, required_throughput
             )
         
@@ -457,7 +501,7 @@ class NetworkController:
         desired_net_latency = throughput_profiles[required_throughput]['network_latency']
         
         new_route = None
-        new_route, route_max_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
+        new_route, route_max_latency = path_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
             graph, source_node, target_node, required_throughput
         )
         
@@ -505,7 +549,7 @@ class NetworkController:
             congestion_iterations += 1
             
             
-            new_route, route_max_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
+            new_route, route_max_latency = path_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
                 graph, source_node, target_node, required_throughput
             )
         

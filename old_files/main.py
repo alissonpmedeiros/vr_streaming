@@ -1,6 +1,6 @@
 from controllers import graph_controller
 from controllers import bs_controller
-from controllers import dijkstra_controller
+from controllers import path_controller
 from pprint import pprint as pprint
 import sys
 import heapq

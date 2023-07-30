@@ -212,7 +212,7 @@ def create_topology(file_dir, file_name, pdf_name):
 
 #####################################################################
         
-def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
+def draw_graph(di_graph: DiGraph, pdf_name, throughput:bool):
     """ draws the GRAPH """
     
     if throughput:
@@ -283,17 +283,17 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         net_throughput = nx.get_edge_attributes(di_graph.graph, "net_throughput")
         net_throughput_labels = {}
         
-        #converting throughputs from Mbps to Gbps
-        for k, v in net_throughput.copy().items():
-            net_throughput[k] = round(v/1000, 2)
+        # #converting throughputs from Mbps to Gbps
+        # for k, v in net_throughput.copy().items():
+        #     net_throughput[k] = round(v/1000, 2)
             
-        #converting throughputs from Mbps to Gbps
-        for k, v in net_allocated_throughput.copy().items():
-            net_allocated_throughput[k] = round(v/1000, 2)
+        # #converting throughputs from Mbps to Gbps
+        # for k, v in net_allocated_throughput.copy().items():
+        #     net_allocated_throughput[k] = round(v/1000, 2)
             
-        #converting throughputs from Mbps to Gbps
-        for k, v in net_available_throughput.copy().items():
-            net_available_throughput[k] = round(v/1000, 2)
+        # #converting throughputs from Mbps to Gbps
+        # for k, v in net_available_throughput.copy().items():
+        #     net_available_throughput[k] = round(v/1000, 2)
         
         '''
         zipped = zip(net_throughput.items(), net_allocated_throughput.items(), net_available_throughput.items())
@@ -319,6 +319,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         
     else:    
         
+        '''
         # provides different colors for each link according to their throughput
         elarge = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_throughput"] < (10000 * 0.3)]
         
@@ -328,10 +329,9 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         
         # provides different colors for each link according to their latency
         '''
-        esmall = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] < 0.7]
-        neutral = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] >= 0.7 and d["net_latency"] <= 0.8]
-        elarge = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] > 0.8]
-        '''
+        esmall = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] < 1]
+        neutral = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] >= 1 and d["net_latency"] <= 2]
+        elarge = [(u, v) for (u, v, d) in di_graph.graph.edges(data=True) if d["net_latency"] > 2]
         
         #pprint(di_graph.graph_positions)
         #pprint(di_graph.graph.graph)
@@ -391,18 +391,18 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
         throughput_labels = nx.get_edge_attributes(di_graph.graph, "net_throughput")
         
         #converting throughputs from Mbps to Gbps
-        for k, v in throughput_labels.copy().items():
-            throughput_labels[k] = round(v/1000, 2)
+        # for k, v in throughput_labels.copy().items():
+        #     throughput_labels[k] = round(v/1000, 2)
             
             
         net_latency_throughput_labels = {}
         
         for (k,v), (k2,v2) in zip(net_allocated_throughput.items(), throughput_labels.items()):
             #plot latency labels only
-            #net_latency_throughput_labels[k] = str(v) #+ '\n(' + str(v2) + ')'
+            net_latency_throughput_labels[k] = str(v) #+ '\n(' + str(v2) + ')'
             
             #plot throughput labels only
-            net_latency_throughput_labels[k] = str(v2) 
+            # net_latency_throughput_labels[k] = str(v2) 
         
         nx.draw_networkx_edge_labels(
             di_graph.graph, 
@@ -427,7 +427,7 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput=False):
     #plt.pause(0.005)
     
     #plt.imshow(plt.imread(pdf_name))
-    plt.pause(5)
+    plt.pause(0.1)
     plt.clf()
     
 def draw_plotly_graph(m_graph: DiGraph):
@@ -680,6 +680,7 @@ def plot_graph(network_graph: dict):
                 allocated_bandwidth = edge_data['allocated_bandwidth']
                 available_bandwidth = edge_data['available_bandwidth']
                 network_throughput = edge_data['network_throughput']
+                network_latency = edge_data['network_latency']
                 
                 #print(f'\nsrc: {src_name} ({type(src_name)}) -> dst: {dst_name}( {type(dst_name)})')
                 #a = input('')
@@ -690,7 +691,8 @@ def plot_graph(network_graph: dict):
                     v_of_edge=dst_name, 
                     net_available_throughput=available_bandwidth,
                     net_allocated_throughput=allocated_bandwidth,
-                    net_throughput=network_throughput
+                    net_throughput=network_throughput,
+                    net_latency=network_latency
                 )
                 
                 # updating destination throughput and latency accordingly
@@ -699,10 +701,11 @@ def plot_graph(network_graph: dict):
                     v_of_edge=src_name, 
                     net_available_throughput=available_bandwidth,
                     net_allocated_throughput=allocated_bandwidth,
-                    net_throughput=network_throughput
+                    net_throughput=network_throughput,
+                    net_latency=network_latency
                 )
                 
-    draw_graph(di_graph, 'any.pdf', throughput=False)
+    draw_graph(di_graph, 'any.pdf', True)
 
 
 if __name__ == "__main__":

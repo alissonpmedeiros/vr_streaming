@@ -5,7 +5,7 @@ from controllers import hmd_controller
 from controllers import json_controller
 from controllers import mec_controller
 from controllers import graph_controller
-from controllers import dijkstra_controller
+from controllers import path_controller
 from utils.network import generate_networks 
 from controllers import network_controller
 from models.bitrates import BitRateProfiles
@@ -262,7 +262,7 @@ def get_average_e2e_latency(graph, flow_set: dict):
         target_mec_id = str(dst_id)
         target_node = base_station_set[target_mec_id]
         
-        path, e2e_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path(
+        path, e2e_latency = path_controller.DijkstraController.get_ETE_shortest_path(
             graph, source_node, target_node
         )
         
@@ -291,7 +291,7 @@ def get_average_net_latency(graph, flow_set: dict):
             target_mec_id = str(flow_hmd.offloaded_server)
             target_node = base_station_set[target_mec_id]
             
-            path, net_latency_from_hmd_to_offloaded_mec = dijkstra_controller.DijkstraController.get_shortest_path(
+            path, net_latency_from_hmd_to_offloaded_mec = path_controller.DijkstraController.get_shortest_path(
                 graph, source_node, target_node
             )
             
@@ -324,7 +324,7 @@ def get_average_desired_net_latency(graph, flow_set: dict):
         target_mec_id = str(dst_id)
         target_node = base_station_set[target_mec_id]
         
-        path, net_latency = dijkstra_controller.DijkstraController.get_shortest_path(
+        path, net_latency = path_controller.DijkstraController.get_shortest_path(
             graph, source_node, target_node
         )
         average_net_latency += net_latency
@@ -1097,13 +1097,41 @@ def FLATWISE_heuristic(node, goal_node, predecessor, latency_requirement, curren
     
     # desired_latency_value = desired_latency_difference + (latency_requirement / 10)
     
+    desired_latency_value = desired_latency_difference + (latency_requirement / current_dist)
+    
+    # desired_latency_value = desired_latency_difference + (latency_requirement / (current_dist - (current_dist * 0.05)))
+    
+    return distance * desired_latency_value
+
+# Heuristic function
+def FLATWISE_heuristic_original(node, goal_node, predecessor, latency_requirement, current_dist):
+
+    latency_requirement = latency_requirement + (latency_requirement * 0.1)
+
+    x1, y1 = node.position[0], node.position[1]
+    x2, y2 = goal_node.position[0], goal_node.position[1]
+
+    distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    
+    if not predecessor:
+        return distance
+
+    latency = graph.get_network_latency(node.bs_name, predecessor)
+    
+    # Calculate the desired latency based on the current latency and latency requirement
+    desired_latency_percentage = (latency * 100) / latency_requirement
+    
+    desired_latency_difference = abs(latency_requirement - desired_latency_percentage)
+    
+    # desired_latency_value = desired_latency_difference + (latency_requirement / 10)
+    
     # desired_latency_value = desired_latency_difference + (latency_requirement / current_dist)
     
     desired_latency_value = desired_latency_difference + (latency_requirement / (current_dist - (current_dist * 0.05)))
     
     return distance * desired_latency_value
 
-def FLATWISE(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], start_node: 'BaseStation', goal_node: 'BaseStation', latency_requirement: float):
+def FLATWISE(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], start_node: 'BaseStation', goal_node: 'BaseStation', latency_requirement: float, required_throughput: float):
     unvisited_nodes = set(graph.get_nodes())
     dist = {}
     previous_nodes = {}
@@ -1126,7 +1154,7 @@ def FLATWISE(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], start_n
         if current_node in unvisited_nodes:
             unvisited_nodes.remove(current_node)
 
-            neighbors = graph.get_outgoing_edges(current_node)
+            neighbors = graph.get_outgoing_edges_throughput(current_node, required_throughput)
             for neighbor in neighbors:
                 if neighbor in unvisited_nodes:
                     it += 1
@@ -1145,12 +1173,14 @@ def FLATWISE(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], start_n
 if __name__ == '__main__':
     
     # logging.info(f'\n*** decoding base stations ***')
-    base_station_set = json_controller.decode_net_config_file()  
+    base_station_set = json_controller.decode_net_config_file() 
+    
     
     # logging.info(f'\n*** building network graph ***')
     graph = graph_controller.GraphController.get_graph(base_station_set)
     # generate_networks.plot_graph(graph.graph)
-
+    # a = input('')
+     
     # while True:
     #    generate_networks.plot_graph(graph.graph)
     #    time.sleep(5)
@@ -1158,48 +1188,233 @@ if __name__ == '__main__':
     # source_node = base_station_set['4']
     # target_node = base_station_set['8']
     
-    source_node = base_station_set['207']
-    target_node = base_station_set['15']
+    source_node = base_station_set['17']
+    target_node = base_station_set['18']
     
-    # source_node = base_station_set['14']
-    # target_node = base_station_set['29']
     
+    
+    it = 0
     """
-    """
-    print(f'\n*** SHORTEST PATH ALGORITHM ***\n')
-    path, cost = dijkstra_controller.DijkstraController.get_shortest_path(graph, source_node, target_node)
-    print(f'route found with cost ({cost} ms)')
-    print(" -> ".join(path))
+    while True:
+        it += 1
+        src = str(random.randint(1, 260))
+        dst = str(random.randint(1, 260))
+        while src == dst:
+            dst = str(random.randint(1, 260))   
     
-    print(f'________________________________________________________________')
-
-    print(f'\n*** WIDEST PATH ALGORITHM ***\n')
-    path, cost = dijkstra_controller.DijkstraController.get_widest_path(graph, source_node, target_node)
-    latency_cost = network_controller.NetworkController.get_route_net_latency(graph, path)
-    print(f'route found with cost ({latency_cost} ms)')
-    print(" -> ".join(path))
-    
-    print(f'________________________________________________________________')
-
-    print(f'\n*** LATENCY-AWARE SHORTEST PATH ALGORITHM ***')
-    
-    latency_requirement = 3.5
-    print(f'\nLATENCY REQUIREMENT: {latency_requirement} ms')
-    previous_nodes, shortest_path, = FLATWISE(graph, base_station_set, source_node, target_node, latency_requirement)
-    path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
-    print(f'route found with cost ({cost} ms)')
-    print(" -> ".join(path))
-    # print(f'cost: {cost}')
-    
-    for i in range(4, 15):
+        source_node = base_station_set[src]
+        target_node = base_station_set[dst]
         
-        latency_requirement = i
-        print(f'\nLATENCY REQUIREMENT: {latency_requirement} ms')
-        previous_nodes, shortest_path, = FLATWISE(graph, base_station_set, source_node, target_node, latency_requirement)
-        path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
-        print(f'route found with cost ({cost} ms)')
-        print(" -> ".join(path))
-        # print(f'cost: {cost}')
+        paths = path_controller.PathController.get_shortest_path(graph, source_node, target_node, 10)
+        
+        if len(paths) > 1:
+            print(f'\niteration {it}\n')
+            for path in paths:
+                print(path)
+                route_throughput = network_controller.NetworkController.get_route_net_throughput(graph, path[0])
+                print(f'\n')
+            a = input('')
+        
+        '''
+        if len(paths) > 1:
+            print(f'\n\nIteration: {it}')
+            pprint(paths)
+            a = input('') 
+        '''
+        
+        
+    
+        '''
+
+        widest_path, widest_path_cost = path_controller.PathController.get_widest_path(graph, source_node, target_node, 10)
+        
+        shortest_widest_path, shortest_widest_path_cost = path_controller.PathController.get_shortest_widest_path(graph, source_node, target_node, 10)
+        
+        if widest_path != shortest_widest_path:
+            print(f'\nIteration: {it}')
+            print(f'Widest and shortest-widest path are not the same')
+            route_latency = network_controller.NetworkController.get_route_net_latency(graph, widest_path)
+            print(f'\nWidest path - cost: {widest_path_cost} | latency ({route_latency})')
+            print(f" -> ".join(widest_path))
+            
+            route_latency = network_controller.NetworkController.get_route_net_latency(graph, shortest_widest_path)
+            print(f'\nShortest-widest path - cost: {shortest_widest_path_cost} | latency ({route_latency})')
+            print(f" -> ".join(shortest_widest_path))
+            a = input('')
+        '''
+        
+        '''
+        shortest_path, shortest_path_cost = path_controller.PathController.get_shortest_path(graph, source_node, target_node, 10)
+        
+        widest_shortest_path, widest_shortest_path_cost = path_controller.PathController.get_widest_shortest_path(graph, source_node, target_node, 10)
+        
+        if shortest_path != widest_shortest_path:
+            print(f'\nIteration: {it}')
+            print(f'Shortest and widest-shortest path are not the same')
+            
+            route_throughput = network_controller.NetworkController.get_route_throughut(graph, shortest_path)
+            
+            print(f'\nShortest path - cost: {shortest_path_cost} | throughput ({route_throughput})')
+            print(" -> ".join(shortest_path))
+            
+            route_throughput = network_controller.NetworkController.get_route_throughut(graph, widest_shortest_path)
+            print(f'\nWidest-shortest path - cost: {widest_shortest_path_cost} | throughput ({route_throughput})')
+            print(" -> ".join(widest_shortest_path))
+            
+            a = input('')
+        '''
+    
+    
+    
+    """
+    
+    source_node = base_station_set['17']
+    target_node = base_station_set['18']
+    
+    # print(f'\n*** SHORTEST PATH ALGORITHM ***\n')
+    # required_throughput = 20
+    # path, cost = path_controller.PathController.get_shortest_path(graph, source_node, target_node, required_throughput)
+    # widest_throughput = network_controller.NetworkController.get_route_widest_throughput(graph, path)
+    # print(f'route found with cost {widest_throughput} MBps ({cost} ms)')
+    # print(" -> ".join(path))
+    
+    # network_controller.NetworkController.increase_bandwidth_reservation_test(graph, path, required_throughput)
+    
+    # print(f'\n*** SHORTEST PATH ALGORITHM ***\n')
+    # required_throughput = 36
+    # path, cost = path_controller.PathController.get_shortest_path(graph, source_node, target_node, required_throughput)
+    # widest_throughput = network_controller.NetworkController.get_route_widest_throughput(graph, path)
+    # print(f'route found with cost {widest_throughput} MBps ({cost} ms)')
+    # print(" -> ".join(path))
+    
+    # network_controller.NetworkController.increase_bandwidth_reservation_test(graph, path, required_throughput)
+    
+    # print(f'\n*** SHORTEST PATH ALGORITHM ***\n')
+    # required_throughput = 55
+    # path, cost = path_controller.PathController.get_shortest_path(graph, source_node, target_node, required_throughput)
+    # widest_throughput = network_controller.NetworkController.get_route_widest_throughput(graph, path)
+    # print(f'route found with cost {widest_throughput} MBps ({cost} ms)')
+    # print(" -> ".join(path))
+    
+    # network_controller.NetworkController.increase_bandwidth_reservation_test(graph, path, required_throughput)
+
+    # print(f'\n*** WIDEST SHORTEST PATH ALGORITHM ***\n')
+    # required_throughput = 25
+    # paths = path_controller.PathController.get_widest_shortest_path(graph, source_node, target_node, required_throughput)
+    
+    # for path in paths:
+    #     widest_throughput = network_controller.NetworkController.get_route_widest_throughput(graph, path[0])
+    #     print(f'\nroute found with cost {widest_throughput} MBps ({path[1]} ms)')
+    #     print(" -> ".join(path[0]))
+  
+    
+    # network_controller.NetworkController.increase_bandwidth_reservation_test(graph, path[0], required_throughput)
+    
+    # print(f'\n*** WIDEST SHORTEST PATH ALGORITHM ***\n')
+    
+    # required_throughput = 55
+    # paths = path_controller.PathController.get_widest_shortest_path(graph, source_node, target_node, required_throughput)
+    
+    # for path in paths:
+    #     widest_throughput = network_controller.NetworkController.get_route_widest_throughput(graph, path[0])
+    #     print(f'\nroute found with cost {widest_throughput} MBps ({path[1]} ms)')
+    #     print(" -> ".join(path[0]))
+    
+    
+    # print(f'________________________________________________________________')
+
+    # print(f'\n*** WIDEST PATH ALGORITHM ***\n')
+    
+    # required_throughput = 20
+    # path, cost = path_controller.PathController.get_widest_path(graph, source_node, target_node, required_throughput)
+    # latency_cost = network_controller.NetworkController.get_route_net_latency(graph, path)
+    # print(f'route found with cost {cost} MBps ({latency_cost} ms)')
+    # print(" -> ".join(path))
+
+    # network_controller.NetworkController.increase_bandwidth_reservation_test(graph, path, required_throughput)
+    
+    # print(f'\n*** WIDEST PATH ALGORITHM ***\n')
+
+    # required_throughput = 55
+    # path, cost = path_controller.PathController.get_widest_path(graph, source_node, target_node, required_throughput)
+    # latency_cost = network_controller.NetworkController.get_route_net_latency(graph, path)
+    # print(f'route found with cost {cost} MBps ({latency_cost} ms)')
+    # print(" -> ".join(path))
+    
+    
+    
+    print(f'\n*** SHORTEST WIDEST PATH ALGORITHM ***\n')
+    
+    required_throughput = 25
+    paths = path_controller.PathController.get_shortest_widest_path(graph, source_node, target_node, required_throughput)
+    # pprint(paths)
+    for path in paths:
+        latency_cost = network_controller.NetworkController.get_route_net_latency(graph, path[0])
+        print(f'\nroute found with cost {path[1]} MBps ({latency_cost} ms)')
+        print(" -> ".join(path[0]))
+    
+    network_controller.NetworkController.increase_bandwidth_reservation_test(graph, paths[0][0], required_throughput)
+    
+    # generate_networks.plot_graph(graph.graph)
+    # a = input('')
+
+    print(f'\n*** SHORTEST WIDEST PATH ALGORITHM ***\n')
+    
+    required_throughput = 55
+    paths = path_controller.PathController.get_shortest_widest_path(graph, source_node, target_node, required_throughput)
+    # pprint(paths)
+    for path in paths:
+        latency_cost = network_controller.NetworkController.get_route_net_latency(graph, path[0])
+        print(f'\nroute found with cost {path[1]} MBps ({latency_cost} ms)')
+        print(" -> ".join(path[0]))
+    
+    
+    
+    # print(f'________________________________________________________________')
+    # print(f'\n*** FLATWISE ALGORITHM ***')
+    
+    # generate_networks.plot_graph(graph.graph)
+    
+    # latency_requirement = 6
+    # required_throughput = 25
+    # print(f'\nLATENCY REQUIREMENT: {latency_requirement} ms')
+    
+    # previous_nodes, shortest_path, = FLATWISE(graph, base_station_set, source_node, target_node, latency_requirement, required_throughput)
+    # path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
+    # widest_throughput = network_controller.NetworkController.get_route_widest_throughput(graph, path)
+    # print(f'route found with cost {widest_throughput} Mbps ({cost} ms)')
+    # print(" -> ".join(path))
+    
+    # network_controller.NetworkController.increase_bandwidth_reservation_test(graph, path, required_throughput)
+    
+    # latency_requirement = 3
+    # required_throughput = 50
+    # print(f'\nLATENCY REQUIREMENT: {latency_requirement} ms')
+    
+    # previous_nodes, shortest_path, = FLATWISE(graph, base_station_set, source_node, target_node, latency_requirement, required_throughput)
+    # path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
+    # widest_throughput = network_controller.NetworkController.get_route_widest_throughput(graph, path)
+    # print(f'route found with cost {widest_throughput} Mbps ({cost} ms)')
+    # print(" -> ".join(path))
+    
+    # routes = []
+    # unique_routes = 0
+    # for i in range(3, 11):
+        
+    #     latency_requirement = i
+    #     print(f'\nLATENCY REQUIREMENT: {latency_requirement} ms')
+    #     previous_nodes, shortest_path, = FLATWISE(graph, base_station_set, source_node, target_node, latency_requirement, required_throughput)
+    #     path, cost = calculate_shortest_path(previous_nodes, shortest_path, source_node, target_node)
+    #     widest_throughput = network_controller.NetworkController.get_route_widest_throughput(graph, path)
+    #     print(f'route found with cost {widest_throughput} Mbps ({cost} ms)')
+    #     print(" -> ".join(path))
+    #     if path not in routes:
+    #         routes.append(path)
+            
+        
+    # print(f'\n***there are {len(routes)} unique routes')
+    # a = input('')
+    """
         
     # initial_distance = euclidean_distance(source_node, target_node)
 
@@ -1216,7 +1431,7 @@ if __name__ == '__main__':
     # print(f'\nWIDEST PATH')
     # network_controller.NetworkController.get_route_net_throughput(graph, path)
     
-    """
+    
     ###########################################################################
 
     ### SHORTEST AND WIDEST PATH TEST###

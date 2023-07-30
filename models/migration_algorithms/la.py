@@ -14,7 +14,7 @@ from controllers import hmd_controller
 from controllers import bs_controller 
 #from controllers import scg_controller 
 from controllers import mec_controller
-from controllers import dijkstra_controller 
+from controllers import path_controller 
 
 """other modules"""
 import sys
@@ -67,7 +67,7 @@ class LA(Migration):
             'mec': None
         }
         
-        shortest_path = dijkstra_controller.DijkstraController.get_all_E2E_shortest_paths(
+        shortest_path = path_controller.DijkstraController.get_all_E2E_shortest_paths(
             graph, start_node
         )
         
@@ -143,7 +143,7 @@ class LA(Migration):
         if mec_candidate and mec_candidate.name != service_mec_server.name:
             '''
             '''
-            path, latency_from_hmd_to_service_mec_server = dijkstra_controller.DijkstraController.get_shortest_path(
+            path, latency_from_hmd_to_service_mec_server = path_controller.DijkstraController.get_shortest_path(
                 graph, hmd_base_station, service_mec_server_bs
             )  
             #print(f'\nWireless latency from hmd_base_station: {hmd_base_station.wireless_latency}')
@@ -154,17 +154,17 @@ class LA(Migration):
                 
             cdn_base_station = base_station_set[str(CDN_SERVER_ID)]
             #print(f'\nCDN base station: {cdn_base_station.id}')
-            current_path, current_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path(graph, cdn_base_station, service_mec_server_bs)
+            current_path, current_latency = path_controller.DijkstraController.get_ETE_shortest_path(graph, cdn_base_station, service_mec_server_bs)
             current_latency += latency_from_hmd_to_service_mec_server
             #print(f'\nCurrent latency: {current_latency}')
             current_path.reverse()
             #print(' -> '.join(current_path))
             
             
-            path, latency_from_hmd_to_candidate_mec_server = dijkstra_controller.DijkstraController.get_shortest_path(
+            path, latency_from_hmd_to_candidate_mec_server = path_controller.DijkstraController.get_shortest_path(
                 graph, hmd_base_station, candidate_base_station
             ) 
-            candidate_path, candidate_latency = dijkstra_controller.DijkstraController.get_ETE_shortest_path(graph, cdn_base_station, candidate_base_station)
+            candidate_path, candidate_latency = path_controller.DijkstraController.get_ETE_shortest_path(graph, cdn_base_station, candidate_base_station)
             candidate_latency += latency_from_hmd_to_candidate_mec_server
             
             #print(f'\nCandidate latency: {candidate_latency}')

@@ -15,7 +15,7 @@ from controllers import bs_controller
 from controllers import scg_controller 
 from controllers import mec_controller
 from controllers import config_controller
-from controllers import dijkstra_controller 
+from controllers import path_controller 
 
 """other imports"""
 import sys
@@ -150,7 +150,7 @@ class SCG(Migration):
     ) -> Dict[str,'Mec']:
         """ discovers a MEC server for a VR service """ 
         #print(f'*** Discovering MEC ***')
-        shortest_path = dijkstra_controller.DijkstraController.get_ETE_shortest_path(
+        shortest_path = path_controller.DijkstraController.get_ETE_shortest_path(
             mec_set, graph, start_node, zones=True, latency_check=LATENCY_CHECK
         )
         

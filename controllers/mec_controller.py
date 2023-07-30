@@ -17,7 +17,7 @@ from models.bitrates import BitRateProfiles
 from controllers import bs_controller 
 from controllers import json_controller
 from controllers import config_controller
-from controllers import dijkstra_controller
+from controllers import path_controller
 
 """ other modules """
 import uuid
@@ -85,7 +85,7 @@ class MecController:
             'mec': None
         }   
         
-        shortest_path = dijkstra_controller.DijkstraController.get_all_E2E_shortest_paths(
+        shortest_path = path_controller.DijkstraController.get_all_E2E_shortest_paths(
             graph, start_node
         )
         

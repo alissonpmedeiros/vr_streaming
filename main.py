@@ -63,7 +63,7 @@ logger.addHandler(console_handler)
 
 MIGRATION_ALGORITHM = LA()
 
-MAX_THROUGHPUT = 250
+MAX_THROUGHPUT = 4153
 
 
 ### CONFIG ###
@@ -1075,103 +1075,18 @@ if __name__ == '__main__':
     '''
 """
 
-# Heuristic function
-def FLATWISE_heuristic(node, goal_node, predecessor, latency_requirement, current_dist):
 
-    latency_requirement = latency_requirement + (latency_requirement * 0.1)
-
-    x1, y1 = node.position[0], node.position[1]
-    x2, y2 = goal_node.position[0], goal_node.position[1]
-
-    distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-    
-    if not predecessor:
-        return distance
-
-    latency = graph.get_network_latency(node.bs_name, predecessor)
-    
-    # Calculate the desired latency based on the current latency and latency requirement
-    desired_latency_percentage = (latency * 100) / latency_requirement
-    
-    desired_latency_difference = abs(latency_requirement - desired_latency_percentage)
-    
-    # desired_latency_value = desired_latency_difference + (latency_requirement / 10)
-    
-    desired_latency_value = desired_latency_difference + (latency_requirement / current_dist)
-    
-    # desired_latency_value = desired_latency_difference + (latency_requirement / (current_dist - (current_dist * 0.05)))
-    
-    return distance * desired_latency_value
-
-# Heuristic function
-def FLATWISE_heuristic_original(node, goal_node, predecessor, latency_requirement, current_dist):
-
-    latency_requirement = latency_requirement + (latency_requirement * 0.1)
-
-    x1, y1 = node.position[0], node.position[1]
-    x2, y2 = goal_node.position[0], goal_node.position[1]
-
-    distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-    
-    if not predecessor:
-        return distance
-
-    latency = graph.get_network_latency(node.bs_name, predecessor)
-    
-    # Calculate the desired latency based on the current latency and latency requirement
-    desired_latency_percentage = (latency * 100) / latency_requirement
-    
-    desired_latency_difference = abs(latency_requirement - desired_latency_percentage)
-    
-    # desired_latency_value = desired_latency_difference + (latency_requirement / 10)
-    
-    # desired_latency_value = desired_latency_difference + (latency_requirement / current_dist)
-    
-    desired_latency_value = desired_latency_difference + (latency_requirement / (current_dist - (current_dist * 0.05)))
-    
-    return distance * desired_latency_value
-
-def FLATWISE(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], start_node: 'BaseStation', goal_node: 'BaseStation', latency_requirement: float, required_throughput: float):
-    unvisited_nodes = set(graph.get_nodes())
-    dist = {}
-    previous_nodes = {}
-
-    max_value = sys.maxsize
-    for node in unvisited_nodes:
-        dist[node] = max_value
-
-    dist[start_node.bs_name] = 0
-
-    # Priority queue for open nodes
-    open_nodes = [(dist[start_node.bs_name] + FLATWISE_heuristic(start_node, goal_node, None, latency_requirement, 0), start_node.bs_name)]
-    it = 0
-    while open_nodes:
-
-        _, current_node = heapq.heappop(open_nodes)
-        if current_node == goal_node.bs_name:
-            break
-
-        if current_node in unvisited_nodes:
-            unvisited_nodes.remove(current_node)
-
-            neighbors = graph.get_outgoing_edges_throughput(current_node, required_throughput)
-            for neighbor in neighbors:
-                if neighbor in unvisited_nodes:
-                    it += 1
-                    new_distance = dist[current_node] + graph.get_network_latency(current_node, neighbor)
-                    if new_distance < dist[neighbor]:
-                        dist[neighbor] = new_distance
-                        previous_nodes[neighbor] = current_node
-                        neighbor_bs = base_station_set[neighbor[2:]]
-                        heapq.heappush(open_nodes, (new_distance + FLATWISE_heuristic(neighbor_bs, goal_node, current_node, latency_requirement, dist[neighbor]), neighbor))
-            
-    
-    # print(f'\n***iterations: {it}\n')
-    return previous_nodes, dist
 
 
 if __name__ == '__main__':
     
+    
+    while True:
+        quota = bitrate_profiles.get_bitrate_quota(6, 4000)
+        print(quota)
+        a = input('\npress to continue!\n')
+    
+    a = input('press to quit!')
     # logging.info(f'\n*** decoding base stations ***')
     base_station_set = json_controller.decode_net_config_file() 
     

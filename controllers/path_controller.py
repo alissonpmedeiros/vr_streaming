@@ -5,7 +5,7 @@ if typing.TYPE_CHECKING:
     from models.graph import Graph
     from models.base_station import BaseStation 
 
-from models.paths import Dijkstra, WidestPath
+from models.paths import Dijkstra, WidestPath, FLATWISE
     
 """ controller modules """
 from controllers import mec_controller
@@ -37,6 +37,18 @@ class PathController:
     ):  
         previous_nodes, shortest_path = Dijkstra.build_shortest_path(
             graph, source_node, required_throughput
+        )
+        
+        return PathController.calculate_path(
+            previous_nodes, shortest_path, source_node, target_node
+        )
+        
+    @staticmethod
+    def get_flatwise_path(
+        graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], source_node: 'BaseStation', target_node: 'BaseStation', latency_requirement: float, required_throughput: float,   
+    ):  
+        previous_nodes, shortest_path = FLATWISE.build_FLATWISE_path(
+            graph, base_station_set, source_node, target_node, latency_requirement, required_throughput
         )
         
         return PathController.calculate_path(

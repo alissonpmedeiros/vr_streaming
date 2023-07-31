@@ -453,16 +453,38 @@ class NetworkController:
         
     @staticmethod
     def allocate_bandwidth(
-        graph: 'Graph', source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, flow_id: int
+        graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], routing_algorithm: str, source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, flow_id: int
     ):
 
         flow = flow_set[flow_id]
         required_throughput = flow['next_throughput']
+        #TODO: need to implement latency_requirement feature.
+        required_latency = flow['latency_requirement']
         
         new_route = None
-        new_route, route_max_throughput = path_controller.DijkstraController.get_widest_path(
-            graph, source_node, target_node, required_throughput
-        )
+        route_max_latency = None
+        route_max_throughput = None
+        
+        if routing_algorithm == 'WSP':
+            new_route, route_max_latency = path_controller.PathController.get_widest_shortest_path(
+                graph, source_node, target_node, required_throughput
+            )
+            if new_route:
+                route_max_throughput = NetworkController.get_route_widest_throughput(graph, new_route)
+            
+        elif routing_algorithm == 'SWP':
+            new_route, route_max_throughput = path_controller.PathController.get_shortest_widest_path(
+                graph, source_node, target_node, required_throughput
+            )
+            if new_route:
+                route_max_latency = NetworkController.get_route_net_latency(graph, new_route)
+        
+        elif routing_algorithm == 'FLATWISE':
+            new_route, route_max_latency = path_controller.PathController.get_flatwise_path(
+                graph, base_station_set, source_node, target_node, latency_requirement= TBD, required_throughput
+            )
+            if new_route:
+                route_max_throughput = NetworkController.get_route_widest_throughput(graph, new_route)
         
         congestion_iterations = 1
         
@@ -490,72 +512,7 @@ class NetworkController:
 
         return required_throughput
         
-    @staticmethod
-    def allocate_bandwidth_with_latency_bandwidth_restrictions(
-        graph: 'Graph', source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, flow_id: int
-    ):
-
-        flow = flow_set[flow_id]
-        required_throughput = flow['next_throughput']
-        throughput_profiles = bitrate_profiles.get_throughput_profiles()
-        desired_net_latency = throughput_profiles[required_throughput]['network_latency']
-        
-        new_route = None
-        new_route, route_max_latency = path_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
-            graph, source_node, target_node, required_throughput
-        )
-        
-        #HERE, THE SHORTEST PATH CALCULATION SHOULD BE PERFORMED FROM THE SERVER TO THE HMD OR EDGE NODE, BECAUSE THE LAST NODE IS THE NODE CONTAINING THE COMPUTING CAPACITY
-        #new_route, route_max_latency = dijkstra_controller.DijkstraController.#get_ETE_shortest_path_with_throughput_restriction(
-        #    graph, target_node, source_node, required_throughput
-        #)
-        
-        
-                
-        congestion_iterations = 1
-        
-        while route_max_latency == MAX_VALUE or route_max_latency > desired_net_latency:
-            #print(f'\nLATENCY TEST\n')
-            
-            '''
-            print(f'\n*** no routes to fulfill {required_throughput} Mbps: flow id: {flow_id} ***')
-            
-            print(f'\nLATENCY TEST\n')
-            print(f'required throughput: {required_throughput} Mbps')
-            print(f'desired net latency: {desired_net_latency} ms')
-            print(f'latency found: {route_max_latency} ms')
-            print(' -> '.join(new_route))
-            ''' 
-           
-            previous_throughput = required_throughput
-            required_throughput = bitrate_profiles.get_previous_throughput_profile(required_throughput)
-            
-            if required_throughput is None:
-                required_throughput = previous_throughput
-            
-            desired_net_latency = throughput_profiles[required_throughput]['network_latency']
-            
-            '''
-            print(f'\nprevious latency: {desired_net_latency} ms')
-            print(f'previous throughput: {required_throughput} Mbps')
-            
-            a = input('')
-            '''
-               
-            NetworkController.congestion_management(
-                graph, flow_set, prioritized_served_flows, non_prioritized_served_flows, congestion_iterations
-            )
-            
-            congestion_iterations += 1
-            
-            
-            new_route, route_max_latency = path_controller.DijkstraController.get_ETE_shortest_path_with_throughput_restriction(
-                graph, source_node, target_node, required_throughput
-            )
-        
-        NetworkController.increase_bandwidth_reservation(graph, flow_set, flow_id, new_route, required_throughput)
-
-        return required_throughput
+    
     
     @staticmethod
     def generate_network_plot(base_station_set: Dict[str, 'BaseStation'], hmds_set: Dict[str, 'VrHMD']) -> None:

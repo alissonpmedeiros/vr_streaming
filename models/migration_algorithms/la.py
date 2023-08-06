@@ -67,7 +67,7 @@ class LA(Migration):
             'mec': None
         }
         
-        shortest_path = path_controller.DijkstraController.get_all_E2E_shortest_paths(
+        shortest_path = path_controller.Others.get_ETE_shortest_path(
             graph, start_node
         )
         

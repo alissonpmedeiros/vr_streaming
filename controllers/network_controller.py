@@ -117,7 +117,9 @@ class NetworkController:
         
         flow = flow_set[flow_id]
         flow_route = flow['route']
-        flow_route_throughput = flow['throughput']               
+        
+        flow_quota = flow['current_quota']
+        flow_route_throughput = flow_quota['throughput']               
         
         if not flow_route:
             return 
@@ -214,9 +216,13 @@ class NetworkController:
         
         flow = flow_set[flow_id]
         flow_route = flow['route']
-        flow_throughput = flow['throughput']
-     
-        previous_flow_throughput = bitrate_profiles.get_previous_throughput_profile(flow_throughput) 
+        flow_quota = flow['current_quota']
+        flow_quota_name = flow['current_quota_name']
+        
+        flow_throughput = flow_quota['throughput']
+             
+        previous_quota_name, previous_quota = bitrate_profiles.get_previous_bitrate_quota(flow_quota_name)             
+        previous_flow_throughput = previous_quota['throughput']
         decreased_throughput = flow_throughput - previous_flow_throughput
         
         if flow_throughput - decreased_throughput != previous_flow_throughput:
@@ -276,25 +282,30 @@ class NetworkController:
             a = input('CRASHED IN DRECRASE_BANDWIDTH!')
             
         
-        flow_set[flow_id]['throughput'] = previous_flow_throughput
+        flow_set[flow_id]['current_quota'] = previous_quota
+        flow_set[flow_id]['current_quota_name'] = previous_quota_name
        
 
     
     
     @staticmethod
     def increase_bandwidth_reservation(
-        graph: 'Graph', flow_set: dict, flow_id: int, new_route: list, required_throughput: float
+        graph: 'Graph', flow_set: dict, flow_id: int, new_route: list, required_quota: dict, required_quota_name: str
     ):
         #print(f'\nIncreasing BW reservation to {required_throughput} Mbps for route:')
         #print(" -> ".join(new_route))
         
         #print(f'\nincreasing each pair of nodes in the route...')
-        current_route_bandwidth = flow_set[flow_id]['throughput']
-        if not NetworkController.check_graph_path_bandwidth_increase_availability(graph, new_route, required_throughput):
+        current_quota = flow_set[flow_id]['current_quota']
+        current_quota_name = flow_set[flow_id]['current_quota_name']
+        
+        current_route_bandwidth = current_quota['throughput']
+        
+        if not NetworkController.check_graph_path_bandwidth_increase_availability(graph, new_route, required_quota["throughput"]):
             print(f'\n*** Widest Path found a route but there is no more available resources for route:***')
             print(' -> '.join(new_route))
             print(f'current route bandwidth: {current_route_bandwidth} Mbps')
-            print(f'requested increase: {required_throughput} Mbps')
+            print(f'requested increase: {required_quota["throughput"]} Mbps')
             a = input('')
         
         for src, dst in NetworkController.__pairwise(new_route):
@@ -304,8 +315,8 @@ class NetworkController:
             current_allocated_bandwidth = graph_bandwidth['current_allocated_bandwidth']
             current_available_bandwidth = graph_bandwidth['current_available_bandwidth']
         
-            new_allocated_bandwidth = current_allocated_bandwidth + required_throughput
-            new_available_bandwidth = current_available_bandwidth - required_throughput
+            new_allocated_bandwidth = current_allocated_bandwidth + required_quota["throughput"]
+            new_available_bandwidth = current_available_bandwidth - required_quota["throughput"]
             
             NetworkController.show_graph_pair_bandwidth_reservation(
                 src, 
@@ -327,7 +338,9 @@ class NetworkController:
                 new_available_bandwidth
             )
         
-        flow_set[flow_id]['throughput'] = required_throughput
+        flow_set[flow_id]['current_quota'] = required_quota
+        flow_set[flow_id]['current_quota_name'] = required_quota_name
+        
         flow_set[flow_id]['route'] = new_route
         
     @staticmethod
@@ -389,7 +402,9 @@ class NetworkController:
         for non_prioritized_flow in non_prioritized_served_flows.copy():
             served_flow = flow_set[non_prioritized_flow]
             served_flow_route = served_flow['route']
-            served_flow_throughput = served_flow['throughput']
+            served_flow_quota = served_flow['current_quota']
+            served_flow_quota_name = served_flow['current_quota_name']
+            served_flow_throughput = served_flow_quota['throughput']
             
             congested_edges = NetworkController.get_congested_edges_in_route(graph, served_flow_route)
             
@@ -406,7 +421,9 @@ class NetworkController:
             for prioritized_flow in prioritized_served_flows.copy():
                 served_flow = flow_set[prioritized_flow]
                 served_flow_route = served_flow['route']
-                served_flow_throughput = served_flow['throughput']
+                served_flow_quota = served_flow['current_quota']
+                served_flow_quota_name = served_flow['current_quota_name']
+                served_flow_throughput = served_flow_quota['throughput']
                 
                 congested_edges = NetworkController.get_congested_edges_in_route(graph, served_flow_route)
                 
@@ -437,8 +454,6 @@ class NetworkController:
         for src, dst in NetworkController.__pairwise(route):
             if graph.graph[src][dst]['network_throughput'] > net_throughput:
                 net_throughput += graph.graph[src][dst]['network_throughput']
-            
-        print(round(net_throughput, 2))
         return net_throughput
     
     @staticmethod
@@ -453,50 +468,57 @@ class NetworkController:
         
     @staticmethod
     def allocate_bandwidth(
-        graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], routing_algorithm: str, source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, flow_id: int
+        base_station_set: Dict[str, 'BaseStation'], graph: 'Graph', routing_algorithm: str, source_node: 'BaseStation', target_node: 'BaseStation', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, flow_id: int, impaired_services: dict
     ):
 
         flow = flow_set[flow_id]
-        required_throughput = flow['next_throughput']
-        #TODO: need to implement latency_requirement feature.
-        required_latency = flow['latency_requirement']
+        
+        required_quota = flow['next_quota']
+        required_quota_name = flow['next_quota_name']
+        # print(f'\nrequired quota')
+        # print(required_quota)
+        required_latency = required_quota['latency']
+        required_throughput = required_quota['throughput']
+        
         
         new_route = None
-        route_max_latency = None
-        route_max_throughput = None
         
-        if routing_algorithm == 'WSP':
+        
+        if routing_algorithm == 'wsp':
             new_route, route_max_latency = path_controller.PathController.get_widest_shortest_path(
                 graph, source_node, target_node, required_throughput
             )
-            if new_route:
-                route_max_throughput = NetworkController.get_route_widest_throughput(graph, new_route)
             
-        elif routing_algorithm == 'SWP':
+        elif routing_algorithm == 'swp':
             new_route, route_max_throughput = path_controller.PathController.get_shortest_widest_path(
                 graph, source_node, target_node, required_throughput
             )
-            if new_route:
-                route_max_latency = NetworkController.get_route_net_latency(graph, new_route)
         
-        elif routing_algorithm == 'FLATWISE':
+        elif routing_algorithm == 'flatwise':
             new_route, route_max_latency = path_controller.PathController.get_flatwise_path(
-                graph, base_station_set, source_node, target_node, latency_requirement= TBD, required_throughput
+                base_station_set, graph, source_node, target_node, required_latency, required_throughput
             )
-            if new_route:
-                route_max_throughput = NetworkController.get_route_widest_throughput(graph, new_route)
         
         congestion_iterations = 1
         
-        while route_max_throughput == MIN_VALUE or route_max_throughput < required_throughput:
-            #print(f'\n*** no routes to fulfill {required_throughput} Mbps: flow id: {flow_id} ***')
-            #print(f'*** recalculating a new route ***')
-                
-            previous_throughput = required_throughput
-            required_throughput = bitrate_profiles.get_previous_throughput_profile(required_throughput)
+        while not new_route:
+            # print(f'\n*** no routes to fulfill latency or throughput: flow id: {flow_id} ***')
+            # print(f'*** latency found: {route_max_latency} | required latency: {required_latency} ms ***')
+            # print(f'*** throughput found: {route_max_throughput} | required throughput: {required_throughput} Mbps ***')
             
-            if required_throughput is None:
-                required_throughput = previous_throughput
+            # print(f'*** recalculating a new route ***')
+            
+            # a = input('type to continue...')
+                
+            # previous_throughput = required_throughput
+            impaired_services['services'] += 1
+            
+            previous_quota_name, previous_quota = bitrate_profiles.get_previous_bitrate_quota(required_quota_name)
+            
+            required_quota = previous_quota
+            required_quota_name = previous_quota_name
+            required_throughput = previous_quota['throughput']
+            required_latency = previous_quota['latency']
                 
             NetworkController.congestion_management(
                 graph, flow_set, prioritized_served_flows, non_prioritized_served_flows, congestion_iterations
@@ -504,13 +526,30 @@ class NetworkController:
             
             congestion_iterations += 1
             
-            new_route, route_max_throughput = path_controller.DijkstraController.get_widest_path(
-                graph, source_node, target_node, required_throughput
-            )
+            if routing_algorithm == 'wsp':
+                new_route, route_max_latency = path_controller.PathController.get_widest_shortest_path(
+                    graph, source_node, target_node, required_throughput
+                )
+                
+            elif routing_algorithm == 'swp':
+                new_route, route_max_throughput = path_controller.PathController.get_shortest_widest_path(
+                    graph, source_node, target_node, required_throughput
+                )
+            
+            elif routing_algorithm == 'flatwise':
+                new_route, route_max_latency = path_controller.PathController.get_flatwise_path(
+                    base_station_set, graph, source_node, target_node, required_latency, required_throughput
+                )
+            
+            
+            # new_route, route_max_throughput = path_controller.DijkstraController.get_widest_path(
+            #     graph, source_node, target_node, required_throughput
+            # )
         
-        NetworkController.increase_bandwidth_reservation(graph, flow_set, flow_id, new_route, required_throughput)
+        # a = input('type to increase bw reservation..')
+        NetworkController.increase_bandwidth_reservation(graph, flow_set, flow_id, new_route, required_quota, required_quota_name)
 
-        return required_throughput
+        # return required_throughput
         
     
     

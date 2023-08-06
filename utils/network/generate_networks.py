@@ -1,4 +1,4 @@
-import os
+import os, sys
 import numpy as np
 import networkx as nx
 #import plotly.io as pio   
@@ -30,9 +30,9 @@ TOPOLOGIES = {
 #RADIUS = 0.2
 #NUMBER_NODES = 50
 
-CITY = 'geneva'
-RADIUS = 0.09
-NUMBER_NODES = 269
+CITY = 'zurich'
+RADIUS = 0.07
+NUMBER_NODES = 586
 
 #networkx plot 
 
@@ -52,9 +52,9 @@ EDGE_FONT_SIZE = 7
 '''
 # for large graphs
 NODE_SIZE = 90
-NODE_FONT_SIZE = 6
-#EDGE_FONT_SIZE = 4
-EDGE_FONT_SIZE = 6
+NODE_FONT_SIZE = 4
+EDGE_FONT_SIZE = 4
+# EDGE_FONT_SIZE = 6
 
 
 
@@ -69,6 +69,17 @@ EDGE_LINE_WIDTH = 1
 EDGE_LINE_COLOR = '#888'
 LEGEND_FONT_SIZE = 90
 LEGEND_COLOR = 'black'
+
+NODE_LATENCY_LOWER_THRESHOLD = 5 # in ms
+NODE_LATENCY_UPPER_THRESHOLD = 10 # in ms
+
+NET_LATENCY_LOWER_THRESHOLD = 0.5 # in ms
+NET_LATENCY_UPPER_THRESHOLD = 1 # in ms
+
+NET_THROUGHPUT_LOWER_THRESHOLD = 50000 # in Mbps
+NET_THROUGHPUT_UPPER_THRESHOLD = 500000 # in Mbps
+
+MAX_VALUE = sys.maxsize
 
 
 @dataclass_json
@@ -137,7 +148,7 @@ def init_graph(graph: Graph, di_graph: DiGraph, node_latency, net_latency_thresh
         computing_latency = round(
             random.uniform(node_latency['lower_latency_threshold'], node_latency['upper_latency_threshold']), 2
         )
-        node_label = str(node) + '\n(' + str(computing_latency) + ')'
+        node_label = str(node) #+ '\n(' + str(computing_latency) + ')'
         di_graph.custom_names[node] = node_label
         
         wireless_latency = round(random.uniform(0.1, 0.3), 2)
@@ -199,16 +210,16 @@ def init_graph(graph: Graph, di_graph: DiGraph, node_latency, net_latency_thresh
 def create_topology(file_dir, file_name, pdf_name):
     graph = Graph()
     di_graph = DiGraph()
-    
-    node_latency = {'lower_latency_threshold': 2, 'upper_latency_threshold': 5}
-    net_latency = {'lower_latency_threshold': 0.5, 'upper_latency_threshold': 1}
-    net_throughput = {'lower_throughput_threshold': 5000, 'upper_throughput_threshold': 100000}
+        
+    node_latency = {'lower_latency_threshold': NODE_LATENCY_LOWER_THRESHOLD, 'upper_latency_threshold': NODE_LATENCY_UPPER_THRESHOLD}
+    net_latency = {'lower_latency_threshold': NET_LATENCY_LOWER_THRESHOLD, 'upper_latency_threshold': NET_LATENCY_UPPER_THRESHOLD}
+    net_throughput = {'lower_throughput_threshold': NET_THROUGHPUT_LOWER_THRESHOLD, 'upper_throughput_threshold': NET_THROUGHPUT_UPPER_THRESHOLD}
     
     generate_graph_connections(graph)
     init_graph(graph, di_graph, node_latency, net_latency, net_throughput)
     save_to_json(di_graph, file_dir, file_name)
     while True:    
-        draw_graph(di_graph, pdf_name)
+        draw_graph(di_graph, pdf_name, False)
 
 #####################################################################
         
@@ -404,12 +415,12 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput:bool):
             #plot throughput labels only
             # net_latency_throughput_labels[k] = str(v2) 
         
-        nx.draw_networkx_edge_labels(
-            di_graph.graph, 
-            di_graph.graph_positions, 
-            net_latency_throughput_labels, 
-            font_size=EDGE_FONT_SIZE
-        )
+        # nx.draw_networkx_edge_labels(
+        #     di_graph.graph, 
+        #     di_graph.graph_positions, 
+        #     net_latency_throughput_labels, 
+        #     font_size=EDGE_FONT_SIZE
+        # )
     
     ax = plt.gca()
     ax.margins(0.00)
@@ -557,7 +568,7 @@ def load_topology(data_dir, file_name, pdf_name):
         node_latency = node_data['node_latency']
         bs_name = node_data['bs_name']
         signal_range = node_data['signal_range']
-        node_label = str(node_id) + '\n(' + str(node_latency) + ')'
+        node_label = str(node_id) #+ '\n(' + str(node_latency) + ')'
         node_position = node_data['position']     
         
         new_node = Node(node_id, bs_name, node_label, node_latency, signal_range, node_position)
@@ -623,7 +634,7 @@ def load_topology(data_dir, file_name, pdf_name):
             )
     
     while True:           
-        draw_graph(di_graph, pdf_name)
+        draw_graph(di_graph, pdf_name, False)
     #file_name = CITY + '_r_' + str(RADIUS) + '.json'
     
     
@@ -708,20 +719,44 @@ def plot_graph(network_graph: dict):
     draw_graph(di_graph, 'any.pdf', True)
 
 
+@staticmethod
+def set_CDN_edges_to_infinit(file_dir, json_file, cdn_id: str):
+    # Load the JSON data from the file
+    
+    with open("{}{}".format(file_dir, json_file)) as f:
+        data = json.load(f)
+    
+    # Reduce 0.3 from each value in the "edge_net_latencies" list
+    for bs_data in data["base_station_set"].values():
+        if str(bs_data["id"]) == cdn_id:
+            for destination in bs_data["edges"]:
+                # print(destination)
+                destination_index = bs_data["edges"].index(destination)
+                bs_data["edge_net_throughputs"][destination_index] = MAX_VALUE
+                
+                destination_data = data["base_station_set"][destination]
+                source_index = destination_data["edges"].index(cdn_id)
+                data["base_station_set"][destination]["edge_net_throughputs"][source_index] = MAX_VALUE
+    
+    # Write the updated JSON data back to the file
+    with open("{}{}".format(file_dir, json_file), "w") as f:
+        json.dump(data, f, indent=2)
+
 if __name__ == "__main__":
     
     #file variables
     file_dir = './network_topologies/'
     file_name = 'network.json' 
-    pdf_name = 'geneve_network.pdf'
+    pdf_name = 'zurich.pdf'
     
     
     if os.path.exists('{}{}'.format(file_dir, file_name)):
         print(f'\n*** File {file_name} at {file_dir} already exists! ***')
         print('1- Create a new network topology')
         print('2- Load a network topology')
+        print('3- Set CDN edges to infinit')
         option = input('\nEnter your choice: ')
-        while option not in ['1', '2']:
+        while option not in ['1', '2', '3']:
             option = input('Enter your choice: ')
         
         if option == '1':
@@ -730,8 +765,11 @@ if __name__ == "__main__":
                 if new_file_name != file_name:
                     create_topology(file_dir, new_file_name, pdf_name)
                     break
-        else:   
+        elif option == '2':   
             print('\nLoading network topology...')
             load_topology(file_dir, file_name, pdf_name)
+        else:
+            print(f'\n*** Setting CDN edges to infinit ***')
+            set_CDN_edges_to_infinit(file_dir, file_name, '454')
     else:
         create_topology(file_dir, file_name, pdf_name)

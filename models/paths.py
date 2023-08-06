@@ -22,7 +22,7 @@ ETE_LATENCY_THRESHOLD = CONFIG['SYSTEM']['ETE_LATENCY_THRESHOLD']
 class FLATWISE:
     # Heuristic function
     @staticmethod
-    def FLATWISE_heuristic(graph: 'Graph', node, goal_node, predecessor, latency_requirement, current_dist):
+    def FLATWISE_heuristic(graph: 'Graph', node: 'BaseStation', goal_node: 'BaseStation', predecessor: str, latency_requirement: float, current_dist: float):
 
         latency_requirement = latency_requirement + (latency_requirement * 0.1)
 
@@ -51,7 +51,7 @@ class FLATWISE:
 
     # Heuristic function
     @staticmethod
-    def FLATWISE_heuristic_original(node, goal_node, predecessor, latency_requirement, current_dist):
+    def FLATWISE_heuristic_original(graph: 'Graph', node: 'BaseStation', goal_node: 'BaseStation', predecessor: str, latency_requirement: float, current_dist: float):
 
         latency_requirement = latency_requirement + (latency_requirement * 0.1)
 
@@ -79,8 +79,12 @@ class FLATWISE:
         return distance * desired_latency_value
 
     @staticmethod
-    def build_FLATWISE_path(graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], start_node: 'BaseStation', goal_node: 'BaseStation', latency_requirement: float, required_throughput: float):
+    def build_FLATWISE_path(base_station_set: Dict[str, 'BaseStation'], graph: 'Graph', start_node: 'BaseStation', goal_node: 'BaseStation', latency_requirement: float, required_throughput: float):
+        # print(type(base_station_set))
+        # print(type(graph))
+        # a = input('')
         unvisited_nodes = set(graph.get_nodes())
+        # unvisited_nodes = list(graph.get_nodes())
         dist = {}
         previous_nodes = {}
 
@@ -190,7 +194,7 @@ class Dijkstra:
                         dist[neighbor] = round(new_distance, 2)
                         previous_nodes[neighbor] = [current_min_node]
                     
-                    elif new_distance == dist[neighbor]:
+                    elif new_distance != max_value and new_distance == dist[neighbor]:
                         previous_nodes[neighbor].append(current_min_node)
                         
             unvisited_nodes.remove(current_min_node)
@@ -298,7 +302,13 @@ class WidestPath:
                         dist[neighbor] = round(new_distance, 2)
                         previous_nodes[neighbor] = [current_max_node] 
                     
-                    elif new_distance == dist[neighbor]:
+                    elif new_distance != min_value and new_distance == dist[neighbor]:
+                        # if neighbor not in previous_nodes:
+                            # print(f'neighbor not in previous_nodes')
+                            # # previous_nodes[neighbor] = []
+                            # print(f'new_distance: {new_distance}')
+                            # print(f'dist[neighbor]: {dist[neighbor]}') 
+                            # a = input('')
                         previous_nodes[neighbor].append(current_max_node)   
                                     
             unvisited_nodes.remove(current_max_node)       

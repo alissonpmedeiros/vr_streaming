@@ -81,7 +81,7 @@ class BitRateProfiles:
     def get_bitrate_quota_profiles():
         """maps each quota into a specific bitrate profile"""
         bitrate_quotas = {
-            #4k week interaction
+            #4k weak interaction
             'mini': {'throughput': 25, 'frame_rate': 30, 'latency': 30},
             'petite': {'throughput': 33, 'frame_rate': 42, 'latency': 26},
             'tiny': {'throughput': 41, 'frame_rate': 54, 'latency': 22},
@@ -89,7 +89,7 @@ class BitRateProfiles:
             'compact': {'throughput': 50, 'frame_rate': 66, 'latency': 18},
             'small': {'throughput': 54, 'frame_rate': 78, 'latency': 18},
             'modest': {'throughput': 58, 'frame_rate': 90, 'latency': 10},
-            #8k week interaction
+            #8k weak interaction
             'limited': {'throughput': 63, 'frame_rate': 30, 'latency': 20},
             'regular': {'throughput': 108, 'frame_rate': 42, 'latency': 18},
             'average': {'throughput': 153, 'frame_rate': 54, 'latency': 16},
@@ -97,7 +97,7 @@ class BitRateProfiles:
             'medium': {'throughput': 200, 'frame_rate': 66, 'latency': 14},
             'standard': {'throughput': 246, 'frame_rate': 78, 'latency': 12},
             'generous': {'throughput': 292, 'frame_rate': 90, 'latency': 10},
-            #12k week interaction
+            #12k weak interaction
             'large': {'throughput': 304, 'frame_rate': 60, 'latency': 20},
             'substantial': {'throughput': 701, 'frame_rate': 72, 'latency': 17},
             'plentiful': {'throughput': 1062, 'frame_rate': 84, 'latency': 14},
@@ -105,7 +105,7 @@ class BitRateProfiles:
             'ample': {'throughput': 1424, 'frame_rate': 96, 'latency': 11},
             'extensive': {'throughput': 1745, 'frame_rate': 108, 'latency': 8},
             'huge': {'throughput': 2066, 'frame_rate': 120, 'latency': 5},
-            #24k week interaction
+            #24k weak interaction
             'massive': {'throughput': 2388, 'frame_rate': 120, 'latency': 10},
             'grant': {'throughput': 2736, 'frame_rate': 136, 'latency': 9},
             'giant': {'throughput': 3084, 'frame_rate': 152, 'latency': 8},
@@ -121,28 +121,43 @@ class BitRateProfiles:
     def get_bitrate_quota(latency, throughput):
         bitrate_quotas = BitRateProfiles.get_bitrate_quota_profiles()
         
-        valid_quotas = {k: v for k, v in bitrate_quotas.items() if v['throughput'] <= throughput}
-
-        # Initialize variables to keep track of the best match found so far
-        best_match = None
-        best_latency_diff = float('inf')
-
-        # Loop through the valid quotas to find the best match
-        for quota_name, quota_values in valid_quotas.items():
-            quota_latency = quota_values['latency']
-
-            # Check if the quota's latency is less than or equal to the specified latency
-            if quota_latency <= latency:
-                # Calculate the difference between the quota's latency and the specified latency
-                latency_diff = latency - quota_latency
-
-                # Check if the current quota is a better match based on latency difference
-                if latency_diff <= best_latency_diff:
-                    best_match = quota_name
-                    best_latency_diff = latency_diff
+        valid_quotas = [k for k, v in bitrate_quotas.items() if v['throughput'] <= throughput]
+        valid_quotas.reverse()
+        
+        best_match = valid_quotas[0]
+        
+        for quota in valid_quotas:
+            
+            print(f"{bitrate_quotas[quota]['throughput']} ({bitrate_quotas[quota]['latency']})")
+            
+            if bitrate_quotas[quota]['latency'] <= latency:
+                best_match = quota
+                break
+                
                 
         return bitrate_quotas[best_match]
+    
+    @staticmethod 
+    def get_next_bitrate_quota(current_quota):
+        
+        bitrate_quotas = BitRateProfiles.get_bitrate_quota_profiles()
+        profile_keys = list(bitrate_quotas.keys())
+        for i in range(len(profile_keys)):
+            if profile_keys[i] == current_quota:
+                if i == len(profile_keys) - 1:
+                    return profile_keys[i], bitrate_quotas[profile_keys[i]]
+                return profile_keys[i+1], bitrate_quotas[profile_keys[i+1]]
+        
 
+    @staticmethod
+    def get_previous_bitrate_quota(current_quota):
+        bitrate_quotas = BitRateProfiles.get_bitrate_quota_profiles()
+        profile_keys = list(bitrate_quotas.keys())
+        for i in range(len(profile_keys)):
+            if profile_keys[i] == current_quota:
+                if i == 0:
+                    return profile_keys[i], bitrate_quotas[profile_keys[i]]
+                return profile_keys[i-1], bitrate_quotas[profile_keys[i-1]]
 
     @staticmethod
     def get_bitrate_quota_by_latency(latency: float) -> str:

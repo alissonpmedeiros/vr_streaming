@@ -5,20 +5,22 @@ if typing.TYPE_CHECKING:
     from models.graph import Graph
     from models.base_station import BaseStation 
 
-from models.paths import Dijkstra, WidestPath, FLATWISE
+from models.paths import Dijkstra, WidestPath, FLATWISE, SCG_Dijkstra
     
 """ controller modules """
 from controllers import mec_controller
+from controllers import network_controller
 
 """other modules"""
+import sys
 import operator
 from typing import Dict
 from pprint import pprint as pprint
 
-#TODO: here we should have an agnostic method to call these methods, since now we're no long just using dijkstra, but also widest path
-
 
 class PathController:
+    
+    ########################  WIDEST PATH ########################
     @staticmethod
     def get_widest_path(
         graph: 'Graph', source_node: 'BaseStation', target_node: 'BaseStation', required_throughput: float  
@@ -30,6 +32,8 @@ class PathController:
         return PathController.calculate_path(
             previous_nodes, widest_path, source_node, target_node
         )
+        
+    ########################  SHORTEST PATH ########################
 
     @staticmethod
     def get_shortest_path(
@@ -43,17 +47,43 @@ class PathController:
             previous_nodes, shortest_path, source_node, target_node
         )
         
+    ########################  FLATWISE SHORTST PATH ########################
+        
     @staticmethod
     def get_flatwise_path(
-        graph: 'Graph', base_station_set: Dict[str, 'BaseStation'], source_node: 'BaseStation', target_node: 'BaseStation', latency_requirement: float, required_throughput: float,   
+        base_station_set: Dict[str, 'BaseStation'], graph: 'Graph', source_node: 'BaseStation', target_node: 'BaseStation', latency_requirement: float, required_throughput: float,   
     ):  
         previous_nodes, shortest_path = FLATWISE.build_FLATWISE_path(
-            graph, base_station_set, source_node, target_node, latency_requirement, required_throughput
+            base_station_set, 
+            graph, 
+            source_node, 
+            target_node, 
+            latency_requirement, 
+            required_throughput
         )
         
         return PathController.calculate_path(
             previous_nodes, shortest_path, source_node, target_node
         )
+    
+    ########################  WIDEST SHORTEST PATH ########################
+    
+    @staticmethod
+    def _calculate_widest_shortest_path(graph: 'Graph', paths: list):
+        """ get the widest shortest path with the highest throughput among all candidate paths"""
+        wsp_path = 0
+        wsp_cost = 0
+        wsp_throughput = 0
+        
+        for path in paths:
+            route_throughput = network_controller.NetworkController.get_route_net_throughput(graph, path[0])
+            
+            if route_throughput > wsp_throughput:
+                wsp_path = path[0]
+                wsp_cost = path[1]
+                wsp_throughput = route_throughput
+        
+        return wsp_path, wsp_cost
         
     @staticmethod
     def get_widest_shortest_path(
@@ -63,9 +93,35 @@ class PathController:
             graph, source_node, required_throughput
         )
         
-        return PathController.calculate_paths(
+        paths =  PathController.calculate_paths(
             previous_nodes, widest_shortest_path, source_node, target_node
         )
+        
+        if not paths:
+            return None, None
+        
+        return PathController._calculate_widest_shortest_path(graph, paths)
+        
+        
+    ########################  SHORTEST WIDEST PATH ########################
+        
+    @staticmethod
+    def _calculate_shortest_widest_path(graph: 'Graph', paths: list):
+        """ get the shortest widest path with the lowest latency cost among all candidate paths"""
+        
+        swp_path = 0
+        swp_cost = 0
+        swp_latency = sys.maxsize
+        
+        for path in paths:
+            route_latency = network_controller.NetworkController.get_route_net_latency(graph, path[0])
+            
+            if route_latency < swp_latency:
+                swp_path = path[0]
+                swp_cost = path[1]
+                swp_latency = route_latency
+        
+        return swp_path, swp_cost
         
     @staticmethod
     def get_shortest_widest_path(
@@ -75,9 +131,16 @@ class PathController:
             graph, source_node, required_throughput
         )
         
-        return PathController.calculate_paths(
+        paths =  PathController.calculate_paths(
             previous_nodes, shortest_widest_path, source_node, target_node
         )
+        
+        if not paths:
+            return None, None
+        
+        return PathController._calculate_shortest_widest_path(graph, paths)
+    
+    ########################  SINGLE PATH CALCULATION ########################
     
     @staticmethod
     def calculate_path( 
@@ -87,7 +150,8 @@ class PathController:
             
         path = []
         node = target_node.bs_name
-       
+        if node not in previous_nodes:
+            return None, None
         
         while node != start_node.bs_name:
             path.append(node)
@@ -99,6 +163,8 @@ class PathController:
         path.append(start_node.bs_name)
         path.reverse()
         return path, round(calculated_path[target_node.bs_name], 2)
+    
+    ########################  MULTIPLE PATH CALCULATION ########################
     
     @staticmethod
     def calculate_paths(previous_nodes, calculated_distances, start_node: 'BaseStation', target_node: 'BaseStation'):
@@ -117,33 +183,16 @@ class PathController:
             return path
 
         paths = []
+        
+        if target_node.bs_name not in previous_nodes:
+            return None
+            
         for node in previous_nodes[target_node.bs_name]:
             path = build_path(node, target_node.bs_name)
             paths.append((path, round(calculated_distances[target_node.bs_name], 2)))
 
         return paths
-    
-    
-    @staticmethod
-    def calculate_path_bk( 
-        previous_nodes, calculated_path, source_node: 'BaseStation', target_node: 'BaseStation'
-    ):
-        """ returns the route and cost for any shortest or widest path between the source and destination node"""
-            
-        path = []
-        node = target_node.bs_name
-       
-        
-        while node != source_node.bs_name:
-            path.append(node)
-            if node in previous_nodes:
-                node = previous_nodes[node]
-            else:
-                break
-    
-        path.append(source_node.bs_name)
-        path.reverse()
-        return path, round(calculated_path[target_node.bs_name], 2)
+
 
 
 
@@ -157,7 +206,7 @@ class Others:
         previous_nodes = None
         shortest_path = None
         
-        previous_nodes, shortest_path = Dijkstra.build_E2E_shortest_path(
+        previous_nodes, shortest_path = SCG_Dijkstra.build_E2E_shortest_path(
             graph, source_node
         )
         
@@ -179,11 +228,11 @@ class Others:
     ):
         """gets the end-to-end latency between start node and the target node, considering the network latency to reach the target and the computing latency of the target node"""
         
-        previous_nodes, shortest_path = Dijkstra.build_E2E_shortest_path(
-            graph, source_node
+        previous_nodes, shortest_path = SCG_Dijkstra.build_E2E_shortest_path(
+            graph, source_node, 1
         )
         
-        return Dijkstra.calculate_ETE_shortest_path(
+        return PathController.calculate_path(
             previous_nodes, shortest_path, source_node, target_node
         )
         

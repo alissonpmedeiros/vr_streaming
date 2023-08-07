@@ -97,7 +97,7 @@ class HmdController:
         return
     
     @staticmethod
-    def __connect_hmd_to_base_station(hmd: VrHMD, base_stations: Dict[str, 'BaseStation']) -> None:
+    def __connect_hmd_to_base_station(hmd: VrHMD, base_stations: Dict[str, 'BaseStation'], cdn_server_id: str) -> None:
         """connects a HMD to a base station"""
         
         max_signal_range = -1
@@ -109,8 +109,15 @@ class HmdController:
                 max_signal_range = base_station.signal_range
                 connected_base_station = bs_id
         
-        if connected_base_station is None:
-            hmd.current_base_station = hmd.previous_base_station
+        
+        if connected_base_station is None or connected_base_station == cdn_server_id:
+            if hmd.previous_base_station == '':
+                temp_id = str(random.randint(0, len(base_stations) - 1))
+                while temp_id != cdn_server_id:
+                    temp_id = str(random.randint(0, len(base_stations) - 1))
+                hmd.current_base_station = temp_id
+            else:
+                hmd.current_base_station = hmd.previous_base_station
         
         else:
             hmd.previous_base_station = hmd.current_base_station
@@ -142,7 +149,7 @@ class HmdController:
     
 
     @staticmethod
-    def update_hmd_positions(base_stations: Dict[str, 'BaseStation'], hmds: Dict[str, VrHMD]) -> None:
+    def update_hmd_positions(base_stations: Dict[str, 'BaseStation'], hmds: Dict[str, VrHMD], cdn_server_id: str) -> None:
         for hmd_id, hmd in hmds.items():
             new_position = HmdController.__generate_hmd_position(hmd)
             new_x = new_position[0]
@@ -158,7 +165,7 @@ class HmdController:
             else:
                 hmd.position[1] = new_y
                 
-            HmdController.__connect_hmd_to_base_station(hmd, base_stations)
+            HmdController.__connect_hmd_to_base_station(hmd, base_stations, cdn_server_id)
 
     
     

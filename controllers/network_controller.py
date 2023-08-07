@@ -41,12 +41,12 @@ logger.addHandler(console_handler)
 
 MIN_VALUE = -10**9
 MAX_VALUE = sys.maxsize
-MIN_THROUGHPUT = 10
-MAX_THROUGHPUT = 250
+MIN_THROUGHPUT = 25
+MAX_THROUGHPUT = 4153
 MIN_LATENCY = 10
 MAX_LATENCY = 56
 
-MINIMUN_AVAILABLE_BANDWIDTH = 50 #Mbps
+MINIMUN_AVAILABLE_BANDWIDTH = 1024 #Mbps
 
 
 class NetworkController:
@@ -398,7 +398,14 @@ class NetworkController:
     def congestion_management(
         graph: 'Graph', flow_set: dict, prioritized_served_flows: list, non_prioritized_served_flows: list, congestion_iterations: int
     ) -> None:
+        # if congestion_iterations == 100:
+        #     print(non_prioritized_served_flows)
+        #     print(prioritized_served_flows)
+            # a = input('')
+        
         reachable_flows = False
+        congested_edges_found = False
+        
         for non_prioritized_flow in non_prioritized_served_flows.copy():
             served_flow = flow_set[non_prioritized_flow]
             served_flow_route = served_flow['route']
@@ -418,6 +425,10 @@ class NetworkController:
                     non_prioritized_served_flows.remove(non_prioritized_flow)
                     
         if not reachable_flows:
+            if congestion_iterations > 50:
+                print(f'BEFORE: size of prioritized flows: {len(prioritized_served_flows)}')
+                print(f' size of non prioritized flows: {len(non_prioritized_served_flows)}')
+                a = input('checking on prioritized flows...')
             for prioritized_flow in prioritized_served_flows.copy():
                 served_flow = flow_set[prioritized_flow]
                 served_flow_route = served_flow['route']
@@ -434,6 +445,33 @@ class NetworkController:
                         )
                     else:
                         prioritized_served_flows.remove(prioritized_flow)
+                        
+                    congested_edges_found = True
+            
+            if not congested_edges_found:
+                for prioritized_flow in prioritized_served_flows.copy():
+                    served_flow = flow_set[prioritized_flow]
+                    served_flow_route = served_flow['route']
+                    served_flow_quota = served_flow['current_quota']
+                    served_flow_quota_name = served_flow['current_quota_name']
+                    served_flow_throughput = served_flow_quota['throughput']
+                    
+                    if served_flow_throughput > MIN_THROUGHPUT:
+                        NetworkController.decrease_bandwidth_reservation(
+                            graph, flow_set, prioritized_flow
+                        )
+                    else:
+                        # print(served_flow_quota)
+                        # print(f'served flow throughput: {served_flow_throughput} Mbps')
+                        # print(f'min throughput: {MIN_THROUGHPUT} Mbps')
+                        # print(served_flow_route)
+                        # a = input('')
+                        prioritized_served_flows.remove(prioritized_flow)
+                    
+            if congestion_iterations > 50:
+                print(f'AFTER: size of prioritized flows: {len(prioritized_served_flows)}')
+                print(f' size of non prioritized flows: {len(non_prioritized_served_flows)}')
+                a = input('')
                         
         if not reachable_flows:
             print(f'\nCongestion iteration: {congestion_iterations} -> NON-PRIORITIZED FLOWS')
@@ -474,6 +512,7 @@ class NetworkController:
         flow = flow_set[flow_id]
         
         required_quota = flow['next_quota']
+        required_quota_copy = required_quota
         required_quota_name = flow['next_quota_name']
         # print(f'\nrequired quota')
         # print(required_quota)
@@ -493,6 +532,8 @@ class NetworkController:
             new_route, route_max_throughput = path_controller.PathController.get_shortest_widest_path(
                 graph, source_node, target_node, required_throughput
             )
+            if new_route:
+                route_max_latency = NetworkController.get_route_net_latency(graph, new_route)
         
         elif routing_algorithm == 'flatwise':
             new_route, route_max_latency = path_controller.PathController.get_flatwise_path(
@@ -501,7 +542,7 @@ class NetworkController:
         
         congestion_iterations = 1
         
-        while not new_route:
+        while not new_route or route_max_latency > required_latency:
             # print(f'\n*** no routes to fulfill latency or throughput: flow id: {flow_id} ***')
             # print(f'*** latency found: {route_max_latency} | required latency: {required_latency} ms ***')
             # print(f'*** throughput found: {route_max_throughput} | required throughput: {required_throughput} Mbps ***')
@@ -526,6 +567,15 @@ class NetworkController:
             
             congestion_iterations += 1
             
+            if congestion_iterations == 50:
+                print(source_node.bs_name)
+                print(target_node.bs_name)
+                print(required_quota_copy)
+                print(required_quota)
+                print(route_max_latency)
+                print(f' -> '.join(new_route))
+                a = input('')
+            
             if routing_algorithm == 'wsp':
                 new_route, route_max_latency = path_controller.PathController.get_widest_shortest_path(
                     graph, source_node, target_node, required_throughput
@@ -535,6 +585,8 @@ class NetworkController:
                 new_route, route_max_throughput = path_controller.PathController.get_shortest_widest_path(
                     graph, source_node, target_node, required_throughput
                 )
+                if new_route:
+                    route_max_latency = NetworkController.get_route_net_latency(graph, new_route)
             
             elif routing_algorithm == 'flatwise':
                 new_route, route_max_latency = path_controller.PathController.get_flatwise_path(
@@ -547,6 +599,12 @@ class NetworkController:
             # )
         
         # a = input('type to increase bw reservation..')
+        if required_latency < route_max_latency:
+            print(f'\n*** ERROR: REQUIRED LATENCY < ROUTE MAX LATENCY ***')
+            print(required_quota_copy)
+            print(required_quota)
+            print(f'route max latency: {route_max_latency} ms')
+            a = input('')
         NetworkController.increase_bandwidth_reservation(graph, flow_set, flow_id, new_route, required_quota, required_quota_name)
 
         # return required_throughput

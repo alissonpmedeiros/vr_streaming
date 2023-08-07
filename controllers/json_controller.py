@@ -124,8 +124,17 @@ class DecoderController:
     def decode_net_config_file() -> dict:
         """ decodes network configuration file """
         
-        file_name      = CONFIG['NETWORK']['NETWORK_FILE']
+        city = CONFIG['SYSTEM']['CITY_TOPOLOGY']
+        radius = CONFIG['SYSTEM']['TOPOLOGY_RADIUS']
+        new_radius = str(radius)
+        new_radius = new_radius.replace('.', '_')
+        
         data_directory = CONFIG['NETWORK']['NETWORK_FILE_DIR']
+        data_directory = "{}{}/".format(data_directory, city)
+        file_name      = city + '_r_' + str(new_radius) + '.json'
+        # print(f'loading file {file_name} at {data_directory}')
+        # a = input('')
+        
         
         #print(f'\n*** loading file {file_name} at {data_directory} ***')
         

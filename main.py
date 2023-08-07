@@ -64,6 +64,32 @@ logger.addHandler(console_handler)
 MIGRATION_ALGORITHM = LA()
 
 MAX_THROUGHPUT = 4153
+MIN_THROUGHPUT = 4153
+
+
+TOPOLOGIES = {
+    'bern': {
+        'nodes': 147,
+        'radius': [0.18, 0.2, 0.22],
+        'edges:': [872, 1069, 1263],
+        'ALVP':   [5.9, 7.2, 8.5],
+        'CDN_SERVER_ID': '45'
+    },
+    'geneva': {
+        'nodes': 269,
+        'radius': [0.11, 0.13, 0.15],
+        'edges:': [1230, 1692, 2217],
+        'ALVP':   [4.5, 6.2, 8.24],
+        'CDN_SERVER_ID': '49'
+    },
+    'zurich': {
+        'nodes': 586,
+        'radius': [0.08, 0.09, 0.1],
+        'edges:': [3173, 3996, 4868],
+        'ALVP':   [5.4, 6.8, 8.3],
+        'CDN_SERVER_ID': '455'
+    }
+}
 
 
 ### CONFIG ###
@@ -79,6 +105,10 @@ hmds_file = CONFIG['SYSTEM']['HMDS_FILE']
 mecs_file = CONFIG['SYSTEM']['MEC_FILE']
 results_dir = CONFIG['SYSTEM']['RESULTS_DIR']
 
+new_radius = str(TOPOLOGY_RADIUS)
+new_radius = new_radius.replace('.', '_')
+results_dir = "{}{}/r_{}/".format(results_dir, CITY_TOPOLOGY, new_radius)
+
 ITERATION = 1
 
 OVERALL_MECS = CONFIG['MEC_SERVERS']['OVERALL_MECS']
@@ -87,7 +117,7 @@ OVERALL_VIDEO_CLIENTS = CONFIG['NETWORK']['HMDS']
 #OVERALL_VIDEO_CLIENTS = 5
 CLIENTS_PER_SERVER = OVERALL_VIDEO_CLIENTS / OVERALL_VIDEO_SERVERS
 
-CDN_SERVER_ID = 136
+CDN_SERVER_ID = TOPOLOGIES[CITY_TOPOLOGY]['CDN_SERVER_ID']
 CDN_CLIENT_ID = 161
 
 '''
@@ -106,11 +136,12 @@ FILE_HEADER = [
     'topology_radius',
     'routing_algorithm',
     'net_congestion',
-    'total_throughput',
-    'e2e_latency', 
-    'throughput',
-    'net_latency', 
+    'total_net_throughput',
+    'flow_e2e_latency', 
+    'fow_throughput',
+    'flow_latency', 
     'route_latency',
+    'overp_net_latency',
     'impaired_services',
     'execution_time',
     'fps',
@@ -122,6 +153,7 @@ FILE_HEADER = [
     'strong_8k',
     'strong_12k',
     'strong_24k',
+    'full_24k'
 ]
 
 CSV.create_file(results_dir, FILE_NAME, FILE_HEADER)    
@@ -134,24 +166,25 @@ def get_total_throughput(flow_set: dict):
         
     return round(overall_throughput / 1024, 2)
 
-def calculate_network_overload(graph):
+def calculate_network_congestion(graph):
     
-    graph_allocated_bw = 0
-    graph_total_bw = 0
+    congested_links = 0
+    total_links = 0
 
     visited_nodes = []
     for node, node_data in graph.items():
         for neighbor, neighbor_data in node_data.items():
             if neighbor.startswith('BS') and neighbor not in visited_nodes:
-                allocated_bw = neighbor_data['allocated_bandwidth']
-                total_bandwidth = neighbor_data['total_bandwidth']
-                graph_allocated_bw += allocated_bw
-                graph_total_bw += total_bandwidth
+                total_links += 1
+                if neighbor_data['available_bandwidth'] < MIN_THROUGHPUT:
+                    congested_links += 1
+                visited_nodes.append(neighbor)
         visited_nodes.append(node)
 
+    congestion_level = (congested_links * total_links) / 100
     
-    network_overload_percentage = (graph_allocated_bw * 100) / graph_total_bw 
-    return round(network_overload_percentage, 2)
+    
+    return round(congestion_level, 2)
 
 def get_resolutions(flow_set: dict):
     
@@ -164,6 +197,8 @@ def get_resolutions(flow_set: dict):
     strong_12k = 0
     strong_8k = 0
     strong_4k = 0
+    
+    full_24k = 0
     
     for flow in flow_set.values():
         flow_throughput = flow['current_quota']
@@ -199,6 +234,8 @@ def get_resolutions(flow_set: dict):
         # Video Bitrate for 24k strong interaction
         elif flow_throughput >= 3432 and flow_throughput <= 4153:
             strong_24k += 1
+            if flow_throughput == 4153:
+                full_24k += 1
     
     result = {
         'weak_24k': weak_24k,
@@ -209,6 +246,7 @@ def get_resolutions(flow_set: dict):
         'strong_12k': strong_12k,
         'strong_8k': strong_8k,
         'strong_4k': strong_4k,
+        'full_24k': full_24k,
     }
     
     return result
@@ -222,18 +260,15 @@ def get_average_e2e_latency(graph, flow_set: dict):
     for flow in flow_set.values():
         src_id = flow['client']
         dst_id = flow['server']
+        flow_route = flow['route']
         
         source_node_id = str(hmds_set[str(src_id)].current_base_station)
-        source_node = base_station_set[source_node_id]
-            
-        target_mec_id = str(dst_id)
-        target_node = base_station_set[target_mec_id]
+        source_node: 'BaseStation' = base_station_set[source_node_id]
         
-        path, e2e_latency = path_controller.Others.get_ETE_shortest_path(
-            graph, source_node, target_node
-        )
+        route_latency = network_controller.NetworkController.get_route_net_latency(graph, flow_route)
         
-        average_e2e_latency += e2e_latency
+        
+        average_e2e_latency += (source_node.node_latency + source_node.wireless_latency + route_latency)
     
     average_e2e_latency = average_e2e_latency / len(flow_set)
     return round(average_e2e_latency, 2)
@@ -269,9 +304,7 @@ def get_average_route_latency(graph, flow_set: dict):
         
         average_route_latency += network_controller.NetworkController.get_route_net_latency(graph, flow_route)
     
-    average_route_latency = average_route_latency / len(flow_set)
-    
-    return round(average_route_latency, 2)
+    return round(average_route_latency / len(flow_set), 2)
         
 
 def flow_fairness_selection(flow_order):
@@ -481,7 +514,7 @@ if __name__ == '__main__':
         logging.info(f'ITERATION: {ITERATION}')
         
         logging.info(f'updating hmd positions...')
-        hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set)
+        hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set, CDN_SERVER_ID)
         
         # if ITERATION > 1 and ROUTING_ALGORITHM == 'flatwise':        
         #     logging.info(f'checking service migration...')
@@ -668,41 +701,45 @@ if __name__ == '__main__':
                 #a = input('type to process the next flow...')
         
         
-        average_net_congestion = calculate_network_overload(graph.graph)
-        average_total_throughput = get_total_throughput(flow_set)
-        average_e2e_latency = get_average_e2e_latency(graph, flow_set)
-        average_net_throughput = get_average_resolution_throughput(flow_set)
-        average_net_latency = get_average_resolution_latency(flow_set)
-        average_route_latency = get_average_route_latency(graph, flow_set)
-        average_impaired_services = impaired_services['services']
-        average_execution_time = round(execution_time, 2) 
-        average_fps = get_average_resolution_fps(flow_set)
-        resolutions = get_resolutions(flow_set)
-            
-        results_data = []
-        results_data.append(CITY_TOPOLOGY)
-        results_data.append(TOPOLOGY_RADIUS)
-        results_data.append(ROUTING_ALGORITHM)
-        results_data.append(average_net_congestion)
-        results_data.append(average_total_throughput)
-        results_data.append(average_e2e_latency)
-        results_data.append(average_net_throughput)
-        results_data.append(average_net_latency)
-        results_data.append(average_route_latency)
-        results_data.append(average_impaired_services)
-        results_data.append(average_execution_time)
-        results_data.append(average_fps)
-        results_data.append(resolutions['weak_4k'])
-        results_data.append(resolutions['weak_8k'])
-        results_data.append(resolutions['weak_12k'])
-        results_data.append(resolutions['weak_24k'])
-        results_data.append(resolutions['strong_4k'])
-        results_data.append(resolutions['strong_8k'])
-        results_data.append(resolutions['strong_12k'])
-        results_data.append(resolutions['strong_24k'])
+        if ITERATION > 2:
+            average_net_congestion = calculate_network_congestion(graph.graph)
+            average_total_net_throughput = get_total_throughput(flow_set)
+            average_flow_e2e_latency = get_average_e2e_latency(graph, flow_set)
+            average_flow_throughput = get_average_resolution_throughput(flow_set)
+            average_flow_latency = get_average_resolution_latency(flow_set)
+            average_route_latency = get_average_route_latency(graph, flow_set)
+            average_impaired_services = impaired_services['services']
+            average_overprovisioned_net_latency = round(average_flow_latency - average_route_latency, 2)
+            average_execution_time = round(execution_time, 2) 
+            average_fps = get_average_resolution_fps(flow_set)
+            resolutions = get_resolutions(flow_set)
+                
+            results_data = []
+            results_data.append(CITY_TOPOLOGY)
+            results_data.append(TOPOLOGY_RADIUS)
+            results_data.append(ROUTING_ALGORITHM)
+            results_data.append(average_net_congestion)
+            results_data.append(average_total_net_throughput)
+            results_data.append(average_flow_e2e_latency)
+            results_data.append(average_flow_throughput)
+            results_data.append(average_flow_latency)
+            results_data.append(average_route_latency)
+            results_data.append(average_overprovisioned_net_latency)
+            results_data.append(average_impaired_services)
+            results_data.append(average_execution_time)
+            results_data.append(average_fps)
+            results_data.append(resolutions['weak_4k'])
+            results_data.append(resolutions['weak_8k'])
+            results_data.append(resolutions['weak_12k'])
+            results_data.append(resolutions['weak_24k'])
+            results_data.append(resolutions['strong_4k'])
+            results_data.append(resolutions['strong_8k'])
+            results_data.append(resolutions['strong_12k'])
+            results_data.append(resolutions['strong_24k'])
+            results_data.append(resolutions['full_24k'])
         
-        CSV.save_data(results_dir, FILE_NAME, results_data)
-        # a = input('')
+            CSV.save_data(results_dir, FILE_NAME, results_data)
+            # a = input('')
         
        
         ITERATION += 1

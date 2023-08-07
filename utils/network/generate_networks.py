@@ -16,23 +16,37 @@ from json import JSONEncoder
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 
+
 TOPOLOGIES = {
+    'bern': {
+        'nodes': 147,
+        'radius': [0.15, 0.16, 0.17],
+        'edges:': [618, 700, 772],
+        'ALVP':   [4.2, 5.2, 4.7],
+        'CDN_SERVER_ID': '45'
+    },
     'geneva': {
         'nodes': 269,
-        'radius': [0.08],
-        'edges:': [726],
-        'ALVP':   [2.7 ]
+        'radius': [0.11, 0.13, 0.15],
+        'edges:': [1230, 1692, 2217],
+        'ALVP':   [4.5, 6.2, 8.24],
+        'CDN_SERVER_ID': '49'
+    },
+    'zurich': {
+        'nodes': 586,
+        'radius': [0.08, 0.09, 0.1],
+        'edges:': [3173, 3996, 4868],
+        'ALVP':   [5.4, 6.8, 8.3],
+        'CDN_SERVER_ID': '455'
     }
 }
 
-#Bern
-#CITY = 'bern'
-#RADIUS = 0.2
-#NUMBER_NODES = 50
 
-CITY = 'zurich'
-RADIUS = 0.07
-NUMBER_NODES = 586
+CITY = 'bern'
+RADIUS = 0.16
+
+CDN_SERVER_ID = TOPOLOGIES[CITY]['CDN_SERVER_ID']
+NUMBER_NODES = TOPOLOGIES[CITY]['nodes']
 
 #networkx plot 
 
@@ -218,8 +232,7 @@ def create_topology(file_dir, file_name, pdf_name):
     generate_graph_connections(graph)
     init_graph(graph, di_graph, node_latency, net_latency, net_throughput)
     save_to_json(di_graph, file_dir, file_name)
-    while True:    
-        draw_graph(di_graph, pdf_name, False)
+    draw_graph(di_graph, pdf_name, False)
 
 #####################################################################
         
@@ -434,12 +447,13 @@ def draw_graph(di_graph: DiGraph, pdf_name, throughput:bool):
     #plt.savefig(pdf_name, bbox_inches='tight', orientation='landscape', dpi=None)  
     #plt.show(block=False)
     #plt.draw()
-    #plt.show(block=False)
+    manager = plt.get_current_fig_manager()
+    manager.full_screen_toggle()
+    plt.show()
     #plt.pause(0.005)
     
-    #plt.imshow(plt.imread(pdf_name))
-    plt.pause(0.1)
-    plt.clf()
+    # plt.pause(0.1)
+    # plt.clf()
     
 def draw_plotly_graph(m_graph: DiGraph):
     edge_x = []
@@ -551,9 +565,38 @@ def save_to_json(di_graph: DiGraph, file_dir, file_name):
     return 
 
 
+def generate_graph_connections_from_file(m_graph: DiGraph, b_graph: Graph):
+    # creates new connnections for a baseline graph based on the positions of main graph on the new radius
+    positions = np.array([[0]])
+    for key, value in m_graph.graph_positions.items():
+        positions = np.append(positions, value)
+    positions = np.delete(positions, 0)
+    #print(f'\n')
+    positions_2d = positions.reshape((NUMBER_NODES, 2))
+    #print(positions_2d)
+    #a = input('')
+    while True:
+        kdtree = spatial.KDTree(positions_2d)
+        pairs = kdtree.query_pairs(RADIUS)
+        
+        b_graph.graph.add_nodes_from(range(NUMBER_NODES))
+        b_graph.graph.add_edges_from(list(pairs))
+        
+        
+        if nx.is_connected(b_graph.graph):
+            b_graph.baseline_positions = positions_2d
+            print(f'NODES: {b_graph.graph.number_of_nodes()} | EDGES: {b_graph.graph.number_of_edges()} | ALPV: {b_graph.graph.number_of_edges()/b_graph.graph.number_of_nodes()}')
+            print('Graph is connected!')
+            break
+            
+        else:    
+            print('\nGraph is not connected!')
+            b_graph.graph = nx.Graph()
+
 def load_topology(data_dir, file_name, pdf_name):
     '''loads the graph from json file'''
     
+    graph = Graph()
     di_graph = DiGraph() 
     
     data = {}
@@ -602,10 +645,10 @@ def load_topology(data_dir, file_name, pdf_name):
             di_graph.nodes_set[src].edge_net_latencies.append(net_latency)
             di_graph.nodes_set[src].edge_net_throughputs.append(net_throughput)
             
-            # updating destination throughput and latency in node_set
-            #di_graph.nodes_set[dst].edges.append(src)
-            #di_graph.nodes_set[dst].edge_net_latencies.append(net_latency)
-            #di_graph.nodes_set[dst].edge_net_throughputs.append(net_throughput)
+            # # updating destination throughput and latency in node_set
+            # di_graph.nodes_set[dst].edges.append(src)
+            # di_graph.nodes_set[dst].edge_net_latencies.append(net_latency)
+            # di_graph.nodes_set[dst].edge_net_throughputs.append(net_throughput)
             
             #print(type(src))
             #print(type(dst))
@@ -633,13 +676,26 @@ def load_topology(data_dir, file_name, pdf_name):
                 net_throughput=net_throughput
             )
     
-    while True:           
-        draw_graph(di_graph, pdf_name, False)
-    #file_name = CITY + '_r_' + str(RADIUS) + '.json'
+    generate_graph_connections_from_file(di_graph, graph)
     
+    di_graph = DiGraph()
     
-    #save_to_json(di_graph, file_dir, 'NEW.json')
-    #a = input('')
+    node_latency = {'lower_latency_threshold': NODE_LATENCY_LOWER_THRESHOLD, 'upper_latency_threshold': NODE_LATENCY_UPPER_THRESHOLD}
+    net_latency = {'lower_latency_threshold': NET_LATENCY_LOWER_THRESHOLD, 'upper_latency_threshold': NET_LATENCY_UPPER_THRESHOLD}
+    net_throughput = {'lower_throughput_threshold': NET_THROUGHPUT_LOWER_THRESHOLD, 'upper_throughput_threshold': NET_THROUGHPUT_UPPER_THRESHOLD}
+    
+    init_graph(graph, di_graph, node_latency, net_latency, net_throughput)
+    
+    NEW_RADIUS = str(RADIUS)
+    NEW_RADIUS = NEW_RADIUS.replace('.', '_')
+    
+    draw_graph(di_graph, pdf_name, False)
+    file_name = CITY + '_r_' + str(NEW_RADIUS) + '.json'
+    a = input('type 1 to save the topology: ')
+    if a == '1':
+        save_to_json(di_graph, file_dir, file_name)
+        set_CDN_edges_to_infinit(file_dir, file_name, CDN_SERVER_ID)
+    
     #draw_plotly_graph(m_graph)
 
 
@@ -745,8 +801,8 @@ def set_CDN_edges_to_infinit(file_dir, json_file, cdn_id: str):
 if __name__ == "__main__":
     
     #file variables
-    file_dir = './network_topologies/'
-    file_name = 'network.json' 
+    file_dir = './network_topologies/{}/'.format(CITY)
+    file_name = 'baseline_topology.json' 
     pdf_name = 'zurich.pdf'
     
     
@@ -770,6 +826,6 @@ if __name__ == "__main__":
             load_topology(file_dir, file_name, pdf_name)
         else:
             print(f'\n*** Setting CDN edges to infinit ***')
-            set_CDN_edges_to_infinit(file_dir, file_name, '454')
+            set_CDN_edges_to_infinit(file_dir, file_name, CDN_SERVER_ID)
     else:
         create_topology(file_dir, file_name, pdf_name)

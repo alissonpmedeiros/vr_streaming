@@ -51,20 +51,98 @@ class PathController:
         
     @staticmethod
     def get_flatwise_path(
-        base_station_set: Dict[str, 'BaseStation'], graph: 'Graph', source_node: 'BaseStation', target_node: 'BaseStation', latency_requirement: float, required_throughput: float,   
+        base_station_set: Dict[str, 'BaseStation'], graph: 'Graph', source_node: 'BaseStation', target_node: 'BaseStation', latency_requirement: float, required_throughput: float
     ):  
-        previous_nodes, shortest_path = FLATWISE.build_FLATWISE_path(
-            base_station_set, 
-            graph, 
-            source_node, 
-            target_node, 
-            latency_requirement, 
-            required_throughput
-        )
+        # previous_nodes, shortest_path = FLATWISE.build_FLATWISE_path(
+        #     base_station_set, 
+        #     graph, 
+        #     source_node, 
+        #     target_node, 
+        #     latency_requirement*5, 
+        #     required_throughput
+        # )
+    
+        # return PathController.calculate_path(
+        #         previous_nodes, shortest_path, source_node, target_node
+        #     )
         
-        return PathController.calculate_path(
-            previous_nodes, shortest_path, source_node, target_node
-        )
+        all_paths = []
+        upper_threshold = 70
+        lower_threshold = 5
+        perc = 5
+        
+        paths = []
+        
+        for latency_tentative in range(upper_threshold, lower_threshold, -perc):
+            previous_nodes, shortest_path = FLATWISE.build_FLATWISE_path(
+                base_station_set, 
+                graph, 
+                source_node, 
+                target_node, 
+                latency_tentative, 
+                required_throughput
+            )
+            
+            new_route, route_max_latency = PathController.calculate_path(
+                previous_nodes, shortest_path, source_node, target_node
+            )
+            
+            if new_route and route_max_latency <= latency_requirement:
+                paths.append((new_route, route_max_latency))
+            
+            all_paths.append((new_route, route_max_latency))
+                
+        if paths:
+            shortest_path_route = None
+            shortest_path = 0
+            for path in paths:
+                # print(path[1])
+                if path[1] > shortest_path:
+                    shortest_path = path[1]
+                    shortest_path_route = path[0]
+            
+            # print(f'requirement: {latency_requirement} ({shortest_path})')
+            # a = input('')
+            return shortest_path_route, shortest_path
+        
+        # for path in all_paths:
+            # print(path[1])
+        # print(f'requirement: {latency_requirement}')
+        # a = input(f'GOING TO CONGESTION MANAGEMENT')
+        return None, None
+        
+        # previous_nodes, shortest_path = FLATWISE.build_FLATWISE_path(
+        #     base_station_set, 
+        #     graph, 
+        #     source_node, 
+        #     target_node, 
+        #     latency_requirement, 
+        #     required_throughput
+        # )
+        
+        # new_route, route_max_latency = PathController.calculate_path(
+        #     previous_nodes, shortest_path, source_node, target_node
+        # )
+        # latency_increment = 15
+        
+        # while not new_route and latency_increment < 1:
+        #     new_latency_requirement = latency_requirement + latency_increment
+        #     previous_nodes, shortest_path = FLATWISE.build_FLATWISE_path(
+        #         base_station_set, 
+        #         graph, 
+        #         source_node, 
+        #         target_node, 
+        #         new_latency_requirement, 
+        #         required_throughput
+        #     )
+            
+        #     latency_increment -= 1
+            
+        #     new_route, route_max_latency = PathController.calculate_path(
+        #         previous_nodes, shortest_path, source_node, target_node
+        #     )
+        
+        # return new_route, route_max_latency
     
     ########################  WIDEST SHORTEST PATH ########################
     

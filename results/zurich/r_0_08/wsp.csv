@@ -1,0 +1,7 @@
+city_topology,topology_radius,routing_algorithm,net_congestion,total_net_throughput,flow_e2e_latency,fow_throughput,flow_latency,route_latency,overp_net_latency,impaired_services,execution_time,fps,weak_4k,weak_8k,weak_12k,weak_24k,strong_4k,strong_8k,strong_12k,strong_24k,full_24k
+zurich,0.08,wsp,37.59,1703.41,9.63,1.7,11.08,2.21,8.87,0,72.95,113.75,0,116,136,121,109,127,127,264,159
+zurich,0.08,wsp,37.59,1881.4,9.82,1.88,10.64,2.35,8.29,0,72.62,119.39,0,112,130,139,67,135,110,307,211
+zurich,0.08,wsp,32.22,2054.08,9.62,2.05,10.08,2.2,7.88,0,72.44,125.1,0,119,132,132,30,126,111,350,264
+zurich,0.08,wsp,37.59,2221.46,9.82,2.22,9.78,2.33,7.45,0,72.4,130.19,0,109,127,127,0,116,136,385,307
+zurich,0.08,wsp,26.85,2389.78,9.62,2.39,9.24,2.16,7.08,0,72.56,136.89,0,67,135,110,0,112,130,446,350
+zurich,0.08,wsp,48.33,2558.37,9.81,2.56,8.54,2.29,6.25,0,72.54,143.71,0,30,126,111,0,119,132,482,385

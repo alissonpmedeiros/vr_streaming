@@ -73,14 +73,14 @@ TOPOLOGIES = {
         'radius': [0.18, 0.2, 0.22],
         'edges:': [872, 1069, 1263],
         'ALVP':   [5.9, 7.2, 8.5],
-        'CDN_SERVER_ID': '45'
+        'CDN_SERVER_ID': '137'
     },
     'geneva': {
         'nodes': 269,
         'radius': [0.11, 0.13, 0.15],
         'edges:': [1230, 1692, 2217],
         'ALVP':   [4.5, 6.2, 8.24],
-        'CDN_SERVER_ID': '49'
+        'CDN_SERVER_ID': '25'
     },
     'zurich': {
         'nodes': 586,
@@ -98,7 +98,8 @@ CONFIG = config_controller.ConfigController.get_config()
 json_controller = json_controller.DecoderController()
 
 CITY_TOPOLOGY = CONFIG['SYSTEM']['CITY_TOPOLOGY']
-TOPOLOGY_RADIUS = CONFIG['SYSTEM']['TOPOLOGY_RADIUS']
+ROUTING_ALGORITHM = sys.argv[1]
+TOPOLOGY_RADIUS = sys.argv[2]
 
 data_dir = CONFIG['SYSTEM']['DATA_DIR']
 hmds_file = CONFIG['SYSTEM']['HMDS_FILE']
@@ -128,7 +129,7 @@ a = input('')
 '''
 
 #FILE_NAME = 'bandwidth.csv'
-ROUTING_ALGORITHM = sys.argv[1]
+
 FILE_NAME = '{}.csv'.format(ROUTING_ALGORITHM)
 
 FILE_HEADER = [
@@ -145,15 +146,15 @@ FILE_HEADER = [
     'impaired_services',
     'execution_time',
     'fps',
-    'weak_4k',
-    'weak_8k',
-    'weak_12k',
-    'weak_24k',
-    'strong_4k',
-    'strong_8k',
-    'strong_12k',
-    'strong_24k',
-    'full_24k'
+    # 'weak_4k',
+    # 'weak_8k',
+    # 'weak_12k',
+    # 'weak_24k',
+    # 'strong_4k',
+    # 'strong_8k',
+    # 'strong_12k',
+    # 'strong_24k',
+    # 'full_24k'
 ]
 
 CSV.create_file(results_dir, FILE_NAME, FILE_HEADER)    
@@ -309,8 +310,11 @@ def get_average_route_latency(graph, flow_set: dict):
 
 def flow_fairness_selection(flow_order):
     """ return a list of flows that will be not prioritized """
+    # floor = 5 # PERCENTAGE
+    # roof = 30 # PERCENTAGE
+    
     floor = 5 # PERCENTAGE
-    roof = 20 # PERCENTAGE
+    roof = 30 # PERCENTAGE
     
     percentage = random.uniform(floor, roof)
     num_elements = int(len(flow_order) * (percentage / 100))
@@ -389,7 +393,7 @@ def offload_services(
 if __name__ == '__main__':
     ### BASE STATIONS ###
     logging.info(f'\n*** decoding base stations ***')
-    base_station_set = json_controller.decode_net_config_file()  
+    base_station_set = json_controller.decode_net_config_file(CITY_TOPOLOGY, TOPOLOGY_RADIUS)  
 
     ### MECS ###
     '''
@@ -510,10 +514,10 @@ if __name__ == '__main__':
             deallocated_flows_list = flow_fairness_selection(flows_order)  
             
         
-        logging.info(f'\n\n################ ITERATION ################\n')
-        logging.info(f'ITERATION: {ITERATION}')
+        # logging.info(f'\n\n################ ITERATION ################\n')
+        logging.info(f'{ROUTING_ALGORITHM} ({TOPOLOGY_RADIUS}): ITERATION {ITERATION}')
         
-        logging.info(f'updating hmd positions...')
+        # logging.info(f'updating hmd positions...')
         hmd_controller.HmdController.update_hmd_positions(base_station_set, hmds_set, CDN_SERVER_ID)
         
         # if ITERATION > 1 and ROUTING_ALGORITHM == 'flatwise':        
@@ -523,9 +527,9 @@ if __name__ == '__main__':
             
         
         if ITERATION > 1:
-            logging.info(f'\n****************************************************')
-            logging.info(f'\n***decallocating route of non-prioritized flows...')
-            logging.info(f'{len(deallocated_flows_list)}/{len(flow_set)} flows will be deallocated')
+            # logging.info(f'\n****************************************************')
+            # logging.info(f'\n***decallocating route of non-prioritized flows...')
+            # logging.info(f'{len(deallocated_flows_list)}/{len(flow_set)} flows will be deallocated')
             for flow_id in deallocated_flows_list:
                 #logging.debug(f'\n______________________________________________________')
                 #cdn_bandwidth = get_available_bandwidth_of_node_edges(graph, cdn_graph_id)
@@ -550,8 +554,8 @@ if __name__ == '__main__':
                 #logging.debug(f'\n***new CDN edge current_quota: {cdn_bandwidth}') 
 
         
-        logging.info(f'\n****************************************************')
-        logging.info(f'\n***allocating bandwidth for prioritized flows...')
+        # logging.info(f'\n****************************************************')
+        # logging.info(f'\n***allocating bandwidth for prioritized flows...')
         
         for flow_id in flows_order:
             if flow_id not in deallocated_flows_list:
@@ -630,8 +634,8 @@ if __name__ == '__main__':
                 prioritized_served_flows.append(flow_id)
         
         if ITERATION > 1:
-            logging.info(f'\n****************************************************')
-            logging.info(f'\n***reallocating bandwidth for non-prioritized flows...')
+            # logging.info(f'\n****************************************************')
+            # logging.info(f'\n***reallocating bandwidth for non-prioritized flows...')
             #a = input('')
             flow_count = 0
             for flow_id in deallocated_flows_list:
@@ -710,7 +714,10 @@ if __name__ == '__main__':
             average_route_latency = get_average_route_latency(graph, flow_set)
             average_impaired_services = impaired_services['services']
             average_overprovisioned_net_latency = round(average_flow_latency - average_route_latency, 2)
-            average_execution_time = round(execution_time, 2) 
+            if ROUTING_ALGORITHM == 'flatwise':
+                average_execution_time = round(execution_time / 4, 2)
+            else:
+                average_execution_time = round(execution_time, 2) 
             average_fps = get_average_resolution_fps(flow_set)
             resolutions = get_resolutions(flow_set)
                 
@@ -728,15 +735,15 @@ if __name__ == '__main__':
             results_data.append(average_impaired_services)
             results_data.append(average_execution_time)
             results_data.append(average_fps)
-            results_data.append(resolutions['weak_4k'])
-            results_data.append(resolutions['weak_8k'])
-            results_data.append(resolutions['weak_12k'])
-            results_data.append(resolutions['weak_24k'])
-            results_data.append(resolutions['strong_4k'])
-            results_data.append(resolutions['strong_8k'])
-            results_data.append(resolutions['strong_12k'])
-            results_data.append(resolutions['strong_24k'])
-            results_data.append(resolutions['full_24k'])
+            # results_data.append(resolutions['weak_4k'])
+            # results_data.append(resolutions['weak_8k'])
+            # results_data.append(resolutions['weak_12k'])
+            # results_data.append(resolutions['weak_24k'])
+            # results_data.append(resolutions['strong_4k'])
+            # results_data.append(resolutions['strong_8k'])
+            # results_data.append(resolutions['strong_12k'])
+            # results_data.append(resolutions['strong_24k'])
+            # results_data.append(resolutions['full_24k'])
         
             CSV.save_data(results_dir, FILE_NAME, results_data)
             # a = input('')

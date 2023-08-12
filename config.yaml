@@ -1,22 +1,24 @@
 SYSTEM:
   ETE_LATENCY_THRESHOLD: 5
-  DATA_DIR: '/Users/alisson-cds/Desktop/vr_streaming/data_sets/'
-  # DATA_DIR: 'C:\Users\Alisson Cds\Downloads\vr_streaming\data_sets\'
+  # DATA_DIR: '/Users/alisson-cds/Desktop/vr_streaming/data_sets/'
+  DATA_DIR: '/home/medeiros/vr_streaming/data_sets/'
   BS_FILE: 'base_stations.json'
   MEC_FILE: 'mecs.json'
   HMDS_FILE: 'hmds_1k.json'
-  RESULTS_DIR: '/Users/alisson-cds/Desktop/vr_streaming/results/'
-  CITY_TOPOLOGY: 'zurich'
-  TOPOLOGY_RADIUS: 0.08
+  # RESULTS_DIR: '/Users/alisson-cds/Desktop/vr_streaming/results/'
+  RESULTS_DIR: '/home/medeiros/vr_streaming/results/'
+  CITY_TOPOLOGY: 'bern'
+  # TOPOLOGY_RADIUS: 0.15
 
+  # bern cdn server id: 45
+  # bern radius are 0.15, 0.16, 0.17
+  
   # zurich cdn server id: 455
   # zurich radius are 0.08, 0.09, and 0.1
   
   # geneve cdn server id: 49
   # geneve radius are 0.11, 0.13, and 0.15
 
-  # bern cdn server id: 45
-  # bern radius are 0.15, 0.16, 0.17
 
 # variables for mininet-wifi 
 NETWORK:
@@ -25,23 +27,10 @@ NETWORK:
   SERVICE_PER_HMD: 1
   BASE_STATIONS: 586
   BASE_STATION_RANGE: 0.13
-  #NETWORK_FILE: base_stations.json
-  #NETWORK_FILE_DIR: C:\Users\Alisson Cds\OneDrive\Desktop\vr_streaming\data_sets\ 
-  #NETWORK_FILE_DIR: /Users/alisson-cds/Desktop/vr_streaming/data_sets/
   NETWORK_FILE: baseline_topology.json
-  # NETWORK_FILE: infocom_graph.json
-  NETWORK_FILE_DIR: /Users/alisson-cds/Desktop/vr_streaming/utils/network/network_topologies/
-  # NETWORK_FILE_DIR: C:\Users\Alisson Cds\Downloads\vr_streaming\utils\network\network_topologies\ 
-  #NET_GRAPH_DIMENSION: 2000
-  #HMD_MIN_VELOCITY: 1000
-  #HMD_MAX_VELOCITY: 1500
-  #BS_CHANNEL: 1
-  #BS_RANGE: 500
-  #BS_MODE: 'g'
-  #BS_TX_POWER: 76
-  #LOWER_LATENCY_THRESHOLD: 0.5 
-  #UPPER_LATENCY_THRESHOLD: 1   
-
+  # NETWORK_FILE_DIR: /Users/alisson-cds/Desktop/vr_streaming/utils/network/network_topologies/
+  NETWORK_FILE_DIR: /home/medeiros/vr_streaming/utils/network/network_topologies/ 
+  
 MIGRATION:  
   ALGORITHMS: 5
   SCG:

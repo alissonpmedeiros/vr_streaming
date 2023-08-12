@@ -124,18 +124,15 @@ class BitRateProfiles:
         valid_quotas = [k for k, v in bitrate_quotas.items() if v['throughput'] <= throughput]
         valid_quotas.reverse()
         
-        best_match = valid_quotas[0]
+        best_match = valid_quotas[-1]
         
         for quota in valid_quotas:
-            
-            print(f"{bitrate_quotas[quota]['throughput']} ({bitrate_quotas[quota]['latency']})")
-            
-            if bitrate_quotas[quota]['latency'] <= latency:
+            if bitrate_quotas[quota]['latency'] >= latency:
                 best_match = quota
                 break
                 
                 
-        return bitrate_quotas[best_match]
+        return best_match, bitrate_quotas[best_match]
     
     @staticmethod 
     def get_next_bitrate_quota(current_quota):

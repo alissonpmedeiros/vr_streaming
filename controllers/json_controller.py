@@ -121,11 +121,8 @@ class DecoderController:
     
     
     @staticmethod
-    def decode_net_config_file() -> dict:
+    def decode_net_config_file(city: str, radius: str) -> dict:
         """ decodes network configuration file """
-        
-        city = CONFIG['SYSTEM']['CITY_TOPOLOGY']
-        radius = CONFIG['SYSTEM']['TOPOLOGY_RADIUS']
         new_radius = str(radius)
         new_radius = new_radius.replace('.', '_')
         

@@ -24,7 +24,9 @@ class FLATWISE:
     @staticmethod
     def FLATWISE_heuristic(graph: 'Graph', node: 'BaseStation', goal_node: 'BaseStation', predecessor: str, latency_requirement: float, current_dist: float):
 
-        latency_requirement = latency_requirement + (latency_requirement * 0.1)
+        # latency_requirement = latency_requirement + (latency_requirement * 0.1)
+
+        latency_requirement = latency_requirement * 0.2
 
         x1, y1 = node.position[0], node.position[1]
         x2, y2 = goal_node.position[0], goal_node.position[1]
@@ -43,9 +45,9 @@ class FLATWISE:
         
         # desired_latency_value = desired_latency_difference + (latency_requirement / 10)
         
-        desired_latency_value = desired_latency_difference + (latency_requirement / current_dist)
+        # desired_latency_value = desired_latency_difference + (latency_requirement / current_dist)
         
-        # desired_latency_value = desired_latency_difference + (latency_requirement / (current_dist - (current_dist * 0.05)))
+        desired_latency_value = desired_latency_difference + (latency_requirement / (current_dist - (current_dist * 0.05)))
         
         return distance * desired_latency_value
 

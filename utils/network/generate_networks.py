@@ -22,31 +22,57 @@ TOPOLOGIES = {
         'nodes': 147,
         'radius': [0.15, 0.16, 0.17],
         'edges:': [618, 700, 772],
-        'ALVP':   [4.2, 5.2, 4.7],
-        'CDN_SERVER_ID': '45'
+        'ALVP':   [4.2, 4.7, 5.2],
+        'CDN_SERVER_ID': '137',
+        'network_latency':{
+            'lower_latency_threshold': 0.1,
+            'upper_latency_threshold': 2
+        },
+        'network_throughput':{
+            'lower_troughput_threshold': 50000,
+            'upper_throughput_threshold': 200000
+        }
     },
     'geneva': {
         'nodes': 269,
         'radius': [0.11, 0.13, 0.15],
         'edges:': [1230, 1692, 2217],
         'ALVP':   [4.5, 6.2, 8.24],
-        'CDN_SERVER_ID': '49'
+        'CDN_SERVER_ID': '25',
+        'network_latency':{
+            'lower_latency_threshold': 0.1,
+            'upper_latency_threshold': 2
+        },
+        'network_throughput':{
+            'lower_troughput_threshold': 50000,
+            'upper_throughput_threshold': 200000
+        }
     },
     'zurich': {
         'nodes': 586,
         'radius': [0.08, 0.09, 0.1],
         'edges:': [3173, 3996, 4868],
         'ALVP':   [5.4, 6.8, 8.3],
-        'CDN_SERVER_ID': '455'
+        'CDN_SERVER_ID': '455',
+        'network_latency':{
+            'lower_latency_threshold': 0.3,
+            'upper_latency_threshold': 0.8
+        }
     }
 }
 
 
-CITY = 'bern'
-RADIUS = 0.16
+CITY = 'geneva'
+RADIUS = 0.17
 
 CDN_SERVER_ID = TOPOLOGIES[CITY]['CDN_SERVER_ID']
 NUMBER_NODES = TOPOLOGIES[CITY]['nodes']
+
+# NET_THROUGHPUT_LOWER_THRESHOLD = 5000 # in Mbps
+# NET_THROUGHPUT_UPPER_THRESHOLD = 50000 # in Mbps
+
+NET_THROUGHPUT_LOWER_THRESHOLD = 50000 # in Mbps
+NET_THROUGHPUT_UPPER_THRESHOLD = 200000 # in Mbps
 
 #networkx plot 
 
@@ -87,11 +113,9 @@ LEGEND_COLOR = 'black'
 NODE_LATENCY_LOWER_THRESHOLD = 5 # in ms
 NODE_LATENCY_UPPER_THRESHOLD = 10 # in ms
 
-NET_LATENCY_LOWER_THRESHOLD = 0.5 # in ms
-NET_LATENCY_UPPER_THRESHOLD = 1 # in ms
+NET_LATENCY_LOWER_THRESHOLD = TOPOLOGIES[CITY]['network_latency']['lower_latency_threshold'] # in ms
+NET_LATENCY_UPPER_THRESHOLD = TOPOLOGIES[CITY]['network_latency']['upper_latency_threshold'] # in ms
 
-NET_THROUGHPUT_LOWER_THRESHOLD = 50000 # in Mbps
-NET_THROUGHPUT_UPPER_THRESHOLD = 500000 # in Mbps
 
 MAX_VALUE = sys.maxsize
 
@@ -689,12 +713,12 @@ def load_topology(data_dir, file_name, pdf_name):
     NEW_RADIUS = str(RADIUS)
     NEW_RADIUS = NEW_RADIUS.replace('.', '_')
     
-    draw_graph(di_graph, pdf_name, False)
+    #draw_graph(di_graph, pdf_name, False)
     file_name = CITY + '_r_' + str(NEW_RADIUS) + '.json'
-    a = input('type 1 to save the topology: ')
-    if a == '1':
-        save_to_json(di_graph, file_dir, file_name)
-        set_CDN_edges_to_infinit(file_dir, file_name, CDN_SERVER_ID)
+    # a = input('type 1 to save the topology: ')
+    # if a == '1':
+    save_to_json(di_graph, file_dir, file_name)
+    set_CDN_edges_to_infinit(file_dir, file_name, CDN_SERVER_ID)
     
     #draw_plotly_graph(m_graph)
 
